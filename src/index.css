@@ -1,0 +1,44 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&family=Poppins:wght@500;600;700&display=swap');
+
+:root {
+  /* Palet Warna Eksak dari Figma */
+  --c-red: #A00500;
+  --c-red-light: #FEE2E2; /* Background badge merah */
+  --c-red-5: rgba(160, 5, 0, 0.05);
+  
+  --c-yellow: #FFC627;
+  --c-yellow-light: #FFF8E6; /* Background badge kuning */
+  
+  --c-dark: #1A1A1A;
+  --c-dark-2: #212529;
+  
+  --c-gray: #6C757D;
+  --c-gray-light: #888888;
+  --c-gray-border: #F3F4F6;
+  
+  --c-green: #33624B;
+  --c-green-light: rgba(51, 98, 75, 0.09);
+  
+  --c-bg-white: #FFFFFF;
+  --c-bg-gray: #F8F9FA;
+  
+  /* Font */
+  --font-inter: 'Inter', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-inter);
+  color: var(--c-dark);
+  background-color: #E5E7EB; /* Latar luar layar agar frame 1425px terlihat jelas di PC besar */
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: inherit;
+}

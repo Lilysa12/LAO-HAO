@@ -1,0 +1,141 @@
+/* src/pages/customer/MenuDetail.css */
+
+.md-container, .md-container * {
+  box-sizing: border-box;
+}
+
+.md-container {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* --- HEADER --- */
+.md-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; border-bottom: 1px solid #F3F4F6; background: #fff; position: sticky; top: 0; z-index: 100; }
+.md-logo { height: 45px; object-fit: contain; }
+.md-nav-links { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;}
+.md-nav-links a { text-decoration: none; color: #6C757D; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: 0.3s; }
+.md-nav-links a:hover { color: #212529; }
+.md-nav-links a.active { color: #A00500; }
+
+/* --- TOP BAR --- */
+.md-top-bar { padding: 30px 60px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #F3F4F6; background: #fff;}
+.md-greeting { margin: 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #A0AEC0; }
+.md-page-title { margin: 5px 0 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; color: #212529; font-weight: 800; }
+.md-table-badge { background-color: #FFC627; color: #212529; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: 10px; display: flex; align-items: center; gap: 6px; }
+
+/* --- MAIN CONTENT & SIDEBAR --- */
+.md-main-layout { display: flex; padding: 40px 60px; gap: 60px; flex: 1; align-items: flex-start; }
+.md-sidebar { width: 80px; display: flex; flex-direction: column; gap: 35px; position: sticky; top: 150px; flex-shrink: 0; }
+.md-side-tab { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; color: #6C757D; transition: 0.3s; text-align: center;}
+.md-side-tab:hover { color: #212529; }
+.md-side-tab.active { color: #A00500; }
+.md-st-icon { width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: #FFFFFF; border: 1.5px solid #F3F4F6; font-size: 22px; font-weight: bold; font-family: 'Poppins', sans-serif; transition: 0.3s;}
+.md-side-tab.active .md-st-icon { background: rgba(160, 5, 0, 0.05); border-color: rgba(160, 5, 0, 0.05); box-shadow: 0 4px 10px rgba(160,5,0,0.1); }
+.md-st-text { font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* --- CONTENT AREA (CLOSEUP CARD) --- */
+.md-content-area { flex: 1; display: flex; flex-direction: column; }
+.md-closeup-card { display: flex; gap: 40px; align-items: stretch; background: #fff; border-radius: 20px; }
+
+/* Gambar Detail Kiri */
+.md-closeup-img { width: 45%; max-width: 450px; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); flex-shrink: 0;}
+
+/* Detail Info Kanan */
+.md-details-info { flex: 1; display: flex; flex-direction: column; padding: 10px 0;}
+.md-item-title { margin: 0 0 12px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; color: #212529; font-weight: 800; }
+.md-item-desc { margin: 0 0 25px 0; font-family: 'Inter', sans-serif; font-size: 15px; color: #6C757D; line-height: 1.7; }
+
+/* Text Area */
+.md-notes-area { 
+  width: 100%; 
+  background: #F8F9FA; 
+  border: 1px solid #E5E7EB; 
+  border-radius: 12px; 
+  padding: 20px; 
+  font-family: 'Inter', sans-serif; 
+  font-size: 14px; 
+  min-height: 140px; 
+  resize: vertical; 
+  margin-bottom: auto; /* Mendorong harga ke bawah */
+  outline: none; 
+  transition: 0.3s;
+  color: #212529;
+}
+.md-notes-area::placeholder { color: #A0AEC0; }
+.md-notes-area:focus { border-color: #A00500; box-shadow: 0 0 0 3px rgba(160,5,0,0.08); background: #fff;}
+
+/* Harga & Tombol */
+.md-action-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F3F4F6; padding-top: 25px; margin-top: 30px;}
+.md-price { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: #A00500; }
+.md-btn-add { background: rgba(160, 5, 0, 0.08); color: #A00500; border: none; padding: 12px 30px; border-radius: 25px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;}
+
+/* --- FLOATING BAR --- */
+.md-floating-bar { 
+  position: fixed; 
+  bottom: 30px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  width: calc(100% - 120px); 
+  max-width: 1305px; 
+  background-color: #960000; 
+  padding: 15px 30px; 
+  border-radius: 18px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  box-shadow: 0 10px 40px rgba(150,0,0,0.25); 
+  z-index: 90; 
+}
+.md-fb-left { display: flex; align-items: center; gap: 20px; color: #FFFFFF; }
+.md-cart-box { width: 50px; height: 50px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; display: flex; justify-content: center; align-items: center; position: relative; }
+.md-cart-icon { width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); }
+.md-cart-dot { position: absolute; top: 12px; right: 12px; width: 9px; height: 9px; background-color: #FFC627; border-radius: 50%; border: 1.5px solid #960000; }
+.md-cart-text h4 { margin: 0 0 3px 0; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 400; opacity: 0.9; }
+.md-cart-text p { margin: 0; font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; }
+.md-btn-checkout { background: #FFC627; color: #212529; border: none; padding: 14px 28px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;}
+
+/* --- FOOTER --- */
+.md-footer { background-color: #A00500; padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto; }
+.md-socials { display: flex; gap: 15px; }
+.md-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+.md-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
+.md-copyright { font-family: 'Inter', sans-serif; font-size: 13px; opacity: 0.9; }
+
+/* EFEK KLIK (Reusable) */
+.efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
+.efek-klik:active { transform: scale(0.96); background-color: rgba(160, 5, 0, 0.15) !important; }
+.efek-klik-kartu { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.efek-klik-kartu:active { transform: scale(0.98); }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1200px) {
+  .md-closeup-card { gap: 30px; }
+  .md-closeup-img { width: 50%; }
+}
+
+@media (max-width: 992px) {
+  .md-header, .md-top-bar, .md-main-layout, .md-floating-bar, .md-footer { padding-left: 30px; padding-right: 30px; }
+  .md-main-layout { flex-direction: column; align-items: center; }
+  .md-sidebar { flex-direction: row; width: 100%; justify-content: center; position: static; gap: 20px; margin-bottom: 20px; }
+  .md-floating-bar { width: calc(100% - 60px); }
+  .md-closeup-card { flex-direction: column; align-items: center; text-align: center; }
+  .md-closeup-img { width: 100%; max-width: 500px; margin-bottom: 20px; }
+  .md-action-row { flex-direction: column; gap: 20px; }
+  .md-btn-add { width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .md-nav-links { display: none; }
+  .md-floating-bar { padding: 10px 20px; bottom: 15px; width: calc(100% - 30px); border-radius: 12px; }
+  .md-cart-box { width: 40px; height: 40px; }
+  .md-cart-icon { width: 18px; height: 18px; }
+  .md-cart-dot { top: 9px; right: 9px; }
+  .md-cart-text p { font-size: 17px; }
+  .md-footer { flex-direction: column; gap: 20px; padding: 30px 20px; text-align: center; }
+}

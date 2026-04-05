@@ -1,0 +1,80 @@
+/* src/pages/customer/InputData.css */
+
+.input-data-container, .input-data-container * {
+  box-sizing: border-box;
+}
+
+.input-data-container {
+  width: 100%;
+  max-width: 2000px; /* Standar ukuran desktop */
+  margin: 0 auto;
+  background-color: var(--c-bg-white, #FFFFFF);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-inter, 'Inter', sans-serif);
+}
+
+/* --- HEADER --- */
+.id-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; border-bottom: 1px solid #F3F4F6; background: #fff; }
+.id-logo { height: 45px; object-fit: contain; }
+.id-nav-links { display: flex; gap: 40px; flex-wrap: wrap; }
+.id-nav-links a { text-decoration: none; color: var(--c-dark, #212529); font-family: var(--font-poppins, 'Poppins', sans-serif); font-size: 14px; font-weight: 600; transition: 0.3s; }
+.id-nav-links a.active { color: var(--c-red, #A00500); }
+
+/* --- MAIN CONTENT (Kiri Gambar, Kanan Form) --- */
+.id-main-body { display: flex; padding: 40px 60px; gap: 60px; flex: 1; align-items: stretch; }
+
+/* Kiri: Gambar */
+.id-image-section { flex: 1.1; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.id-hero-img { width: 100%; height: 100%; object-fit: cover; min-height: 500px; display: block; }
+
+/* Kanan: Form */
+.id-form-section { flex: 0.9; display: flex; flex-direction: column; justify-content: center; }
+.id-title { font-family: var(--font-jakarta, 'Plus Jakarta Sans', sans-serif); font-size: 28px; color: var(--c-dark, #212529); margin: 0 0 10px 0; font-weight: 800; }
+.id-subtitle { font-family: var(--font-inter, 'Inter', sans-serif); font-size: 15px; color: var(--c-gray, #6C757D); margin: 0 0 30px 0; line-height: 1.6; }
+
+.id-form-card { border: 1px solid #E5E7EB; border-radius: 16px; padding: 30px; background: #FFFFFF; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+
+/* Baris Lokasi */
+.id-location-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #F3F4F6; padding-bottom: 20px; }
+.id-loc-left { display: flex; align-items: center; gap: 12px; font-family: var(--font-jakarta, 'Plus Jakarta Sans', sans-serif); font-size: 22px; font-weight: 700; color: var(--c-dark, #212529); }
+.id-loc-icon { width: 24px; height: 24px; object-fit: contain; }
+.id-table-badge { background-color: var(--c-yellow, #FFC627); color: var(--c-dark, #212529); font-family: var(--font-poppins, 'Poppins', sans-serif); font-weight: 600; font-size: 14px; padding: 8px 16px; border-radius: 8px; display: flex; align-items: center; gap: 6px; }
+.badge-icon { font-size: 16px; font-weight: 400; }
+
+/* Input Group */
+.id-input-group { margin-bottom: 20px; }
+.id-input-group label { display: block; font-family: var(--font-inter, 'Inter', sans-serif); font-size: 13px; color: var(--c-dark, #212529); margin-bottom: 8px; font-weight: 500; }
+.id-input-group input { width: 100%; padding: 15px 16px; border: 1px solid #E5E7EB; border-radius: 10px; font-family: var(--font-inter, 'Inter', sans-serif); font-size: 14px; outline: none; transition: border 0.3s; color: var(--c-dark, #212529); }
+.id-input-group input::placeholder { color: #A0AEC0; }
+.id-input-group input:focus { border-color: var(--c-red, #A00500); box-shadow: 0 0 0 3px rgba(160, 5, 0, 0.1); }
+
+/* Tombol Submit */
+.id-btn-submit { width: 100%; background: var(--c-red, #A00500); color: #fff; border: none; padding: 16px; border-radius: 10px; font-family: var(--font-poppins, 'Poppins', sans-serif); font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+.id-btn-submit:hover { background: #850400; }
+
+/* --- FOOTER --- */
+.id-footer { background-color: var(--c-red, #A00500); padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto; }
+.id-socials { display: flex; gap: 15px; }
+.id-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.3s; }
+.id-soc-circle:hover { transform: translateY(-3px); }
+/* Trik CSS: Mengubah ikon hitam bawaan menjadi merah Laoban agar pas dengan desain lingkaran putih */
+.id-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
+.id-copyright { font-family: var(--font-inter, 'Inter', sans-serif); font-size: 13px; opacity: 0.9; }
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+@media (max-width: 1024px) {
+  .id-main-body { flex-direction: column; padding: 40px; }
+  .id-image-section { height: 350px; flex: none; }
+  .id-hero-img { min-height: auto; }
+}
+
+@media (max-width: 768px) {
+  .id-header { padding: 0 20px; justify-content: center; }
+  .id-nav-links { display: none; }
+  .id-main-body { padding: 30px 20px; gap: 30px; }
+  .id-form-card { padding: 20px; }
+  .id-loc-left { font-size: 18px; }
+  .id-footer { flex-direction: column; gap: 20px; padding: 30px 20px; text-align: center; }
+}

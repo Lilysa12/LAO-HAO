@@ -1,0 +1,340 @@
+/* src/pages/customer/Home.css */
+
+/* Reusable CSS Variables */
+:root {
+  --c-red: #A00500;
+  --c-white: #FFFFFF;
+  --c-yellow: #FFC627;
+  --c-gray: #6C757D;
+  --c-gray-light: #F3F4F6;
+  --c-gray-bg: #F8F9FA;
+  --c-dark: #212529;
+  
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+.hm-container, .hm-container * {
+  box-sizing: border-box;
+}
+
+.hm-container {
+  width: 100%;
+  max-width: 2000px; /* Mengembalikan ukuran max-width normal agar tidak terlalu melar */
+  margin: 0 auto;
+  background-color: var(--c-white);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-inter);
+}
+
+/* --- HEADER NAVBAR --- */
+.hm-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; background: var(--c-white); border-bottom: 1px solid #DEE2E6; }
+.hm-logo { height: 45px; object-fit: contain; }
+.hm-nav-links { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;}
+.hm-nav-links a { text-decoration: none; color: var(--c-gray); font-family: var(--font-poppins); font-size: 14px; font-weight: 600; transition: 0.3s; }
+.hm-nav-links a.active { color: var(--c-red); border-bottom: 2px solid var(--c-red); padding-bottom: 4px; }
+.hm-nav-links a:hover { color: var(--c-red); }
+
+/* --- HERO SECTION --- */
+.hm-hero {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 92px);
+  min-height: 600px;
+}
+
+/* Sisi Kiri (Teks) */
+.hm-hero-left {
+  flex: 1;
+  background-color: var(--c-red);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.hm-hero-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-jakarta);
+  font-size: 120px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.05); 
+  white-space: nowrap;
+  pointer-events: none;
+}
+.hm-hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: left;
+  padding: 0 60px;
+}
+.hm-hero-title {
+  font-family: var(--font-jakarta);
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--c-white);
+  margin: 0;
+  line-height: 1.1;
+}
+.hm-hero-subtitle {
+  font-family: var(--font-poppins);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--c-yellow); 
+  letter-spacing: 2px;
+  margin: 10px 0 40px 0;
+}
+.hm-btn-white {
+  background: var(--c-white);
+  color: var(--c-red);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-family: var(--font-poppins);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Sisi Kanan (Slider) */
+.hm-hero-right {
+  flex: 1.5;
+  position: relative;
+  overflow: hidden;
+  background: var(--c-gray-bg);
+}
+.hm-slide-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+.hm-slide-img.active {
+  opacity: 1;
+}
+
+/* Tombol Panah Slider (Bulat Merah Transparan) */
+.hm-slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(160, 5, 0, 0.4); 
+  border: none;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  color: var(--c-white); 
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+.hm-slider-btn:hover { 
+  background: var(--c-red); 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+}
+.hm-slider-btn.left { left: 20px; }
+.hm-slider-btn.right { right: 20px; }
+
+/* Titik Indikator Bawah */
+.hm-slider-dots {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+.hm-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: 0.3s;
+}
+.hm-dot.active { background: var(--c-white); transform: scale(1.2); }
+
+/* --- INSTAGRAM GRID SECTION --- */
+.hm-ig-section {
+  padding: 80px 60px;
+  text-align: center;
+  background: var(--c-white);
+}
+
+/* Desain Header Instagram Terbaru */
+.hm-ig-header-container {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.hm-ig-subtitle {
+  font-family: var(--font-poppins);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-red);
+  letter-spacing: 2px;
+  margin: 0;
+  text-transform: uppercase;
+}
+.hm-ig-title {
+  font-family: var(--font-jakarta);
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--c-dark);
+  margin: 0;
+  letter-spacing: 1px;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
+.hm-ig-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 900px; 
+  margin: 0 auto;
+}
+
+/* Container untuk Gambar + Overlay Card */
+.hm-ig-item-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; 
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.3s ease;
+}
+.hm-ig-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Kartu Info saat Hover */
+.hm-ig-overlay-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(160, 5, 0, 0.9); 
+  padding: 20px;
+  color: var(--c-white);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.hm-card-header {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-inter);
+  font-size: 12px;
+  opacity: 0.9;
+}
+.hm-card-date {
+  font-weight: 500;
+}
+
+.hm-card-body {
+  margin-top: auto; 
+}
+.hm-card-food-name {
+  font-family: var(--font-jakarta);
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+.hm-card-food-desc {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* --- FOOTER --- */
+.hm-footer { 
+  background-color: var(--c-red); 
+  padding: 30px 60px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  color: var(--c-white); 
+}
+.hm-socials { display: flex; gap: 15px; flex: 1;}
+.hm-soc-circle { width: 40px; height: 40px; background-color: var(--c-white); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+.hm-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
+
+.hm-footer-logo-box {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.hm-footer-logo {
+  height: 45px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); 
+}
+
+.hm-copyright { 
+  flex: 1;
+  text-align: right;
+  font-family: var(--font-inter); 
+  font-size: 13px; 
+  opacity: 0.9; 
+}
+
+/* EFEK KLIK */
+.efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
+.efek-klik:active { transform: scale(0.96); }
+.efek-klik-kartu:active { transform: scale(0.98); }
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+@media (max-width: 992px) {
+  .hm-header, .hm-ig-section, .hm-footer { padding: 30px 20px; }
+  .hm-hero { flex-direction: column; min-height: auto; height: auto;}
+  .hm-hero-left, .hm-hero-right { width: 100%; flex: none; }
+  .hm-hero-left { padding: 60px 20px; text-align: center; }
+  .hm-hero-right { height: 400px; }
+  .hm-hero-content { padding: 0; }
+  .hm-hero-watermark { font-size: 80px; }
+  .hm-ig-grid { grid-template-columns: repeat(2, 1fr); gap: 15px;}
+  .hm-footer { flex-direction: column; gap: 25px; text-align: center; }
+  .hm-socials, .hm-footer-logo-box, .hm-copyright { flex: none; justify-content: center; text-align: center;}
+}
+
+@media (max-width: 768px) {
+  .hm-hero-title { font-size: 36px; }
+  .hm-hero-subtitle { font-size: 16px; margin-bottom: 30px; }
+  .hm-ig-title { font-size: 26px; }
+}
+
+@media (max-width: 576px) {
+  .hm-nav-links { display: none; }
+  .hm-header { justify-content: center; }
+  .hm-ig-grid { grid-template-columns: repeat(1, 1fr); max-width: 400px; }
+}

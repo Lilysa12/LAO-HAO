@@ -1,0 +1,196 @@
+/* src/pages/customer/Checkout.css */
+
+.co-container, .co-container * {
+  box-sizing: border-box;
+}
+
+.co-container {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --- HEADER --- */
+.co-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; background: #fff; }
+.co-logo { height: 45px; object-fit: contain; }
+.co-nav-links { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;}
+.co-nav-links a { text-decoration: none; color: #6C757D; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: 0.3s; }
+.co-nav-links a.active { color: #A00500; }
+
+/* --- TOP BAR --- */
+.co-top-bar { 
+  display: flex; 
+  align-items: center; 
+  gap: 20px; 
+  padding: 20px 60px; 
+  border-top: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6; 
+  background: #fff;
+}
+.co-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #DEE2E6;
+  background: #fff;
+  color: #212529;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.co-page-title { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; color: #212529; font-weight: 800; }
+
+/* --- MAIN LAYOUT (2 KOLOM) --- */
+.co-main-layout { 
+  display: flex; 
+  padding: 40px 60px; 
+  gap: 40px; 
+  flex: 1; 
+  align-items: flex-start;
+}
+
+/* --- KOLOM KIRI (ITEMS) --- */
+.co-left-column { flex: 6; display: flex; flex-direction: column; gap: 30px; }
+
+.co-item-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-bottom: 1px solid #F3F4F6;
+  padding-bottom: 30px;
+}
+.co-item-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.co-item-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #F8F9FA;
+}
+.co-item-info { flex: 1; }
+.co-item-info h3 { margin: 0 0 8px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; color: #212529; font-weight: 700; }
+.co-item-price { margin: 0; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; color: #A00500; }
+
+/* Quantity Control */
+.co-qty-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid #DEE2E6;
+  border-radius: 20px;
+  padding: 4px 8px;
+  background: #fff;
+}
+.co-qty-btn {
+  background: transparent; border: none; font-size: 18px; color: #6C757D; width: 30px; height: 30px; cursor: pointer; font-weight: 600;
+}
+.co-qty-btn.text-red { color: #A00500; }
+.co-qty-num { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #212529; width: 25px; text-align: center; }
+
+/* Notes Input */
+.co-notes-input {
+  width: 100%;
+  background: #F8F9FA;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #212529;
+  outline: none;
+}
+.co-notes-input::placeholder { color: #6C757D; opacity: 0.7; }
+
+/* --- KOLOM KANAN (SUMMARY) --- */
+.co-right-column { flex: 4; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 120px;}
+
+.co-promo-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #DEE2E6;
+  background: #fff;
+  cursor: pointer;
+}
+.co-promo-card.yellow-tint {
+  background: linear-gradient(90deg, rgba(255, 198, 39, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+  border-color: rgba(255, 198, 39, 0.4);
+}
+
+.co-promo-icon {
+  width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.co-promo-icon.text-yellow { color: #FFC627; }
+.co-promo-icon.text-red { color: #A00500; }
+
+.co-promo-text h4 { margin: 0 0 4px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; color: #212529; }
+.co-promo-text p { margin: 0; font-family: 'Inter', sans-serif; font-size: 12px; color: #6C757D; }
+
+.co-summary-card {
+  border: 1px solid #DEE2E6;
+  border-radius: 16px;
+  padding: 25px;
+  background: #fff;
+  margin-top: 10px;
+}
+.co-summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+.co-sum-label { color: #6C757D; font-size: 14px; }
+.co-sum-value { color: #6C757D; font-size: 14px; font-weight: 500;}
+
+.co-divider { height: 1px; background: #DEE2E6; margin: 20px 0; }
+
+.total-row { margin-bottom: 25px; align-items: center;}
+.co-sum-label-bold { font-family: 'Plus Jakarta Sans', sans-serif; color: #212529; font-size: 16px; font-weight: 700; }
+.co-sum-total { font-family: 'Poppins', sans-serif; color: #A00500; font-size: 22px; font-weight: 700; }
+
+.co-btn-pay {
+  width: 100%;
+  background: #A00500;
+  color: #fff;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* --- FOOTER --- */
+.co-footer { background-color: #A00500; padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto; }
+.co-socials { display: flex; gap: 15px; }
+.co-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+.co-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
+.co-copyright { font-family: 'Inter', sans-serif; font-size: 13px; opacity: 0.9; }
+
+/* EFEK KLIK (Reusable) */
+.efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
+.efek-klik:active { transform: scale(0.96); }
+.efek-klik-kartu { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.efek-klik-kartu:active { transform: scale(0.98); }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+  .co-header, .co-top-bar, .co-main-layout, .co-footer { padding-left: 30px; padding-right: 30px; }
+  .co-main-layout { flex-direction: column; }
+  .co-right-column { position: static; width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .co-nav-links { display: none; }
+  .co-item-header { flex-direction: column; align-items: flex-start; }
+  .co-qty-control { align-self: flex-end; margin-top: -40px; }
+  .co-footer { flex-direction: column; gap: 20px; padding: 30px 20px; text-align: center; }
+}
