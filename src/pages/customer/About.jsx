@@ -2,17 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './About.css';
 
-// --- IMPORT ICONS ---
-import LogoLaoban from '../../assets/icons customer/Logo Laoban.png';
-import IconInstagram from '../../assets/icons customer/Instagram.png';
-import IconWhatsapp from '../../assets/icons customer/Whatsapp.png';
-import IconFacebook from '../../assets/icons customer/Facebook.png';
-import IconLink from '../../assets/icons customer/Link.png';
-import IconTiktok from '../../assets/icons customer/Tiktok.png';
+// --- IMPORT ICONS (FIX JALUR: Sesuai persis dengan huruf besar/kecil di folder) ---
+import LogoLaoban from '../../assets/icons/icons-customer/LogoLaoban.png'; // L besar
+import IconInstagram from '../../assets/icons/icons-customer/Instagram.png'; // I besar
+import IconWhatsapp from '../../assets/icons/icons-customer/Whatsapp.png'; // W besar
+import IconFacebook from '../../assets/icons/icons-customer/facebook.png'; // f kecil (khusus ini)
+import IconLink from '../../assets/icons/icons-customer/Link.png'; // L besar
+import IconTiktok from '../../assets/icons/icons-customer/Tiktok.png'; // T besar
 
-// --- IMPORT GAMBAR ABOUT ---
-import ImgHistory from '../../assets/Home/Image1.png';
-import ImgFounder from '../../assets/Home/Image2.png';
+// --- IMPORT GAMBAR ABOUT (FIX JALUR: Sesuaikan dengan nama file) ---
+import ImgHistory from '../../assets/home/image1.png'; 
+import ImgFounder from '../../assets/home/image2.png'; 
 
 export default function About() {
   const navigate = useNavigate();

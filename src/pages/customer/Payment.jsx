@@ -3,17 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import './Payment.css';
 
 // --- IMPORT ASSETS (Jalur sudah diperbaiki) ---
-import LogoLaoban from '../../assets/icons customer/Logo Laoban.png';
-import IconInstagram from '../../assets/icons customer/Instagram.png';
-import IconWhatsapp from '../../assets/icons customer/Whatsapp.png';
-import IconFacebook from '../../assets/icons customer/Facebook.png';
-import IconLink from '../../assets/icons customer/Link.png';
-import IconTiktok from '../../assets/icons customer/Tiktok.png';
+import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
+import IconInstagram from '../../assets/icons/icons-customer/instagram.png';
+import IconWhatsapp from '../../assets/icons/icons-customer/whatsapp.png';
+import IconFacebook from '../../assets/icons/icons-customer/facebook.png';
+import IconLink from '../../assets/icons/icons-customer/link.png';
+import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
 
 // Import Icon Payment (Jalur sudah diperbaiki)
-import IconTunai from '../../assets/icons customer/Tunai.png';
-import IconQris from '../../assets/icons customer/Qris.png';
-import IconGopay from '../../assets/icons customer/Gopay.png';
+import IconTunai from '../../assets/icons/icons-customer/tunai.png';
+import IconQris from '../../assets/icons/icons-customer/qris.png';
+import IconGopay from '../../assets/icons/icons-customer/gopay.png';
 
 export default function Payment() {
   const navigate = useNavigate();

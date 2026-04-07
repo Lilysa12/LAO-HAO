@@ -1,14 +1,13 @@
 /* src/pages/customer/LandingPage.css */
 
 /* --- RESET & BOX-SIZING --- */
-/* Mencegah padding menambah ukuran lebar elemen */
 .landing-container, .landing-container * {
   box-sizing: border-box;
 }
 
 /* --- 1. CONTAINER UTAMA --- */
 .landing-container {
-  max-width: 2000px; /* Ini biang keroknya */
+  max-width: 2000px; 
   width: 100%;
   margin: 0 auto;
   background-color: var(--c-bg-white);
@@ -29,6 +28,7 @@
 
 /* --- BUTTONS --- */
 .btn-red { background: var(--c-red); color: #fff; border: none; padding: 12px 28px; border-radius: 30px; font-family: var(--font-poppins); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s;}
+.btn-red:hover { background: #8a0400; }
 .btn-outline { background: #fff; color: var(--c-dark); border: 1px solid #ddd; padding: 12px 28px; border-radius: 30px; font-family: var(--font-poppins); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s;}
 .btn-outline-red { background: #fff; color: var(--c-red); border: 1px solid var(--c-red); padding: 12px 30px; border-radius: 30px; font-family: var(--font-poppins); font-weight: 600; cursor: pointer; transition: 0.3s;}
 .btn-yellow { background: var(--c-yellow); color: var(--c-dark); border: none; padding: 14px 30px; border-radius: 30px; font-family: var(--font-poppins); font-weight: 700; cursor: pointer; transition: 0.3s;}
@@ -39,17 +39,24 @@
 .logo-box { display: flex; align-items: center; }
 .logo-img { width: auto; height: 45px; object-fit: contain; }
 .nav-links { display: flex; gap: 40px; flex-wrap: wrap;}
-.nav-links a { text-decoration: none; color: var(--c-gray); font-family: var(--font-poppins); font-size: 14px; font-weight: 500; }
-.nav-links a.active { 
-  color: #A00500; 
-  border-bottom: 2px solid #A00500; /* Ini yang bikin ada garis bawahnya */
-  padding-bottom: 4px; /* Biar garisnya nggak nempel banget sama tulisan */
-}
+.nav-links a { text-decoration: none; color: var(--c-gray); font-family: var(--font-poppins); font-size: 14px; font-weight: 500; transition: 0.3s; }
+.nav-links a:hover { color: var(--c-red); }
+.nav-links a.active { color: #A00500; border-bottom: 2px solid #A00500; padding-bottom: 4px; }
 
 /* --- HERO --- */
 .hero { display: flex; min-height: 667px; height: auto; padding: 60px; gap: 40px; align-items: center; background-color: var(--c-bg-gray); }
 .hero-text { flex: 1.1; }
-.hero-subtitle { display: flex; align-items: center; gap: 15px; font-family: var(--font-inter); color: var(--c-gray-light); font-size: 13px; font-weight: 500; letter-spacing: 2px; margin-bottom: 15px; text-transform: uppercase;}
+.hero-subtitle {
+  font-family: var(--font-poppins); 
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #A00500; 
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
 .hero-subtitle .line { height: 1px; width: 30px; background: #ddd; }
 .hero-title { font-family: var(--font-jakarta); font-size: 72px; font-weight: 800; line-height: 1.05; color: var(--c-dark); margin: 0 0 25px 0; letter-spacing: -1px; }
 .badges { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 25px; }
@@ -60,14 +67,13 @@
 .hero-desc { font-family: var(--font-inter); color: var(--c-gray); font-size: 15px; line-height: 1.7; margin-bottom: 35px; max-width: 520px; }
 .hero-action { display: flex; gap: 15px; flex-wrap: wrap;}
 
-/* REVISI 1: Jarak Grid Hero Lebih Rapat */
 .hero-grid { 
   flex: 0.9; 
   display: grid; 
   grid-template-columns: 1fr 1fr; 
-  gap: 2px; /* FIX: Sangat rapat */
+  gap: 2px; 
   width: 100%;
-  border-radius: 12px; /* Melengkung luar */
+  border-radius: 12px; 
   overflow: hidden; 
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
@@ -75,12 +81,11 @@
   width: 100%; 
   height: 280px; 
   object-fit: cover; 
-  border-radius: 0; /* Sudut dalam tajam bersentuhan */
+  border-radius: 0; 
 }
 
 /* --- MARQUEE & STATS --- */
 .red-marquee { background: var(--c-red); color: #fff; padding: 10px 20px; display: flex; justify-content: center; gap: 20px; font-family: var(--font-poppins); font-size: 11px; font-weight: 700; letter-spacing: 1px; flex-wrap: wrap; text-align: center; }
-.marquee-bar { background: linear-gradient(90deg, #A00500 0%, #D32F2F 100%); }
 
 .stats { display: flex; justify-content: space-around; align-items: center; padding: 60px 20px; background: var(--c-bg-white); flex-wrap: wrap; gap: 20px;}
 .stat-box { text-align: center; flex: 1; min-width: 150px;}
@@ -90,49 +95,47 @@
 .stat-box p { font-family: var(--font-inter); font-size: 12px; color: var(--c-gray-light); margin: 0; }
 .yellow-line { height: 2px; background: var(--c-yellow); width: 100%; }
 
-/* REVISI 2: About Section Frame & Tata Letak */
+/* --- ABOUT SECTION --- */
 .about { display: flex; padding: 100px 60px; gap: 60px; background: var(--c-bg-gray); align-items: center; }
 .about-img-container { 
   flex: 1; 
   height: 380px; 
-  background-color: var(--c-yellow-light); /* Frame kotak kuning */
+  background-color: var(--c-yellow-light); 
   border-radius: 24px; 
   display: flex; 
   padding: 20px; 
-  gap: 20px; /* Gambar sejajar samping */
+  gap: 20px; 
 }
 .img-orange { 
   width: 50%; 
   height: 100%; 
   object-fit: cover; 
   border-radius: 16px; 
-  position: static; /* Menempel bersampingan */
 }
 .img-tea { 
   width: 50%; 
   height: 100%; 
   object-fit: cover; 
   border-radius: 16px; 
-  position: static; 
-  border: none; /* Hilangkan border tumpuk sebelumnya */
 }
 .about-text { flex: 1; }
-.link-red { color: var(--c-red); font-family: var(--font-poppins); font-weight: 600; font-size: 14px; text-decoration: none; margin-top: 10px; display: inline-block; }
+.link-red { color: var(--c-red); font-family: var(--font-poppins); font-weight: 600; font-size: 14px; text-decoration: none; margin-top: 10px; display: inline-block; transition: 0.3s; }
+.link-red:hover { text-decoration: underline; }
 
 /* --- MENU --- */
 .menu-section { padding: 100px 60px; background: var(--c-bg-white); }
 .menu-tabs { display: flex; justify-content: center; gap: 20px; margin: 40px 0 60px 0; flex-wrap: wrap; }
-.tab { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; }
-.tab.active { border-bottom: 2px solid var(--c-red); padding-bottom: 10px; }
-.tab.active span { color: var(--c-red); font-weight: 700; }
-.tab .icon { width: 72px; height: 72px; background: var(--c-bg-gray); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 28px; border: 1px solid var(--c-gray-border); }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; transition: 0.3s; opacity: 0.6; }
+.tab:hover { opacity: 0.8; }
+.tab.active { opacity: 1; }
+.tab .icon { width: 72px; height: 72px; background: var(--c-bg-gray); border-radius: 12px; display: flex; justify-content: center; align-items: center; border: 1px solid var(--c-gray-border); transition: 0.3s; }
 .tab.active .icon { background: var(--c-red-light); border-color: var(--c-red-light); }
-.tab span { font-family: var(--font-poppins); font-size: 14px; font-weight: 600; color: var(--c-dark); }
+.tab span { font-family: var(--font-poppins); font-size: 14px; font-weight: 600; color: var(--c-dark); transition: 0.3s; }
+.tab.active span { color: var(--c-red); font-weight: 700; border-bottom: 2px solid var(--c-red); padding-bottom: 5px; }
 
-/* REVISI 3: Menu List Atas Bawah (2 Kolom Pasti) */
 .menu-list { 
   display: grid; 
-  grid-template-columns: 1fr 1fr; /* FIX: Memaksa tampil 2 per baris / atas-bawah */
+  grid-template-columns: 1fr 1fr; 
   gap: 50px; 
   margin-bottom: 60px; 
 }
@@ -170,11 +173,14 @@
 .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
 .foot-brand p { font-family: var(--font-inter); font-size: 13px; color: var(--c-gray); line-height: 1.7; margin: 15px 0 25px 0; max-width: 280px; }
 .socials { display: flex; gap: 12px; flex-wrap: wrap;}
-.soc-icon { width: 40px; height: 40px; background: var(--c-bg-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--c-gray); cursor: pointer; border: 1px solid var(--c-gray-border); font-size: 16px; }
-.soc-img { width: 16px; height: 16px; object-fit: contain; }
+.soc-icon { width: 40px; height: 40px; background: var(--c-bg-gray); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--c-gray); cursor: pointer; border: 1px solid var(--c-gray-border); font-size: 16px; transition: 0.3s; }
+.soc-icon:hover { border-color: var(--c-red); }
+.soc-img { width: 16px; height: 16px; object-fit: contain; filter: grayscale(100%); transition: 0.3s;}
+.soc-icon:hover .soc-img { filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
 .foot-links h4 { font-family: var(--font-poppins); font-size: 15px; color: var(--c-dark); margin: 0 0 20px 0; font-weight: 700; }
 .foot-links ul, .contact-list { list-style: none; padding: 0; margin: 0; }
-.foot-links ul li { font-family: var(--font-inter); font-size: 14px; color: var(--c-gray); margin-bottom: 15px; cursor: pointer; }
+.foot-links ul li { font-family: var(--font-inter); font-size: 14px; color: var(--c-gray); margin-bottom: 15px; cursor: pointer; transition: 0.3s; }
+.foot-links ul li:hover { color: var(--c-red); }
 .contact-list li { display: flex; align-items: center; gap: 12px; font-family: var(--font-inter); font-size: 14px; color: var(--c-gray); margin-bottom: 15px;}
 .contact-icon { width: 18px; height: 18px; object-fit: contain; }
 .foot-bottom { display: flex; justify-content: space-between; padding-top: 30px; border-top: 1px solid var(--c-gray-border); font-family: var(--font-inter); font-size: 12px; color: var(--c-gray-light); margin-top: 40px; flex-wrap: wrap; gap: 20px;}
@@ -182,7 +188,6 @@
 /* ========================================= */
 /* --- RESPONSIVE MEDIA QUERIES --- */
 /* ========================================= */
-
 @media (max-width: 1024px) {
   .navbar { padding: 0 40px; }
   .hero { flex-direction: column; text-align: center; padding: 60px 40px; }
@@ -208,7 +213,7 @@
   .about { padding: 60px 20px; }
   .about-img-container { display: none; } 
   .menu-section { padding: 60px 20px; }
-  .menu-list { grid-template-columns: 1fr; } /* Menyusun Menu menjadi 1 baris ke bawah di HP */
+  .menu-list { grid-template-columns: 1fr; } 
   .menu-card { flex-direction: column; align-items: center; text-align: center; }
   .menu-card img, .img-blank { width: 100%; max-width: 250px; height: auto; aspect-ratio: 1; }
   .map-section { padding: 60px 20px; }

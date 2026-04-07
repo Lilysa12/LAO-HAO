@@ -3,33 +3,33 @@ import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
 // --- IMPORT ICONS ---
-import LogoLaoban from '../../assets/icons customer/Logo Laoban.png';
-import IconInstagram from '../../assets/icons customer/Instagram.png';
-import IconWhatsapp from '../../assets/icons customer/Whatsapp.png';
-import IconFacebook from '../../assets/icons customer/Facebook.png';
-import IconLink from '../../assets/icons customer/Link.png';
-import IconTiktok from '../../assets/icons customer/Tiktok.png';
+import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
+import IconInstagram from '../../assets/icons/icons-customer/instagram.png';
+import IconWhatsapp from '../../assets/icons/icons-customer/whatsapp.png';
+import IconFacebook from '../../assets/icons/icons-customer/facebook.png';
+import IconLink from '../../assets/icons/icons-customer/link.png';
+import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
 
 // --- IMPORT GAMBAR SLIDER (8 Gambar NIC_ dari folder Home) ---
-import Slide1 from '../../assets/Home/NIC_1497.jpg';
-import Slide2 from '../../assets/Home/NIC_1941.jpg';
-import Slide3 from '../../assets/Home/NIC_4125.jpg';
-import Slide4 from '../../assets/Home/NIC_4272.jpg';
-import Slide5 from '../../assets/Home/NIC_7913.jpg';
-import Slide6 from '../../assets/Home/NIC_8374.jpg';
-import Slide7 from '../../assets/Home/NIC_8421.jpg';
-import Slide8 from '../../assets/Home/NIC_9028.jpg';
+import Slide1 from '../../assets/home/nic_1497.jpg';
+import Slide2 from '../../assets/home/nic_1941.jpg';
+import Slide3 from '../../assets/home/nic_4125.jpg';
+import Slide4 from '../../assets/home/nic_4272.jpg';
+import Slide5 from '../../assets/home/nic_7913.jpg';
+import Slide6 from '../../assets/home/nic_8374.jpg';
+import Slide7 from '../../assets/home/nic_8421.jpg';
+import Slide8 from '../../assets/home/nic_9028.jpg';
 
 // --- IMPORT GAMBAR GRID INSTAGRAM (Sesuai folder Abang yang baru .png) ---
-import Grid1 from '../../assets/Home/img1.png';
-import Grid2 from '../../assets/Home/img2.png';
-import Grid3 from '../../assets/Home/img3.png';
-import Grid4 from '../../assets/Home/img4.png';
-import Grid5 from '../../assets/Home/img5.png';
-import Grid6 from '../../assets/Home/img6.png';
-import Grid7 from '../../assets/Home/img7.png';
-import Grid8 from '../../assets/Home/img8.png';
-import Grid9 from '../../assets/Home/img9.png';
+import Grid1 from '../../assets/home/img1.png';
+import Grid2 from '../../assets/home/img2.png';
+import Grid3 from '../../assets/home/img3.png';
+import Grid4 from '../../assets/home/img4.png';
+import Grid5 from '../../assets/home/img5.png';
+import Grid6 from '../../assets/home/img6.png';
+import Grid7 from '../../assets/home/img7.png';
+import Grid8 from '../../assets/home/img8.png';
+import Grid9 from '../../assets/home/img9.png';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -193,7 +193,7 @@ export default function Home() {
         
         {/* Tengah: Logo Putih */}
         <div className="hm-footer-logo-box">
-          <img src={LogoLaoban} alt="Logo Laoban" className="hm-footer-logo" />
+          <img src={LogoLaoban} alt="logoLaoban" className="hm-footer-logo" />
         </div>
 
         {/* Kanan: Copyright */}

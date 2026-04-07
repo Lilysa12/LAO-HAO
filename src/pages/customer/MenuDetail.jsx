@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './MenuDetail.css';
 
 // --- IMPORT ASSETS LOKAL (JALUR SUDAH DIPERBAIKI 100%) ---
-import LogoLaoban from '../../assets/icons customer/Logo Laoban.png';
-import IconCheckout from '../../assets/icons customer/Checkout.png';
-import ImgDetail from '../../assets/Image/Image9.png'; // Gambar Makanan Utama
+import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
+import IconCheckout from '../../assets/icons/icons-customer/checkout.png';
+import ImgDetail from '../../assets/image/image9.png'; // Gambar Makanan Utama
 
 // Social Icons (Jalur sudah diperbaiki)
-import IconInstagram from '../../assets/icons customer/Instagram.png';
-import IconWhatsapp from '../../assets/icons customer/Whatsapp.png';
-import IconFacebook from '../../assets/icons customer/Facebook.png';
-import IconLink from '../../assets/icons customer/Link.png';
-import IconTiktok from '../../assets/icons customer/Tiktok.png';
+import IconInstagram from '../../assets/icons/icons-customer/instagram.png';
+import IconWhatsapp from '../../assets/icons/icons-customer/whatsapp.png';
+import IconFacebook from '../../assets/icons/icons-customer/facebook.png';
+import IconLink from '../../assets/icons/icons-customer/link.png';
+import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
 
 export default function MenuDetail() {
   const navigate = useNavigate();

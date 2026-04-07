@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import './InputData.css';
 
 // --- IMPORT ASSETS (Jalur Sudah Diperbaiki) ---
-import ImgHero from '../../assets/Image/Image5.png'; // Pastikan ekstensinya .png atau .jpg sesuai file asli
-import LogoLaoban from '../../assets/icons customer/Logo Laoban.png';
-import IconInstagram from '../../assets/icons customer/Instagram.png';
-import IconWhatsapp from '../../assets/icons customer/Whatsapp.png';
-import IconFacebook from '../../assets/icons customer/Facebook.png';
-import IconLink from '../../assets/icons customer/Link.png';
-import IconTiktok from '../../assets/icons customer/Tiktok.png';
-import IconPeta from '../../assets/icons customer/Peta.png';
+import ImgHero from '../../assets/image/Image5.png'; // Pastikan ekstensinya .png atau .jpg sesuai file asli
+import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
+import IconInstagram from '../../assets/icons/icons-customer/instagram.png';
+import IconWhatsapp from '../../assets/icons/icons-customer/whatsapp.png';
+import IconFacebook from '../../assets/icons/icons-customer/facebook.png';
+import IconLink from '../../assets/icons/icons-customer/link.png';
+import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
+import IconPeta from '../../assets/icons/icons-customer/peta.png';
 
 export default function InputData() {
   const navigate = useNavigate(); // <-- Fungsi pindah halaman

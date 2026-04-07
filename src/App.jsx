@@ -4,29 +4,36 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // Import semua halaman
 import LandingPage from './pages/customer/LandingPage';
 import InputData from './pages/customer/InputData';
-import MenuList from './pages/customer/MenuList';
+import MenuList from './pages/customer/MenuList'; // Halaman pesanan (keranjang)
 import MenuDetail from './pages/customer/MenuDetail';
 import Checkout from './pages/customer/Checkout'; 
 import Payment from './pages/customer/Payment';   
 import Home from './pages/customer/Home';
 import About from './pages/customer/About';
 
+// FIX 1: Tambahkan Import untuk halaman Menu yang baru (Desain Feed IG)
+import Menu from './pages/customer/Menu'; 
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* FIX: Kembalikan Landing Page ke path "/" agar otomatis muncul pertama kali saat web dibuka */}
         <Route path="/" element={<LandingPage />} /> 
-        
-        {/* Halaman Home baru kita kasih alamat "/home" */}
         <Route path="/home" element={<Home />} /> 
+        <Route path="/about" element={<About />} />
+        
+        {/* FIX 2: Alamat /menu sekarang membuka file Menu.jsx yang baru */}
+        <Route path="/menu" element={<Menu />} />
 
+        {/* --- Bagian Pemesanan --- */}
         <Route path="/order" element={<InputData />} />
-        <Route path="/menu" element={<MenuList />} />
+        
+        {/* FIX 3: Halaman pesan makan yang lama digeser ke /order-list biar gak bentrok */}
+        <Route path="/order-list" element={<MenuList />} /> 
+        
         <Route path="/detail" element={<MenuDetail />} />
         <Route path="/checkout" element={<Checkout />} /> 
         <Route path="/payment" element={<Payment />} />  
-        <Route path="/about" element={<About />} />
       </Routes>
     </BrowserRouter>
   );

@@ -2,29 +2,28 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
-// --- IMPORT ASSETS (Jalur Diperbaiki) ---
-import HeroImg1 from '../../assets/Image/image1.png';
-import HeroImg2 from '../../assets/Image/image2.png';
-import HeroImg3 from '../../assets/Image/image3.png';
-import HeroImg4 from '../../assets/Image/image4.png';
+// --- IMPORT ASSETS ---
+import HeroImg1 from '../../assets/image/image1.png';
+import HeroImg2 from '../../assets/image/image2.png';
+import HeroImg3 from '../../assets/image/image3.png';
+import HeroImg4 from '../../assets/image/image4.png';
 
-// Ikon Sosmed & Logo (Di dalam 'icons customer/')
-import IconInstagram from '../../assets/icons customer/Instagram.png';
-import IconTiktok from '../../assets/icons customer/Tiktok.png';
-import IconWhatsapp from '../../assets/icons customer/Whatsapp.png';
-import LogoLaoban from '../../assets/icons customer/Logo Laoban.png';
+// Ikon Sosmed & Logo
+import IconInstagram from '../../assets/icons/icons-customer/instagram.png';
+import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
+import IconWhatsapp from '../../assets/icons/icons-customer/whatsapp.png';
+import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
 
-// Ikon Kontak & Menu (Asumsi di dalam 'Icons/' langsung)
-// JIKA ERROR LAGI DI BAGIAN INI: Coba ganti '../../assets/Icons/' menjadi '../../assets/icons customer/'
-import IconMessage from '../../assets/Icons/Message.png'; 
-import IconCall from '../../assets/Icons/Call.png'; 
-import IconMainDish from '../../assets/Icons/Main Dish.png'; 
-import IconSnack from '../../assets/Icons/Snack.png'; 
-import IconDimsum from '../../assets/Icons/Dimsum.png'; 
-import IconHotDrink from '../../assets/Icons/Hot Drink.png'; 
-import IconColdDrink from '../../assets/Icons/Cold Drink.png'; 
-import IconIceDessert from '../../assets/Icons/Ice & Dessert.png'; 
-import IconFrame from '../../assets/Icons/Frame.png'; 
+// Ikon Kontak & Menu
+import IconMessage from '../../assets/icons/message.png'; 
+import IconCall from '../../assets/icons/call.png'; 
+import IconMainDish from '../../assets/icons/mainDish.png'; 
+import IconSnack from '../../assets/icons/snack.png'; 
+import IconDimsum from '../../assets/icons/dimsum.png'; 
+import IconHotDrink from '../../assets/icons/hotDrink.png'; 
+import IconColdDrink from '../../assets/icons/coldDrink.png'; 
+import IconIceDessert from '../../assets/icons/ice&Dessert.png'; 
+import IconFrame from '../../assets/icons/frame.png'; 
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -39,10 +38,7 @@ export default function LandingPage() {
         </div>
         <div className="nav-links">
           <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
-          
-          {/* FIX: Tambahin navigasi untuk About */}
           <a href="#" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>About</a>
-          
           <a href="#" onClick={(e) => { e.preventDefault(); navigate('/menu'); }}>Menu</a>
           <a href="#">Our Partner</a>
           <a href="#">Partnership</a>
@@ -73,7 +69,8 @@ export default function LandingPage() {
           </p>
           
           <div className="hero-action">
-            <button className="btn-red" onClick={() => navigate('/order')}>Lihat Menu Pilihan</button>
+            {/* FIX: Tombol langsung mengarah ke halaman Menu */}
+            <button className="btn-red" onClick={() => navigate('/menu')}>Lihat Menu Pilihan</button>
             <button className="btn-outline">Gabung Kemitraan</button>
           </div>
         </div>
@@ -137,7 +134,7 @@ export default function LandingPage() {
           <p className="desc-gray">
             Kami berkomitmen untuk selalu menyajikan kualitas terbaik dengan harga yang bersahabat. Kebersihan, pelayanan ramah, dan cita rasa autentik adalah kunci yang membawa kami terus berekspansi hingga memiliki lebih dari 50 cabang di seluruh Indonesia.
           </p>
-          <a href="#" className="link-red">Baca Selengkapnya &rarr;</a>
+          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>Baca Selengkapnya &rarr;</a>
         </div>
       </section>
 
@@ -148,38 +145,39 @@ export default function LandingPage() {
           <h2 className="title-dark">Menu Perguruan Laoban</h2>
         </div>
 
+        {/* FIX: Klik Ikon membawa "state" kategori, sehingga Menu.jsx bisa menangkapnya */}
         <div className="menu-tabs">
-          <div className="tab active">
+          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Main Dish' }})} style={{cursor: 'pointer'}}>
             <div className="icon">
               <img src={IconMainDish} alt="Main Dish" className="tab-img" />
             </div>
             <span>Main Dish</span>
           </div>
-          <div className="tab">
+          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Snack' }})} style={{cursor: 'pointer'}}>
             <div className="icon">
               <img src={IconSnack} alt="Snack" className="tab-img" />
             </div>
             <span>Snack</span>
           </div>
-          <div className="tab">
+          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Dimsum' }})} style={{cursor: 'pointer'}}>
             <div className="icon">
               <img src={IconDimsum} alt="Dimsum" className="tab-img" />
             </div>
             <span>Dimsum</span>
           </div>
-          <div className="tab">
+          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Hot Drink' }})} style={{cursor: 'pointer'}}>
             <div className="icon">
               <img src={IconHotDrink} alt="Hot Drink" className="tab-img" />
             </div>
             <span>Hot Drink</span>
           </div>
-          <div className="tab">
+          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Cold Drink' }})} style={{cursor: 'pointer'}}>
             <div className="icon">
               <img src={IconColdDrink} alt="Cold Drink" className="tab-img" />
             </div>
             <span>Cold Drink</span>
           </div>
-          <div className="tab">
+          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Ice & Dessert' }})} style={{cursor: 'pointer'}}>
             <div className="icon">
               <img src={IconIceDessert} alt="Ice & Dessert" className="tab-img" />
             </div>
@@ -281,8 +279,8 @@ export default function LandingPage() {
             <h4>Navigasi</h4>
             <ul>
               <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
-              <li>Tentang Kami</li>
-              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Pergnięan</li>
+              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
               <li>Daftar Cabang</li>
             </ul>
           </div>

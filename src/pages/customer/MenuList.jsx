@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import './MenuList.css';
 
 // --- IMPORT ASSETS (Jalur Sudah Diperbaiki) ---
-import LogoLaoban from '../../assets/icons customer/Logo Laoban.png';
-import IconCheckout from '../../assets/icons customer/Checkout.png'; // Ikon keranjang
+import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
+import IconCheckout from '../../assets/icons/icons-customer/checkout.png'; // Ikon keranjang
 
 // Gambar Makanan
-import ImgImage6 from '../../assets/Image/Image6.png'; // Nasi Lemak
-import ImgImage7 from '../../assets/Image/Image7.png'; // Nasi Mala
-import ImgImage8 from '../../assets/Image/Image8.png'; // Nasi Hainan
+import ImgImage6 from '../../assets/image/image6.png'; // Nasi Lemak
+import ImgImage7 from '../../assets/image/image7.png'; // Nasi Mala
+import ImgImage8 from '../../assets/image/image8.png'; // Nasi Hainan
 
 export default function MenuList() {
   const navigate = useNavigate();
