@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'; // FIX: Tambahkan useEffect
-import { useNavigate, Link, useLocation } from 'react-router-dom'; // FIX: Tambahkan useLocation
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import './Menu.css';
 
 // --- IMPORT ICONS & LOGO ---
@@ -10,7 +10,7 @@ import IconFacebook from '../../assets/icons/icons-customer/facebook.png';
 import IconLink from '../../assets/icons/icons-customer/link.png';
 import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
 
-// Kategori Icons
+// --- IMPORT KATEGORI ICONS ---
 import IconMainDish from '../../assets/icons/mainDish.png';
 import IconSnack from '../../assets/icons/snack.png';
 import IconDimsum from '../../assets/icons/dimsum.png';
@@ -18,24 +18,43 @@ import IconHotDrink from '../../assets/icons/hotDrink.png';
 import IconColdDrink from '../../assets/icons/coldDrink.png';
 import IconIceDessert from '../../assets/icons/ice&Dessert.png';
 
+// --- IMPORT GAMBAR SLIDER (Dari Home) ---
+import Slide1 from '../../assets/home/nic_1497.jpg';
+import Slide2 from '../../assets/home/nic_1941.jpg';
+import Slide3 from '../../assets/home/nic_4125.jpg';
+import Slide4 from '../../assets/home/nic_4272.jpg';
+import Slide5 from '../../assets/home/nic_7913.jpg';
+import Slide6 from '../../assets/home/nic_8374.jpg';
+import Slide7 from '../../assets/home/nic_8421.jpg';
+import Slide8 from '../../assets/home/nic_9028.jpg';
+
 export default function Menu() {
   const navigate = useNavigate();
-  const location = useLocation(); // FIX: Memanggil useLocation untuk menangkap data lemparan
+  const location = useLocation();
 
-  // FIX: Ambil kategori dari Landing Page kalau ada, kalau tidak default 'Main Dish'
   const [activeCategory, setActiveCategory] = useState(location.state?.category || 'Main Dish');
-  
-  // State untuk melacak frame mana yang sedang di-hover/disentuh
   const [hoveredMenuItemIndex, setHoveredMenuItemIndex] = useState(null);
 
-  // FIX: Efek samping kalau tiba-tiba location.state berubah (misal diklik berulang kali dari nav)
+  // State & Logika untuk Slider Utama
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slides = [Slide1, Slide2, Slide3, Slide4, Slide5, Slide6, Slide7, Slide8];
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  const prevSlide = () => setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+
+  // Efek Slider Otomatis (Ganti setiap 3.5 detik)
+  useEffect(() => {
+    const slideInterval = setInterval(nextSlide, 3500);
+    return () => clearInterval(slideInterval);
+  }, [currentSlide]);
+
+  // Efek menangkap kategori aktif dari halaman sebelumnya
   useEffect(() => {
     if (location.state?.category) {
       setActiveCategory(location.state.category);
     }
   }, [location.state]);
 
-  // Data Kategori
   const categories = [
     { name: 'Main Dish', icon: IconMainDish },
     { name: 'Snack', icon: IconSnack },
@@ -109,6 +128,7 @@ export default function Menu() {
     ]
   };
 
+  // Tambahkan fallback empty array jika menu belum didefinisikan (agar tidak error map)
   const activeProducts = menuData[activeCategory] || [];
 
   return (
@@ -129,32 +149,79 @@ export default function Menu() {
         <div style={{ width: '100px' }}></div>
       </header>
 
-      {/* ================= MAIN CONTENT ================= */}
+      {/* ================= HERO SECTION (SLIDER BERGESER) ================= */}
+      <section className="mn-hero">
+        {/* Sisi Kiri: Teks Merah */}
+        <div className="mn-hero-left">
+          <div className="mn-hero-watermark">LAOBAN</div>
+          <div className="mn-hero-content">
+            <h1 className="mn-hero-title">LaobanNusantara</h1>
+            <p className="mn-hero-subtitle">BY UNCLE OSH</p>
+            <button className="mn-btn-white efek-klik" onClick={() => navigate('/order')}>
+              Grow Together With Us
+            </button>
+          </div>
+        </div>
+
+        {/* Sisi Kanan: Slider Gambar */}
+        <div className="mn-hero-right">
+          {slides.map((slide, index) => (
+            <img 
+              key={index}
+              src={slide} 
+              alt={`Slide ${index + 1}`} 
+              className={`mn-slide-img ${index === currentSlide ? 'active' : ''}`} 
+            />
+          ))}
+          
+          <button className="mn-slider-btn left" onClick={prevSlide}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          <button className="mn-slider-btn right" onClick={nextSlide}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+
+          <div className="mn-slider-dots">
+            {slides.map((_, index) => (
+              <span 
+                key={index} 
+                className={`mn-dot ${index === currentSlide ? 'active' : ''}`}
+                onClick={() => setCurrentSlide(index)}
+              ></span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= MAIN CONTENT (KATEGORI MENU) ================= */}
       <main className="mn-main">
-        
-        {/* Title Section */}
         <div className="mn-title-section">
           <p className="mn-label">OUR MENU</p>
           <h1 className="mn-title">Menu Perguruan<br/>Laoban</h1>
         </div>
 
         {/* Tab Kategori */}
-        <div className="menu-tabs">
+        <div className="mn-tabs">
           {categories.map((cat, index) => (
             <div 
               key={index} 
-              className={`tab ${activeCategory === cat.name ? 'active' : ''}`}
+              className={`mn-tab-item ${activeCategory === cat.name ? 'active' : ''}`}
               onClick={() => setActiveCategory(cat.name)}
             >
-              <div className="icon">
-                <img src={cat.icon} alt={cat.name} className="tab-img" onError={(e) => e.target.style.display='none'} />
+              <div className="mn-tab-icon-box">
+                <img src={cat.icon} alt={cat.name} onError={(e) => e.target.style.display='none'} />
               </div>
               <span>{cat.name}</span>
             </div>
           ))}
         </div>
 
-        {/* Grid Frame Gambar (Desain seperti feed IG) */}
+        {/* Grid Frame Gambar */}
         <div className="mn-square-grid">
           {activeProducts.map((prod, index) => (
             <div 
@@ -163,13 +230,11 @@ export default function Menu() {
               onMouseEnter={() => setHoveredMenuItemIndex(index)}
               onMouseLeave={() => setHoveredMenuItemIndex(null)}
             >
-              {/* Image from backend placeholder */}
               <div className="mn-backend-image-placeholder">
                 <p>Gambar {prod.name}</p>
                 <span>(Dari Backend)</span>
               </div>
 
-              {/* Hover Overlay Merah */}
               {index === hoveredMenuItemIndex && (
                 <div className="mn-item-overlay">
                   <div className="mn-item-overlay-content">
@@ -183,24 +248,23 @@ export default function Menu() {
             </div>
           ))}
         </div>
-
       </main>
 
       {/* ================= FOOTER ================= */}
-      <footer className="hm-footer">
-        <div className="hm-socials">
-          <div className="hm-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
-          <div className="hm-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
-          <div className="hm-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
-          <div className="hm-soc-circle"><img src={IconLink} alt="Link" /></div>
-          <div className="hm-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
+      <footer className="mn-footer">
+        <div className="mn-socials">
+          <div className="mn-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
+          <div className="mn-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
+          <div className="mn-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
+          <div className="mn-soc-circle"><img src={IconLink} alt="Link" /></div>
+          <div className="mn-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
         </div>
         
-        <div className="hm-footer-logo-box">
-          <img src={LogoLaoban} alt="logoLaoban" className="hm-footer-logo" />
+        <div className="mn-footer-logo-box" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
+          <img src={LogoLaoban} alt="Logo Laoban" className="mn-footer-logo" />
         </div>
 
-        <div className="hm-copyright">
+        <div className="mn-copyright">
           © Copyright Laoban Nusantara.
         </div>
       </footer>
