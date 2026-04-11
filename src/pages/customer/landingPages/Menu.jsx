@@ -3,30 +3,30 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import './Menu.css';
 
 // --- IMPORT ICONS & LOGO ---
-import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
-import IconInstagram from '../../assets/icons/icons-customer/instagram.png';
-import IconWhatsapp from '../../assets/icons/icons-customer/whatsapp.png';
-import IconFacebook from '../../assets/icons/icons-customer/facebook.png';
-import IconLink from '../../assets/icons/icons-customer/link.png';
-import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
+import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
+import IconInstagram from '../../../assets/icons/icons-customer/instagram.png';
+import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
+import IconFacebook from '../../../assets/icons/icons-customer/facebook.png';
+import IconLink from '../../../assets/icons/icons-customer/link.png';
+import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
 
 // --- IMPORT KATEGORI ICONS ---
-import IconMainDish from '../../assets/icons/mainDish.png';
-import IconSnack from '../../assets/icons/snack.png';
-import IconDimsum from '../../assets/icons/dimsum.png';
-import IconHotDrink from '../../assets/icons/hotDrink.png';
-import IconColdDrink from '../../assets/icons/coldDrink.png';
-import IconIceDessert from '../../assets/icons/ice&Dessert.png';
+import IconMainDish from '../../../assets/icons/mainDish.png';
+import IconSnack from '../../../assets/icons/snack.png';
+import IconDimsum from '../../../assets/icons/dimsum.png';
+import IconHotDrink from '../../../assets/icons/hotDrink.png';
+import IconColdDrink from '../../../assets/icons/coldDrink.png';
+import IconIceDessert from '../../../assets/icons/ice&Dessert.png';
 
 // --- IMPORT GAMBAR SLIDER (Dari Home) ---
-import Slide1 from '../../assets/home/nic_1497.jpg';
-import Slide2 from '../../assets/home/nic_1941.jpg';
-import Slide3 from '../../assets/home/nic_4125.jpg';
-import Slide4 from '../../assets/home/nic_4272.jpg';
-import Slide5 from '../../assets/home/nic_7913.jpg';
-import Slide6 from '../../assets/home/nic_8374.jpg';
-import Slide7 from '../../assets/home/nic_8421.jpg';
-import Slide8 from '../../assets/home/nic_9028.jpg';
+import Slide1 from '../../../assets/home/nic_1497.jpg';
+import Slide2 from '../../../assets/home/nic_1941.jpg';
+import Slide3 from '../../../assets/home/nic_4125.jpg';
+import Slide4 from '../../../assets/home/nic_4272.jpg';
+import Slide5 from '../../../assets/home/nic_7913.jpg';
+import Slide6 from '../../../assets/home/nic_8374.jpg';
+import Slide7 from '../../../assets/home/nic_8421.jpg';
+import Slide8 from '../../../assets/home/nic_9028.jpg';
 
 export default function Menu() {
   const navigate = useNavigate();

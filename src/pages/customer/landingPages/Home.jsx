@@ -3,40 +3,40 @@ import { useNavigate } from 'react-router-dom';
 import './Home.css'; 
 
 // --- IMPORT ASSETS GAMBAR ---
-import HeroImg1 from '../../assets/image/image1.png';
-import HeroImg2 from '../../assets/image/image2.png';
-import HeroImg3 from '../../assets/image/image3.png';
-import HeroImg4 from '../../assets/image/image4.png';
+import HeroImg1 from '../../../assets/image/image1.png';
+import HeroImg2 from '../../../assets/image/image2.png';
+import HeroImg3 from '../../../assets/image/image3.png';
+import HeroImg4 from '../../../assets/image/image4.png';
 
 // --- IMPORT GAMBAR GRID INSTAGRAM ---
-import Grid1 from '../../assets/home/img1.png';
-import Grid2 from '../../assets/home/img2.png';
-import Grid3 from '../../assets/home/img3.png';
-import Grid4 from '../../assets/home/img4.png';
-import Grid5 from '../../assets/home/img5.png';
-import Grid6 from '../../assets/home/img6.png';
-import Grid7 from '../../assets/home/img7.png';
-import Grid8 from '../../assets/home/img8.png';
-import Grid9 from '../../assets/home/img9.png';
+import Grid1 from '../../../assets/home/img1.png';
+import Grid2 from '../../../assets/home/img2.png';
+import Grid3 from '../../../assets/home/img3.png';
+import Grid4 from '../../../assets/home/img4.png';
+import Grid5 from '../../../assets/home/img5.png';
+import Grid6 from '../../../assets/home/img6.png';
+import Grid7 from '../../../assets/home/img7.png';
+import Grid8 from '../../../assets/home/img8.png';
+import Grid9 from '../../../assets/home/img9.png';
 
 // --- IMPORT ICONS & LOGO Jalur Fix Anti-Error ---
-import LogoLaoban from '../../assets/icons/LogoLaoban.png';
-import IconInstagram from '../../assets/icons/Instagram.png';
-import IconWhatsapp from '../../assets/icons/Whatsapp.png';
-import IconFacebook from '../../assets/icons/icons-customer/facebook.png'; 
-import IconLink from '../../assets/icons/icons-customer/Link.png'; 
-import IconTiktok from '../../assets/icons/Tiktok.png';
+import LogoLaoban from '../../../assets/icons/LogoLaoban.png';
+import IconInstagram from '../../../assets/icons/Instagram.png';
+import IconWhatsapp from '../../../assets/icons/Whatsapp.png';
+import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
+import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
+import IconTiktok from '../../../assets/icons/Tiktok.png';
 
-import IconMainDish from '../../assets/icons/MainDish.png';
-import IconSnack from '../../assets/icons/Snack.png';
-import IconDimsum from '../../assets/icons/Dimsum.png';
-import IconHotDrink from '../../assets/icons/HotDrink.png';
-import IconColdDrink from '../../assets/icons/ColdDrink.png';
-import IconIceDessert from '../../assets/icons/Ice&Dessert.png';
+import IconMainDish from '../../../assets/icons/MainDish.png';
+import IconSnack from '../../../assets/icons/Snack.png';
+import IconDimsum from '../../../assets/icons/Dimsum.png';
+import IconHotDrink from '../../../assets/icons/HotDrink.png';
+import IconColdDrink from '../../../assets/icons/ColdDrink.png';
+import IconIceDessert from '../../../assets/icons/Ice&Dessert.png';
 
-import IconMessage from '../../assets/icons/Message.png'; 
-import IconCall from '../../assets/icons/Call.png'; 
-import IconFrame from '../../assets/icons/Frame.png'; 
+import IconMessage from '../../../assets/icons/Message.png'; 
+import IconCall from '../../../assets/icons/Call.png'; 
+import IconFrame from '../../../assets/icons/Frame.png'; 
 
 export default function Home() {
   const navigate = useNavigate();

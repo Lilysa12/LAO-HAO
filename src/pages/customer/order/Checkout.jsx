@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './Checkout.css';
 
 // --- IMPORT ASSETS (JALUR SUDAH DIPERBAIKI) ---
-import LogoLaoban from '../../assets/icons/icons-customer/logoLaoban.png';
-import IconInstagram from '../../assets/icons/icons-customer/instagram.png';
-import IconWhatsapp from '../../assets/icons/icons-customer/whatsapp.png';
-import IconTiktok from '../../assets/icons/icons-customer/tiktok.png';
-import IconFacebook from '../../assets/icons/icons-customer/facebook.png';
-import IconLink from '../../assets/icons/icons-customer/link.png';
+import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
+import IconInstagram from '../../../assets/icons/icons-customer/instagram.png';
+import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
+import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
+import IconFacebook from '../../../assets/icons/icons-customer/facebook.png';
+import IconLink from '../../../assets/icons/icons-customer/link.png';
 
 // Placeholder Gambar Menu
-import ImgNasi from '../../assets/image/image1.png'; 
-import ImgRoti from '../../assets/image/image4.png'; 
+import ImgNasi from '../../../assets/image/image1.png'; 
+import ImgRoti from '../../../assets/image/image4.png'; 
 
 export default function Checkout() {
   const navigate = useNavigate();
