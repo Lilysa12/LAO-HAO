@@ -1,14 +1,11 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import axios from 'axios'; // Import Axios untuk koneksi ke API
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-// Import Library DatePicker
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
 import './LaporanPenjualanPusat.css';
 
-// --- IMPORT ASSETS (LOGO & SIDEBAR ICONS) ---
 import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconLaporan from '../../assets/Icons/icons-admin/laporan.svg';
@@ -18,8 +15,6 @@ import iconKasir from '../../assets/Icons/icons-admin/kasir.svg';
 import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg'; 
 import iconPanahBawah from '../../assets/Icons/icons-admin/panahbawah.svg';
-
-// --- IMPORT ASSETS (CARDS & BUTTONS) ---
 import iconKalender from '../../assets/Icons/icons-admin/kalender.svg';
 import iconDownload from '../../assets/Icons/icons-admin/download.svg';
 import iconTotal from '../../assets/Icons/icons-admin/total.svg';
@@ -28,11 +23,25 @@ import iconList from '../../assets/Icons/icons-admin/list.svg';
 
 const LaporanPenjualanPusat = () => {
   const location = useLocation();
-
-  // State untuk tanggal yang dipilih
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Komponen Custom Input untuk Kalender
+  // STATE UNTUK DATA DARI DATABASE (SUPABASE)
+  const [transactions, setTransactions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // MENGAMBIL DATA TRANSAKSI DARI BACKEND LARAVEL
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/api/admin/transactions')
+      .then(response => {
+        setTransactions(response.data);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error("Gagal mengambil data transaksi:", error);
+        setIsLoading(false);
+      });
+  }, []);
+
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <button className="filter-btn" onClick={onClick} ref={ref}>
       <img src={iconKalender} alt="Kalender" className="btn-icon-svg icon-gray" /> 
@@ -41,7 +50,6 @@ const LaporanPenjualanPusat = () => {
     </button>
   ));
 
-  // Data Dummy untuk Bar Chart
   const dataPenjualan = [
     { name: 'Sen', kasir: 4000, qr: 2500 },
     { name: 'Sel', kasir: 1500, qr: 3000 },
@@ -67,7 +75,6 @@ const LaporanPenjualanPusat = () => {
 
   return (
     <div className="admin-container">
-      {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-brand">
           <img src={logoLaoban} alt="Laoban Logo" className="logo-circle" />
@@ -115,7 +122,6 @@ const LaporanPenjualanPusat = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="main-content">
         <header className="topbar">
           <div className="breadcrumb">
@@ -140,12 +146,11 @@ const LaporanPenjualanPusat = () => {
                 <p className="page-subtitle">Ringkasan pendapatan dan detail transaksi restoran</p>
               </div>
               <div className="action-buttons">
-                {/* Widget Kalender Harian Normal */}
                 <div className="date-picker-wrapper">
                   <DatePicker
                     selected={selectedDate}
                     onChange={(date) => setSelectedDate(date)}
-                    dateFormat="dd MMMM yyyy" /* Format menjadi tanggal lengkap */
+                    dateFormat="dd MMMM yyyy"
                     customInput={<CustomDateInput />}
                   />
                 </div>
@@ -156,7 +161,6 @@ const LaporanPenjualanPusat = () => {
               </div>
             </div>
 
-            {/* Summary Cards */}
             <div className="summary-cards reports-cards">
               <div className="card">
                 <div className="card-header">
@@ -192,7 +196,6 @@ const LaporanPenjualanPusat = () => {
               </div>
             </div>
 
-            {/* Grafik Penjualan */}
             <div className="chart-container card mb-6">
               <h3 className="section-title">Grafik Penjualan (Minggu Ini)</h3>
               <div style={{ width: '100%', height: 300 }}>
@@ -209,46 +212,46 @@ const LaporanPenjualanPusat = () => {
               </div>
             </div>
 
-            {/* Tabel Detail Transaksi */}
             <div className="transaction-container card">
               <div className="table-header-row">
                 <h3 className="section-title">Detail Transaksi Terakhir</h3>
                 <button className="view-all-btn">Lihat Semua</button>
               </div>
-              <table className="transaction-table">
-                <thead>
-                  <tr>
-                    <th>NO. INVOICE</th>
-                    <th>WAKTU</th>
-                    <th>PELANGGAN</th>
-                    <th>METODE</th>
-                    <th>TOTAL</th>
-                    <th className="text-center">STATUS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { inv: '#INV-0012', time: '12 Okt 2026, 14:30', user: 'Budi S.', method: 'QRIS', total: 'Rp 125.000', status: 'BERHASIL' },
-                    { inv: '#INV-0013', time: '12 Okt 2026, 14:45', user: 'Andi M.', method: 'Cash', total: 'Rp 45.000', status: 'BERHASIL' },
-                    { inv: '#INV-0014', time: '12 Okt 2026, 15:10', user: 'Siti K.', method: 'Debit', total: 'Rp 210.000', status: 'BERHASIL' },
-                    { inv: '#INV-0015', time: '12 Okt 2026, 15:30', user: 'Guest', method: 'Cash', total: 'Rp 35.000', status: 'DIBATALKAN' },
-                    { inv: '#INV-0016', time: '12 Okt 2026, 16:00', user: 'Joko P.', method: 'QRIS', total: 'Rp 85.000', status: 'BERHASIL' },
-                  ].map((row, idx) => (
-                    <tr key={idx}>
-                      <td className="font-bold text-black">{row.inv}</td>
-                      <td>{row.time}</td>
-                      <td>{row.user}</td>
-                      <td>{row.method}</td>
-                      <td className="font-bold text-red">{row.total}</td>
-                      <td className="text-center">
-                        <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
-                          {row.status}
-                        </span>
-                      </td>
+              
+              {/* RENDER DATA DARI DATABASE */}
+              {isLoading ? (
+                <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data transaksi dari Supabase...</div>
+              ) : (
+                <table className="transaction-table">
+                  <thead>
+                    <tr>
+                      <th>NO. INVOICE</th>
+                      <th>WAKTU</th>
+                      <th>PELANGGAN</th>
+                      <th>METODE</th>
+                      <th>TOTAL</th>
+                      <th className="text-center">STATUS</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {transactions.map((row) => (
+                      <tr key={row.id}>
+                        <td className="font-bold text-black">{row.inv}</td>
+                        <td>{row.time}</td>
+                        <td>{row.user}</td>
+                        <td>{row.method}</td>
+                        <td className="font-bold text-red">{row.total}</td>
+                        <td className="text-center">
+                          <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
+                            {row.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+
             </div>
           </div>
         </div>

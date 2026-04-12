@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import './ManajemenAkunStaf.css';
 
 import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
@@ -15,12 +16,80 @@ import iconKunci from '../../assets/Icons/icons-admin/kunci.svg';
 const ManajemenAkunStaf = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const staffData = [
-    { id: 1, name: 'Ahmad Syahroni', email: 'ahmad@laohao.com', initial: 'A', role: 'SUPER ADMIN', roleClass: 'role-superadmin', status: 'AKTIF', lastLogin: 'Hari ini, 08:30', isVerified: true },
-    { id: 2, name: 'Budi Santoso', email: 'budi.kasir@laohao.com', initial: 'B', role: 'KASIR', roleClass: 'role-kasir', status: 'AKTIF', lastLogin: 'Hari ini, 07:45', isVerified: false },
-    { id: 3, name: 'Siti Aminah', email: 'siti.a@laohao.com', initial: 'S', role: 'KASIR', roleClass: 'role-kasir', status: 'NONAKTIF', lastLogin: '10 Okt 2026', isVerified: false },
-    { id: 4, name: 'Dewi Lestari', email: 'dewi.kitchen@laohao.com', initial: 'D', role: 'DAPUR / KITCHEN', roleClass: 'role-dapur', status: 'AKTIF', lastLogin: 'Hari ini, 06:15', isVerified: false },
-  ];
+  // STATE UNTUK DATA TABEL
+  const [staffData, setStaffData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // STATE UNTUK INPUT FORMULIR
+  const [formData, setFormData] = useState({
+    name: '',
+    role: '',
+    email: '',
+    password: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // FUNGSI MENGAMBIL DATA DARI BACKEND
+  const fetchStaffData = () => {
+    setIsLoading(true);
+    axios.get('http://127.0.0.1:8000/api/admin/staff')
+      .then(response => {
+        setStaffData(response.data);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error("Gagal mengambil data staf:", error);
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchStaffData();
+  }, []);
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // FUNGSI MENGIRIM DATA (POST / CREATE)
+  const handleSubmitForm = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      await axios.post('http://127.0.0.1:8000/api/admin/staff', formData);
+      alert('Berhasil! Akun staf baru telah ditambahkan.');
+      setIsModalOpen(false);
+      setFormData({ name: '', role: '', email: '', password: '' });
+      fetchStaffData();
+    } catch (error) {
+      console.error('Gagal menyimpan data:', error);
+      alert('Gagal menambahkan staf. Pastikan Email belum terdaftar dan kolom terisi semua.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // FUNGSI BARU: MENGHAPUS DATA STAF (DELETE / BYPASS POST)
+  const handleDeleteStaff = async (id, staffName) => {
+    const isConfirmed = window.confirm(`Apakah Anda yakin ingin menghapus akun staf ${staffName}? Data tidak dapat dikembalikan.`);
+    
+    if (isConfirmed) {
+      try {
+        // Menembak API Laravel yang sudah kita siapkan sebelumnya
+        await axios.post(`http://127.0.0.1:8000/api/admin/staff/${id}/delete`);
+        alert('Akun staf berhasil dihapus!');
+        fetchStaffData(); // Refresh tabel otomatis
+      } catch (error) {
+        console.error('Detail Error:', error);
+        const errorMsg = error.response?.data?.message || 'Server menolak koneksi.';
+        alert(`Gagal menghapus! Pesan server: ${errorMsg}`);
+      }
+    }
+  };
 
   return (
     <div className="admin-container">
@@ -124,69 +193,73 @@ const ManajemenAkunStaf = () => {
                 </div>
               </div>
 
-              <table className="transaction-table staff-table">
-                <thead>
-                  <tr>
-                    <th>NAMA & KONTAK</th>
-                    <th>ROLE AKSES</th>
-                    <th>STATUS AKUN</th>
-                    <th>LOGIN TERAKHIR</th>
-                    <th className="text-center">AKSI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {staffData.map((staff) => (
-                    <tr key={staff.id}>
-                      <td>
-                        <div className="name-contact-cell">
-                          <div className="avatar-circle">
-                            {staff.initial}
-                          </div>
-                          <div>
-                            <div className="font-bold text-black name-text flex-align-center">
-                              {staff.name}
-                              {staff.isVerified && (
-                                <svg className="verified-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                                </svg>
-                              )}
-                            </div>
-                            <div className="text-gray text-small">{staff.email}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className={`role-badge ${staff.roleClass}`}>
-                          {staff.role}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`badge ${staff.status === 'AKTIF' ? 'badge-success' : 'badge-danger'}`}>
-                          {staff.status}
-                        </span>
-                      </td>
-                      <td className="text-gray text-small">
-                        {staff.lastLogin}
-                      </td>
-                      <td>
-                        <div className="action-icons-cell">
-                          <button className="action-icon-btn" title="Reset Password">
-                            <img src={iconKunci} alt="Kunci" className="btn-icon-svg icon-gray" />
-                          </button>
-                          <button className="action-icon-btn" title="Lainnya">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="1"></circle>
-                              <circle cx="12" cy="5" r="1"></circle>
-                              <circle cx="12" cy="19" r="1"></circle>
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
+              {isLoading ? (
+                <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data staf dari Supabase...</div>
+              ) : (
+                <table className="transaction-table staff-table">
+                  <thead>
+                    <tr>
+                      <th>NAMA & KONTAK</th>
+                      <th>ROLE AKSES</th>
+                      <th>STATUS AKUN</th>
+                      <th>LOGIN TERAKHIR</th>
+                      <th className="text-center">AKSI</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {staffData.map((staff) => (
+                      <tr key={staff.id}>
+                        <td>
+                          <div className="name-contact-cell">
+                            <div className="avatar-circle">
+                              {staff.initial}
+                            </div>
+                            <div>
+                              <div className="font-bold text-black name-text flex-align-center">
+                                {staff.name}
+                                {staff.isVerified && (
+                                  <svg className="verified-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                  </svg>
+                                )}
+                              </div>
+                              <div className="text-gray text-small">{staff.email}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className={`role-badge ${staff.roleClass}`}>
+                            {staff.role}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`badge ${staff.status === 'AKTIF' ? 'badge-success' : 'badge-danger'}`}>
+                            {staff.status}
+                          </span>
+                        </td>
+                        <td className="text-gray text-small">
+                          {staff.lastLogin}
+                        </td>
+                        <td>
+                          <div className="action-icons-cell">
+                            <button className="action-icon-btn" title="Reset Password">
+                              <img src={iconKunci} alt="Kunci" className="btn-icon-svg icon-gray" />
+                            </button>
+                            {/* TOMBOL DELETE DIUBAH MENJADI TEMPAT SAMPAH */}
+                            <button className="action-icon-btn" title="Hapus Staf" onClick={() => handleDeleteStaff(staff.id, staff.name)}>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
@@ -205,47 +278,52 @@ const ManajemenAkunStaf = () => {
               </button>
             </div>
             
-            <div className="modal-body custom-scrollbar">
-              <div className="form-group">
-                <label>NAMA LENGKAP</label>
-                <input type="text" placeholder="Masukkan nama lengkap staf" className="form-input" />
+            <form onSubmit={handleSubmitForm}>
+              <div className="modal-body custom-scrollbar">
+                
+                <div className="form-group">
+                  <label>NAMA LENGKAP</label>
+                  <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Masukkan nama lengkap staf" className="form-input" required />
+                </div>
+                
+                <div className="form-group">
+                  <label>ROLE AKUN</label>
+                  <select name="role" value={formData.role} onChange={handleInputChange} className="form-input select-input" required>
+                    <option value="" disabled>Pilih Role</option>
+                    <option value="SUPER ADMIN">Super Admin</option>
+                    <option value="KASIR">Kasir Cabang</option>
+                    <option value="DAPUR / KITCHEN">Dapur / Kitchen</option>
+                  </select>
+                </div>
+                
+                <div className="form-group">
+                  <label>PILIH CABANG</label>
+                  <select className="form-input select-input" defaultValue="">
+                    <option value="" disabled>Pilih Cabang Penempatan</option>
+                    <option value="hq">Semua Cabang (HQ)</option>
+                    <option value="tebet">Cabang Tebet</option>
+                  </select>
+                </div>
+                
+                <div className="form-group">
+                  <label>EMAIL LOGIN</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="contoh: budi@laohao.com" className="form-input" required />
+                </div>
+                
+                <div className="form-group">
+                  <label>PASSWORD SEMENTARA</label>
+                  <input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="Minimal 6 karakter" className="form-input" minLength="6" required />
+                </div>
               </div>
-              
-              <div className="form-group">
-                <label>ROLE AKUN</label>
-                <select className="form-input select-input" defaultValue="">
-                  <option value="" disabled>Pilih Role</option>
-                  <option value="super_admin">Super Admin</option>
-                  <option value="kasir">Kasir Cabang</option>
-                </select>
-              </div>
-              
-              <div className="form-group">
-                <label>PILIH CABANG</label>
-                <select className="form-input select-input" defaultValue="">
-                  <option value="" disabled>Pilih Cabang Penempatan</option>
-                  <option value="hq">Semua Cabang (HQ)</option>
-                  <option value="tebet">Cabang Tebet</option>
-                  <option value="sudirman">Cabang Sudirman</option>
-                  <option value="kelapa_gading">Cabang Kelapa Gading</option>
-                </select>
-              </div>
-              
-              <div className="form-group">
-                <label>USERNAME LOGIN</label>
-                <input type="text" placeholder="Karakter unik untuk login" className="form-input" />
-              </div>
-              
-              <div className="form-group">
-                <label>PASSWORD SEMENTARA</label>
-                <input type="password" placeholder="Minimal 6 karakter" className="form-input" />
-              </div>
-            </div>
 
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-              <button className="btn-primary">Simpan Akun</button>
-            </div>
+              <div className="modal-footer">
+                <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
+                <button type="submit" className="btn-primary" disabled={isSubmitting}>
+                  {isSubmitting ? 'Menyimpan...' : 'Simpan Akun'}
+                </button>
+              </div>
+            </form>
+
           </div>
         </div>
       )}
