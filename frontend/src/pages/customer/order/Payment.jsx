@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Payment.css';
 
-// --- IMPORT ASSETS (Jalur sudah diperbaiki) ---
+// --- IMPORT ASSETS ---
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconInstagram from '../../../assets/icons/icons-customer/instagram.png';
 import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
@@ -10,35 +10,28 @@ import IconFacebook from '../../../assets/icons/icons-customer/facebook.png';
 import IconLink from '../../../assets/icons/icons-customer/link.png';
 import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
 
-// Import Icon Payment (Jalur sudah diperbaiki)
 import IconTunai from '../../../assets/icons/icons-customer/tunai.png';
 import IconQris from '../../../assets/icons/icons-customer/qris.png';
 import IconGopay from '../../../assets/icons/icons-customer/gopay.png';
 
+// FIX RAHASIA: Nama variabel impornya diubah jadi IconShopee agar tidak bentrok
+import IconShopee from '../../../assets/icons/icons-customer/shopee.png';
+
 export default function Payment() {
   const navigate = useNavigate();
-  // State untuk menyimpan metode pembayaran yang dipilih (Default: QRIS)
   const [selectedMethod, setSelectedMethod] = useState('qris');
 
   return (
     <div className="pay-container">
       
-      {/* ================= HEADER ================= */}
+      {/* ================= HEADER (Hanya Desktop) ================= */}
       <header className="pay-header">
-        <div className="pay-logo-box">
+        <div className="pay-logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="pay-logo" />
         </div>
-        <nav className="pay-nav-links">
-          <a href="#" className="active">Home</a>
-          <a href="#">About</a>
-          <a href="#">Menu</a>
-          <a href="#">Our Partner</a>
-          <a href="#">Partnership</a>
-        </nav>
-        <div style={{ width: '100px' }}></div>
       </header>
 
-      {/* ================= TOP BAR (BACK & TITLE) ================= */}
+      {/* ================= TOP BAR ================= */}
       <div className="pay-top-bar">
         <button className="pay-back-btn efek-klik" onClick={() => navigate(-1)}>
           &lt;
@@ -58,8 +51,12 @@ export default function Payment() {
               className={`pay-method-card ${selectedMethod === 'tunai' ? 'active' : ''}`}
               onClick={() => setSelectedMethod('tunai')}
             >
-              <img src={IconTunai} alt="Tunai" className="pay-method-icon" />
-              <span className="pay-method-name">Bayar di kasir</span>
+              <div className="pay-method-left">
+                <div className="pay-icon-box">
+                  <img src={IconTunai} alt="Tunai" className="pay-method-icon" />
+                </div>
+                <span className="pay-method-name">Bayar di kasir</span>
+              </div>
               <div className="pay-radio-circle">
                 <div className="pay-radio-dot"></div>
               </div>
@@ -75,8 +72,12 @@ export default function Payment() {
               className={`pay-method-card ${selectedMethod === 'qris' ? 'active' : ''}`}
               onClick={() => setSelectedMethod('qris')}
             >
-              <img src={IconQris} alt="QRIS" className="pay-method-icon" />
-              <span className="pay-method-name">QRIS</span>
+              <div className="pay-method-left">
+                <div className="pay-icon-box">
+                  <img src={IconQris} alt="QRIS" className="pay-method-icon" />
+                </div>
+                <span className="pay-method-name">QRIS</span>
+              </div>
               <div className="pay-radio-circle">
                 <div className="pay-radio-dot"></div>
               </div>
@@ -87,8 +88,29 @@ export default function Payment() {
               className={`pay-method-card ${selectedMethod === 'gopay' ? 'active' : ''}`}
               onClick={() => setSelectedMethod('gopay')}
             >
-              <img src={IconGopay} alt="GoPay" className="pay-method-icon" />
-              <span className="pay-method-name">GoPay</span>
+              <div className="pay-method-left">
+                <div className="pay-icon-box">
+                  <img src={IconGopay} alt="GoPay" className="pay-method-icon" />
+                </div>
+                <span className="pay-method-name">GoPay</span>
+              </div>
+              <div className="pay-radio-circle">
+                <div className="pay-radio-dot"></div>
+              </div>
+            </div>
+
+            {/* Opsi ShopeePay */}
+            <div 
+              className={`pay-method-card ${selectedMethod === 'shopee' ? 'active' : ''}`}
+              onClick={() => setSelectedMethod('shopee')}
+            >
+              <div className="pay-method-left">
+                <div className="pay-icon-box">
+                  {/* FIX: Menggunakan IconShopee yang sudah diimpor dengan benar */}
+                  <img src={IconShopee} alt="ShopeePay" className="pay-method-icon" />
+                </div>
+                <span className="pay-method-name">ShopeePay</span>
+              </div>
               <div className="pay-radio-circle">
                 <div className="pay-radio-dot"></div>
               </div>
@@ -97,24 +119,27 @@ export default function Payment() {
 
           {/* --- SUMMARY & BUTTON --- */}
           <div className="pay-summary-box">
-            <div className="pay-total-row">
-              <span className="pay-total-label">Total Akhir</span>
-              <span className="pay-total-value">Rp 42.000</span>
+            <div className="pay-summary-row">
+              <span className="pay-sum-label">Subtotal</span>
+              <span className="pay-sum-value">Rp 57.000</span>
+            </div>
+            <div className="pay-summary-row">
+              <span className="pay-sum-label">Pajak Restoran (10%)</span>
+              <span className="pay-sum-value">Rp 5.700</span>
             </div>
             
+            <div className="pay-summary-row total-row">
+              <span className="pay-sum-label-bold">Total Pembayaran</span>
+              <span className="pay-sum-total">Rp 62.700</span>
+            </div>
+
             <button 
               className="pay-btn-submit efek-klik"
               onClick={() => {
-                alert(`Pesanan Berhasil Diproses dengan metode: ${selectedMethod.toUpperCase()}`);
-                navigate('/'); // Kembali ke Home setelah bayar
+                navigate('/status'); // <-- REVISI: Sekarang diarahkan ke halaman /status
               }}
             >
-              Bayar Sekarang 
-              {/* Icon Check SVG sederhana */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft: '8px'}}>
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
+              Pilih Pembayaran
             </button>
           </div>
 

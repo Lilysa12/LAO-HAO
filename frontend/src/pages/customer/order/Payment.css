@@ -17,11 +17,8 @@
 /* --- HEADER --- */
 .pay-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; background: #fff; border-bottom: 1px solid #F3F4F6; }
 .pay-logo { height: 45px; object-fit: contain; }
-.pay-nav-links { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;}
-.pay-nav-links a { text-decoration: none; color: #6C757D; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: 0.3s; }
-.pay-nav-links a.active { color: #A00500; }
 
-/* --- TOP BAR (Back & Title) --- */
+/* --- TOP BAR --- */
 .pay-top-bar { 
   display: flex; 
   align-items: center; 
@@ -31,20 +28,20 @@
   background: #fff;
 }
 .pay-back-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid #DEE2E6;
   background: #fff;
   color: #212529;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
 }
-.pay-page-title { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; color: #212529; font-weight: 700; }
+.pay-page-title { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; color: #212529; font-weight: 800; }
 
 /* --- MAIN CONTENT (Tengah) --- */
 .pay-main-layout { 
@@ -57,7 +54,7 @@
 
 .pay-content-wrapper {
   width: 100%;
-  max-width: 500px; /* Lebar maksimal konten di tengah */
+  max-width: 500px; 
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -81,6 +78,7 @@
 /* --- METHOD CARD --- */
 .pay-method-card {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
   border: 1.5px solid #DEE2E6;
@@ -88,38 +86,50 @@
   background: #fff;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
 }
 .pay-method-card:hover { border-color: #A00500; }
-.pay-method-card.active { border-color: #A00500; }
 
+/* Struktur Kiri Card */
+.pay-method-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 2; /* Agar di atas gradasi background */
+}
+.pay-icon-box {
+  background: #F3F4F6;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .pay-method-icon {
-  height: 30px;
+  height: 20px;
   width: auto;
   object-fit: contain;
-  margin-right: 15px;
 }
-
 .pay-method-name {
-  flex: 1;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #212529;
 }
 
-/* --- RADIO BUTTON CUSTOM (Bulat Kanan) --- */
+/* --- RADIO BUTTON CUSTOM --- */
 .pay-radio-circle {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 2px solid #DEE2E6;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: 0.2s;
-}
-.pay-method-card.active .pay-radio-circle {
-  border-color: #A00500;
+  background: #fff;
+  z-index: 2;
 }
 .pay-radio-dot {
   width: 10px;
@@ -128,35 +138,33 @@
   background: transparent;
   transition: 0.2s;
 }
-.pay-method-card.active .pay-radio-dot {
-  background: #A00500;
-}
 
-/* --- SUMMARY BOX (Bawah) --- */
+/* --- ACTIVE STATE (BINGKAI MERAH & GRADASI) --- */
+.pay-method-card.active { 
+  border-color: #A00500; 
+  /* FIX: Gradasi pink halus di sebelah kanan persis desain */
+  background: linear-gradient(90deg, #FFFFFF 60%, rgba(160, 5, 0, 0.08) 100%);
+}
+.pay-method-card.active .pay-radio-circle { border-color: #A00500; border-width: 2.5px; }
+.pay-method-card.active .pay-radio-dot { background: #A00500; }
+
+/* --- SUMMARY BOX --- */
 .pay-summary-box {
-  margin-top: 20px;
+  margin-top: 10px;
   padding-top: 30px;
-  border-top: 1.5px solid #F3F4F6;
-}
-
-.pay-total-row {
+  border-top: 1px solid #DEE2E6;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+  flex-direction: column;
+  gap: 12px;
 }
-.pay-total-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  color: #6C757D;
+.pay-summary-row { 
+  display: flex; justify-content: space-between; align-items: center; font-family: 'Inter', sans-serif; 
 }
-.pay-total-value {
-  font-family: 'Poppins', sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: #A00500;
-}
+.pay-sum-label, .pay-sum-value { font-size: 14px; color: #6C757D; }
+
+.total-row { padding-top: 10px; margin-top: 5px; margin-bottom: 10px;}
+.pay-sum-label-bold { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: #6C757D; }
+.pay-sum-total { font-family: 'Plus Jakarta Sans', sans-serif; color: #A00500; font-size: 20px; font-weight: 800; }
 
 .pay-btn-submit {
   width: 100%;
@@ -165,13 +173,14 @@
   border: none;
   padding: 16px;
   border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 10px;
 }
 
 /* --- FOOTER --- */
@@ -185,10 +194,64 @@
 .efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
 .efek-klik:active { transform: scale(0.96); }
 
-/* --- RESPONSIVE --- */
+/* =========================================================
+   RESPONSIVE MOBILE STYLES
+========================================================= */
+/* --- GANTI BLOK @MEDIA INI DI BAWAH PAYMENT.CSS --- */
 @media (max-width: 768px) {
-  .pay-header, .pay-top-bar, .pay-footer { padding-left: 20px; padding-right: 20px; }
-  .pay-nav-links { display: none; }
-  .pay-main-layout { padding: 40px 20px; }
-  .pay-footer { flex-direction: column; gap: 20px; text-align: center; }
+  .pay-header { display: none; } 
+  .pay-footer { display: none; }
+
+  .pay-container { min-height: 100vh; background-color: #FFFFFF;}
+  
+  .pay-top-bar { padding: 20px 20px 10px 20px; border-bottom: none; display: flex; align-items: center; justify-content: flex-start; gap: 15px;}
+  .pay-back-btn { width: 36px; height: 36px; border-radius: 50%; background: #F8F9FA; border: none; font-size: 16px; color: #212529; padding: 0;}
+  .pay-page-title { font-size: 20px; margin: 0; font-weight: 700;}
+  
+  .pay-main-layout { padding: 10px 20px; display: block; flex: none; height: auto;}
+  
+  /* FIX: Memberikan ruang di bagian bawah agar daftar metode tidak tertutup rincian harga */
+  .pay-content-wrapper { padding: 0; display: flex; flex-direction: column; gap: 24px; padding-bottom: 250px; }
+
+  .pay-section { gap: 12px; }
+  .pay-section-label { font-size: 12px; margin-bottom: 4px; color: #6C757D; font-weight: 600; letter-spacing: 0px;}
+  
+  .pay-method-card { padding: 16px; border-radius: 12px; margin-bottom: 0; border: 1px solid #F3F4F6; box-shadow: none; position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center;}
+  .pay-method-card.active { border: 1.5px solid #A00500; background: linear-gradient(90deg, #FFFFFF 50%, rgba(160, 5, 0, 0.08) 100%); }
+  
+  .pay-method-left { display: flex; align-items: center; gap: 15px; z-index: 2;}
+  .pay-icon-box { background: #F3F4F6; padding: 8px 12px; border-radius: 8px; display: flex; justify-content: center; align-items: center;}
+  .pay-method-icon { height: 16px; width: auto; object-fit: contain;}
+  .pay-method-name { font-size: 14px; font-weight: 700; color: #212529;}
+  
+  .pay-radio-circle { width: 22px; height: 22px; border: 2px solid #DEE2E6; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: #fff; z-index: 2;}
+  .pay-method-card.active .pay-radio-circle { border-color: #A00500; border-width: 2.5px;}
+  .pay-radio-dot { width: 10px; height: 10px; border-radius: 50%; background: transparent; transition: 0.2s;}
+  .pay-method-card.active .pay-radio-dot { background: #A00500; }
+
+  /* FIX RAHASIA: SUMMARY BOX Nempel di bawah layar persis desain */
+  .pay-summary-box { 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 25px 20px 20px 20px; 
+    border-radius: 24px 24px 0 0; /* Sudut atas membulat */
+    margin-top: 0; 
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.04); 
+    border: none; 
+    border-top: 1px solid #F3F4F6; 
+    background: #FFFFFF;
+    z-index: 100;
+    box-sizing: border-box;
+  }
+  
+  .pay-summary-row { margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
+  .pay-sum-label, .pay-sum-value { font-size: 13px; color: #6C757D;}
+  
+  .total-row { margin-top: 15px; margin-bottom: 20px; padding-top: 0; }
+  .pay-sum-label-bold { font-size: 14px; font-weight: 500; color: #4A4A4A;}
+  .pay-sum-total { font-size: 20px; font-weight: 800; color: #A00500;}
+  
+  .pay-btn-submit { padding: 16px; font-size: 15px; border-radius: 12px; width: 100%; margin-top: 0; background: #A00500; color: #fff; font-weight: 700; border: none; display: flex; justify-content: center; align-items: center;}
 }

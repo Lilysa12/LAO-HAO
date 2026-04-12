@@ -194,8 +194,9 @@
 
 .cta-section { 
   padding: 0 60px; 
-  /* Memperdalam overlap agar proporsi lebih pas seperti desain */
-  margin-bottom: -120px; 
+  margin-top: 20px;
+  /* FIX: Kita pakai jarak normal (positif) agar kotak merah berdiri sendiri di atas footer */
+  margin-bottom: 80px; 
   position: relative; 
   z-index: 20; 
   display: flex; 
@@ -204,8 +205,8 @@
 
 .cta-card { 
   width: 100%; 
-  max-width: 961px; 
-  min-height: 435px; 
+  max-width: 960px; 
+  min-height: auto; 
   background: var(--c-red); 
   border-radius: 24px; 
   display: flex; 
@@ -213,21 +214,21 @@
   justify-content: center; 
   position: relative; 
   overflow: hidden; 
-  padding: 40px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  padding: 60px 40px;
+  box-shadow: 0 15px 40px rgba(160, 5, 0, 0.15); 
 }
-.watermark { position: absolute; right: 50px; bottom: 30px; font-size: 200px; color: var(--c-bg-white); opacity: 0.05; user-select: none; }
+.watermark { position: absolute; right: -20px; bottom: -20px; font-size: 280px; color: var(--c-bg-white); opacity: 0.04; user-select: none; line-height: 1; font-family: sans-serif;}
 .cta-content { text-align: center; color: #fff; position: relative; z-index: 2; width: 100%;}
-.cta-content h2 { font-family: var(--font-jakarta); font-size: 48px; margin: 0 0 20px 0; line-height: 1.15; }
-.cta-content p { font-family: var(--font-inter); font-size: 16px; max-width: 650px; margin: 0 auto 40px auto; line-height: 1.6; opacity: 0.95; }
+.cta-content h2 { font-family: var(--font-jakarta); font-size: 46px; margin: 0 0 20px 0; line-height: 1.2; font-weight: 800;}
+.cta-content p { font-family: var(--font-inter); font-size: 16px; max-width: 700px; margin: 0 auto 40px auto; line-height: 1.6; opacity: 0.95; }
 .cta-action { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;}
 
 /* --- FOOTER --- */
 .footer-modern { 
   background: var(--c-bg-white); 
-  /* FIX Jarak: Padding atas dibesarkan menjadi 250px agar logo & teks tidak tertabrak CTA */
-  padding: 250px 60px 40px 60px; 
-  border-top: none; 
+  /* FIX: Padding atas dikembalikan ke ukuran normal yang wajar */
+  padding: 60px 60px 40px 60px; 
+  border-top: 1px solid var(--c-gray-border); /* Menambahkan garis halus agar terpisah rapi dengan area atasnya */
   margin-top: auto; 
   display: flex; 
   flex-direction: column; 
@@ -284,6 +285,127 @@
 /* ========================================= */
 /* --- RESPONSIVE MEDIA QUERIES --- */
 /* ========================================= */
+
+/* ======================================================== */
+/* --- EFEK ANIMASI ON-SCROLL (FADE IN UP) --- */
+/* ======================================================== */
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(60px); /* Posisi awal di bawah */
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Class ini akan ditambahkan otomatis oleh React saat di-scroll */
+.fade-in-up.is-visible {
+  opacity: 1;
+  transform: translateY(0); /* Naik ke posisi asli */
+}
+
+/* Jeda waktu agar munculnya bergantian (elegan) */
+.delay-1 { transition-delay: 0.2s; }
+.delay-2 { transition-delay: 0.4s; }
+.delay-3 { transition-delay: 0.6s; }
+
+
+/* ======================================================== */
+/* --- ANIMASI TEKS CABANG BERJALAN (MARQUEE) --- */
+/* ======================================================== */
+
+.red-marquee-container {
+  width: 100%;
+  background: linear-gradient(90deg, #A00500 0%, #8a0400 50%, #A00500 100%);
+  overflow: hidden;
+  padding: 14px 0;
+  display: flex;
+  white-space: nowrap;
+}
+
+.red-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: scrollMarquee 35s linear infinite; 
+}
+
+.red-marquee-container:hover .red-marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-item {
+  color: #fff;
+  font-family: var(--font-poppins);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-transform: uppercase;
+  padding-right: 40px; 
+}
+
+.yellow-box {
+  color: var(--c-yellow);
+  font-size: 10px; 
+}
+
+@keyframes scrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ======================================================== */
+/* --- ANIMASI TEKS CABANG BERJALAN (MARQUEE) --- */
+/* ======================================================== */
+
+.red-marquee-container {
+  width: 100%;
+  /* Background merah gelap gradasi agar mirip desain */
+  background: linear-gradient(90deg, #A00500 0%, #8a0400 50%, #A00500 100%);
+  overflow: hidden;
+  padding: 14px 0;
+  display: flex;
+  white-space: nowrap;
+}
+
+.red-marquee-track {
+  display: flex;
+  width: max-content;
+  /* Durasi 35s, ubah angka ini kalau mau lebih cepat/lambat */
+  animation: scrollMarquee 35s linear infinite; 
+}
+
+/* Kalau kursor mouse diarahkan ke teks, teksnya berhenti (khusus desktop) */
+.red-marquee-container:hover .red-marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-item {
+  color: #fff;
+  font-family: var(--font-poppins);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-transform: uppercase;
+  padding-right: 40px; /* Jarak antar kota */
+}
+
+/* Kotak Kuning Pembatas */
+.yellow-box {
+  color: var(--c-yellow);
+  font-size: 10px; 
+}
+
+/* Animasi geser mulus */
+@keyframes scrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 @media (max-width: 1024px) {
   .navbar { padding: 0 40px; }
   .hero { flex-direction: column; text-align: center; padding: 60px 40px; }
@@ -296,11 +418,10 @@
   .ig-section { padding: 80px 40px 100px 40px; }
   .ig-grid { grid-template-columns: repeat(2, 1fr); }
   
-  .cta-section { padding: 0 40px; margin-bottom: -100px; }
-  .cta-card { padding: 50px 30px; min-height: auto;}
-  
-  /* FIX Jarak Mobile/Tablet */
-  .footer-modern { padding: 180px 40px 40px 40px; }
+  /* Jarak ditormalkan untuk Tablet */
+  .cta-section { padding: 0 40px; margin-bottom: 60px; }
+  .cta-card { padding: 50px 30px; }
+  .footer-modern { padding: 60px 40px 40px 40px; }
 }
 
 @media (max-width: 768px) {
@@ -322,14 +443,13 @@
   .ig-section { padding: 60px 20px 80px 20px; }
   .ig-grid { grid-template-columns: 1fr; }
   
-  .cta-section { padding: 0 20px; margin-bottom: -60px; }
+  /* Jarak dinormalkan untuk Mobile/HP */
+  .cta-section { padding: 0 20px; margin-bottom: 40px; }
   .cta-card { padding: 40px 20px; }
   .cta-content h2 { font-size: 36px; }
   .cta-action { flex-direction: column; width: 100%; }
   .cta-action button { width: 100%; }
-  
-  /* FIX Jarak HP */
-  .footer-modern { padding: 140px 20px 30px 20px; }
+  .footer-modern { padding: 40px 20px 30px 20px; }
   .foot-bottom { flex-direction: column; align-items: center; text-align: center; }
 }
 

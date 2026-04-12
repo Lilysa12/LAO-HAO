@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './InputData.css';
 
-// --- IMPORT ASSETS (Jalur Sudah Diperbaiki) ---
-import ImgHero from '../../../assets/image/Image5.png'; // Pastikan ekstensinya .png atau .jpg sesuai file asli
+// --- IMPORT ASSETS ---
+import ImgHero from '../../../assets/image/Image5.png'; 
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconInstagram from '../../../assets/icons/icons-customer/instagram.png';
 import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
@@ -13,23 +13,16 @@ import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
 import IconPeta from '../../../assets/icons/icons-customer/peta.png';
 
 export default function InputData() {
-  const navigate = useNavigate(); // <-- Fungsi pindah halaman
+  const navigate = useNavigate();
 
   return (
     <div className="input-data-container">
       
       {/* ================= HEADER ================= */}
       <header className="id-header">
-        <div className="id-logo-box">
+        <div className="id-logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="id-logo" />
         </div>
-        <nav className="id-nav-links">
-          <a href="#" className="active">Home</a>
-          <a href="#">About</a>
-          <a href="#">Menu</a>
-          <a href="#">Our Partner</a>
-          <a href="#">Partnership</a>
-        </nav>
       </header>
 
       {/* ================= MAIN CONTENT ================= */}
@@ -76,11 +69,10 @@ export default function InputData() {
                 <input type="email" placeholder="contoh123@gmail.com" />
               </div>
 
-              {/* <-- Tombol pindah ke MenuList --> */}
               <button 
                 type="button" 
                 className="id-btn-submit efek-klik" 
-                onClick={() => navigate('/menu')}
+                onClick={() => navigate('/order-list')}
               >
                 &gt; Mulai Memesan
               </button>

@@ -16,6 +16,7 @@ import MenuList from './pages/customer/order/MenuList';
 import MenuDetail from './pages/customer/order/MenuDetail';
 import Checkout from './pages/customer/order/Checkout'; 
 import Payment from './pages/customer/order/Payment';  
+import Status from './pages/customer/order/Status'; // <-- IMPORT HALAMAN BARU
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/detail" element={<MenuDetail />} />
         <Route path="/checkout" element={<Checkout />} /> 
         <Route path="/payment" element={<Payment />} />  
+        <Route path="/status" element={<Status />} /> {/* <-- ROUTE BARU UNTUK STATUS */}
       </Routes>
     </BrowserRouter>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // <-- FIX: Tambah useEffect
 import { useNavigate } from 'react-router-dom';
 import './Home.css'; 
 
@@ -59,11 +59,35 @@ export default function Home() {
 
   const gridImages = [Grid1, Grid2, Grid3, Grid4, Grid5, Grid6, Grid7, Grid8, Grid9];
   
+  // ==============================================================
+  // FIX RAHASIA: RADAR SCROLL UNTUK MENTRIGGER ANIMASI MUNCUL
+  // ==============================================================
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        // Jika elemen masuk ke dalam layar abang
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.15 }); // Animasi dipicu saat 15% bagian elemen terlihat
+
+    // Pasang radar ke semua elemen yang punya class 'fade-in-up'
+    const hiddenElements = document.querySelectorAll('.fade-in-up');
+    hiddenElements.forEach((el) => observer.observe(el));
+
+    // Bersihkan radar saat pindah halaman
+    return () => {
+      hiddenElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+  // ==============================================================
+
   return (
     <div className="home-container">
       
       {/* ================= 1. NAVBAR ================= */}
-      <nav className="navbar">
+      <nav className="navbar fade-in-up">
         <div className="logo-box">
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
@@ -78,7 +102,7 @@ export default function Home() {
       </nav>
 
       {/* ================= 2. HERO SECTION ================= */}
-      <section className="hero">
+      <section className="hero fade-in-up delay-1">
         <div className="hero-text">
           <div className="hero-subtitle">
             <span className="line"></span> 老板 Nusantara · By Uncle Osh <span className="line"></span>
@@ -113,33 +137,60 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= 3. MARQUEE & STATS (FIX: Hilangkan garis pembatas) ================= */}
-      <div className="red-marquee">
-        <span>■ PALEMBANG</span><span>■ CIREBON</span><span>■ BOGOR</span>
-        <span>■ BEKASI</span><span>■ TANGERANG</span><span>■ DEPOK</span>
-        <span>■ SOLO</span><span>■ MALANG</span><span>■ LOMBOK</span>
-        <span>■ PEKANBARU</span><span>■ BALIKPAPAN</span><span>■ SAMARINDA</span>
+      {/* ================= 3. MARQUEE CABANG (KECUALI INI TIDAK DIANIMASIKAN MUNCUL) ================= */}
+      {/* Sesuai instruksi, class 'fade-in-up' DIBUANG dari sini agar cabang langsung tampil */}
+      <div className="red-marquee-container">
+        <div className="red-marquee-track">
+          {/* Set 1 */}
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BEKASI</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> TANGERANG</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> DEPOK</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> SOLO</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> MALANG</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> LOMBOK</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> PEKANBARU</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BALIKPAPAN</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> SAMARINDA</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> MANADO</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> PONTIANAK</div>
+
+          {/* Set 2 */}
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BEKASI</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> TANGERANG</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> DEPOK</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> SOLO</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> MALANG</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> LOMBOK</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> PEKANBARU</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BALIKPAPAN</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> SAMARINDA</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> MANADO</div>
+          <div className="marquee-item"><span className="yellow-box">&#9632;</span> PONTIANAK</div>
+        </div>
       </div>
 
-      <section className="stats">
+      <section className="stats fade-in-up">
         <div className="stat-box">
           <h2>50+</h2>
           <h3>CABANG AKTIF</h3>
           <p>Di seluruh Indonesia</p>
         </div>
-        {/* FIX: `<div className="stat-divider"></div>` dihapus */}
         <div className="stat-box">
           <h2>34</h2>
           <h3>KOTA & KABUPATEN</h3>
           <p>Sabang - Makassar</p>
         </div>
-        {/* FIX: `<div className="stat-divider"></div>` dihapus */}
         <div className="stat-box">
           <h2>6+</h2>
           <h3>TAHUN PENGALAMAN</h3>
           <p>Berdiri sejak 2018</p>
         </div>
-        {/* FIX: `<div className="stat-divider"></div>` dihapus */}
         <div className="stat-box">
           <h2>1M+</h2>
           <h3>PELANGGAN SETIA</h3>
@@ -150,7 +201,7 @@ export default function Home() {
       <div className="yellow-line"></div>
 
       {/* ================= 4. ABOUT SECTION ================= */}
-      <section className="about">
+      <section className="about fade-in-up">
         <div className="about-img-container">
           <img src="https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=500&q=80" alt="Jus Jeruk" className="img-orange" />
           <img src="https://images.unsplash.com/photo-1544145945-f90425340c7e?w=500&q=80" alt="Es Teh" className="img-tea" />
@@ -169,13 +220,12 @@ export default function Home() {
       </section>
 
       {/* ================= 5. MENU SECTION ================= */}
-      <section className="menu-section">
+      <section className="menu-section fade-in-up">
         <div className="center-title">
           <p className="label-red">OUR MENU</p>
           <h2 className="title-dark">Menu Perguruan Laoban</h2>
         </div>
 
-        {/* FIX: Tab Menu dikembalikan ke Desain Awal yg Rapi */}
         <div className="menu-tabs">
           <div className="tab active" onClick={() => navigate('/menu', { state: { category: 'Main Dish' }})} style={{cursor: 'pointer'}}>
             <div className="icon"><img src={IconMainDish} alt="Main Dish" className="tab-img" /></div>
@@ -240,7 +290,7 @@ export default function Home() {
       </section>
 
       {/* ================= 6. MAP SECTION ================= */}
-      <section className="map-section">
+      <section className="map-section fade-in-up">
         <h2 className="title-dark center-title">50+ Titik Kenikmatan di Seluruh Nusantara</h2>
         <p className="desc-gray text-center max-w">
           Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk mendekatkan kehangatan Kopitiam autentik ke kota Anda.
@@ -263,7 +313,7 @@ export default function Home() {
       </section>
 
       {/* ================= 6.5 INSTAGRAM GRID SECTION ================= */}
-      <section className="ig-section">
+      <section className="ig-section fade-in-up">
         <div className="ig-header-container">
           <p className="label-red text-center">FOLLOW US ON INSTAGRAM!</p>
           <h2 className="title-dark text-center" style={{marginBottom: '50px'}}>@LAOBAN.NUSANTARA</h2>
@@ -298,8 +348,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= 7. CTA SECTION (FIX: Rapi sesuai Figma) ================= */}
-      <section className="cta-section">
+      {/* ================= 7. CTA SECTION ================= */}
+      <section className="cta-section fade-in-up">
         <div className="cta-card">
           <div className="watermark">☕</div>
           <div className="cta-content">
@@ -316,8 +366,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= 8. FOOTER (FIX: Satukan footer putih rapi) ================= */}
-      <footer className="footer-modern">
+      {/* ================= 8. FOOTER ================= */}
+      <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
             <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px'}} />

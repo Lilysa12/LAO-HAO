@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Checkout.css';
 
-// --- IMPORT ASSETS (JALUR SUDAH DIPERBAIKI) ---
+// --- IMPORT ASSETS ---
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconInstagram from '../../../assets/icons/icons-customer/instagram.png';
 import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
@@ -22,7 +22,7 @@ export default function Checkout() {
       
       {/* ================= HEADER ================= */}
       <header className="co-header">
-        <div className="co-logo-box">
+        <div className="co-logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="co-logo" />
         </div>
         <nav className="co-nav-links">
@@ -35,7 +35,7 @@ export default function Checkout() {
         <div style={{ width: '100px' }}></div>
       </header>
 
-      {/* ================= TOP BAR (BACK & TITLE) ================= */}
+      {/* ================= TOP BAR ================= */}
       <div className="co-top-bar">
         <button className="co-back-btn efek-klik" onClick={() => navigate(-1)}>
           &lt;
@@ -43,10 +43,10 @@ export default function Checkout() {
         <h2 className="co-page-title">Pesanan Anda</h2>
       </div>
 
-      {/* ================= MAIN CONTENT (2 KOLOM) ================= */}
+      {/* ================= MAIN CONTENT ================= */}
       <main className="co-main-layout">
         
-        {/* KOLOM KIRI: Daftar Pesanan */}
+        {/* --- KOLOM KIRI: Daftar Pesanan --- */}
         <section className="co-left-column">
           
           {/* Card Item 1 */}
@@ -83,9 +83,18 @@ export default function Checkout() {
             <input type="text" className="co-notes-input" placeholder="Tambah catatan (opsional)" />
           </div>
 
+          {/* =========================================================
+              FIX: INI DIA TOMBOL TAMBAH MENU LAIN 
+              Berada tepat di bawah item makanan, di atas Promo
+          ========================================================= */}
+          <div className="co-add-more-btn efek-klik-kartu" onClick={() => navigate('/menu')}>
+            <span className="co-add-icon">+</span>
+            <span className="co-add-text">Tambah Menu Lain</span>
+          </div>
+
         </section>
 
-        {/* KOLOM KANAN: Promo & Summary */}
+        {/* --- KOLOM KANAN: Promo & Summary --- */}
         <section className="co-right-column">
           
           {/* Promo Card 1 (Yellow) */}
