@@ -1,0 +1,268 @@
+/* src/pages/customer/Status.css */
+
+.st-container, .st-container * {
+  box-sizing: border-box;
+}
+
+.st-container {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  background-color: #F8F9FA; /* Latar belakang abu-abu sangat muda untuk Desktop */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --- HEADER --- */
+.st-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  min-height: 92px; 
+  padding: 0 60px; 
+  background: #FFFFFF; 
+  border-bottom: 1px solid #F3F4F6; 
+}
+.st-logo { height: 45px; object-fit: contain; }
+
+/* --- MAIN LAYOUT --- */
+.st-main-layout { 
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px; 
+  flex: 1; 
+}
+
+/* --- KARTU STATUS (Card) --- */
+.st-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Ikon Centang Besar */
+.st-icon-big {
+  width: 80px;
+  height: 80px;
+  background-color: #356E4E; /* Hijau tua elegan */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 25px rgba(53, 110, 78, 0.3);
+}
+
+.st-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 32px;
+  color: #212529;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 10px 0;
+}
+
+.st-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #6C757D;
+  margin: 0 0 35px 0;
+}
+
+/* Kotak Order ID & Meja */
+.st-order-box {
+  width: 100%;
+  background: #FAFAFA;
+  border: 1px solid #F3F4F6;
+  border-radius: 16px;
+  padding: 20px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.st-ob-left, .st-ob-right {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.st-ob-left { text-align: left; }
+.st-ob-right { text-align: right; }
+
+.st-ob-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #A0AEC0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.st-ob-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  color: #212529;
+  font-weight: 800;
+}
+
+.st-ob-value-yellow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 22px;
+  color: #FFC627;
+  font-weight: 800;
+}
+
+.st-ob-divider {
+  width: 1px;
+  height: 40px;
+  background-color: #E5E7EB;
+}
+
+/* Status Tracker */
+.st-tracker {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding: 0 10px;
+}
+
+.st-icon-small {
+  width: 24px;
+  height: 24px;
+  background-color: #356E4E;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.st-tracker-text {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.st-tracker-text h4 {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #4A4A4A;
+  font-weight: 600;
+}
+.st-tracker-text p {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #A0AEC0;
+}
+
+/* Teks Deskripsi */
+.st-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #A0AEC0;
+  line-height: 1.6;
+  margin: 0 0 35px 0;
+}
+
+/* Tombol Pesan Lagi */
+.st-btn-again {
+  width: 100%;
+  background: #FAFAFA;
+  border: 1px solid #E5E7EB;
+  color: #4A4A4A;
+  padding: 16px;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.st-btn-again:hover {
+  background: #F3F4F6;
+  color: #212529;
+}
+
+/* --- FOOTER --- */
+.st-footer { background-color: #A00500; padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto; width: 100%;}
+.st-socials { display: flex; gap: 15px; }
+.st-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+.st-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
+.st-copyright { font-family: 'Inter', sans-serif; font-size: 13px; opacity: 0.9; }
+
+/* Efek Klik */
+.efek-klik { transition: transform 0.1s ease-in-out; }
+.efek-klik:active { transform: scale(0.97); }
+
+/* =========================================================
+   RESPONSIVE MOBILE STYLES (Plek Ketiplek Gambar 2)
+========================================================= */
+/* --- GANTI SELURUH BLOK @MEDIA INI DI BAWAH STATUS.CSS --- */
+@media (max-width: 768px) {
+  /* Sembunyikan Header dan Footer */
+  .st-header { display: none; }
+  .st-footer { display: none; }
+
+  /* Background container menjadi putih murni */
+  .st-container { background-color: #FFFFFF; }
+  
+  .st-main-layout { 
+    padding: 20px; 
+    /* FIX: Hapus flex-start agar otomatis kembali ke CENTER (tengah layar) */
+    align-items: center; 
+  }
+
+  /* Hilangkan efek bingkai Card pada HP */
+  .st-card {
+    padding: 0; 
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    /* Sedikit diangkat ke atas agar proposinya pas di mata */
+    margin-top: -5vh; 
+  }
+
+  .st-icon-big { 
+    width: 75px; 
+    height: 75px; 
+    margin-bottom: 24px; 
+  }
+  
+  .st-title { font-size: 28px; margin-bottom: 8px;}
+  .st-subtitle { font-size: 14px; margin-bottom: 35px;}
+
+  /* Kotak Order ID */
+  .st-order-box { 
+    padding: 20px; 
+    margin-bottom: 30px;
+    border-radius: 16px;
+  }
+  .st-ob-value { font-size: 16px; }
+  .st-ob-value-yellow { font-size: 20px; }
+
+  /* Tracker Status */
+  .st-tracker { margin-bottom: 25px; padding: 0 5px;}
+  .st-tracker-text h4 { font-size: 14px; margin-bottom: 2px;}
+  .st-tracker-text p { font-size: 12px; }
+
+  .st-desc { font-size: 13px; margin-bottom: 40px; padding: 0 5px;}
+
+  /* Tombol */
+  .st-btn-again { 
+    padding: 16px; 
+    font-size: 15px; 
+    border-radius: 12px; 
+  }
+}

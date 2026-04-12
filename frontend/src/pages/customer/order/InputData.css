@@ -59,22 +59,97 @@
 .id-socials { display: flex; gap: 15px; }
 .id-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.3s; }
 .id-soc-circle:hover { transform: translateY(-3px); }
-/* Trik CSS: Mengubah ikon hitam bawaan menjadi merah Laoban agar pas dengan desain lingkaran putih */
 .id-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
 .id-copyright { font-family: var(--font-inter, 'Inter', sans-serif); font-size: 13px; opacity: 0.9; }
 
 /* --- RESPONSIVE MEDIA QUERIES --- */
-@media (max-width: 1024px) {
-  .id-main-body { flex-direction: column; padding: 40px; }
-  .id-image-section { height: 350px; flex: none; }
-  .id-hero-img { min-height: auto; }
-}
-
 @media (max-width: 768px) {
-  .id-header { padding: 0 20px; justify-content: center; }
-  .id-nav-links { display: none; }
-  .id-main-body { padding: 30px 20px; gap: 30px; }
-  .id-form-card { padding: 20px; }
-  .id-loc-left { font-size: 18px; }
-  .id-footer { flex-direction: column; gap: 20px; padding: 30px 20px; text-align: center; }
+  /* Sembunyikan Header dan Footer di Mobile */
+  .id-header { display: none; }
+  .id-footer { display: none; }
+
+  .id-main-body {
+    display: flex;
+    flex-direction: column;
+    /* FIX: Tambah padding atas (40px) agar tidak mepet dengan jam/baterai HP */
+    padding: 40px 20px 20px 20px; 
+    background-color: #FBFBFB;
+    min-height: 100vh;
+    gap: 0;
+  }
+
+  .id-form-section { display: contents; }
+  .id-form-card { display: contents; }
+
+  /* URUTAN 1: Teks Selamat Datang */
+  .id-text-header {
+    order: 1;
+    text-align: center;
+    margin-bottom: 35px; /* FIX: Jarak diperbesar */
+    margin-top: 0;
+  }
+  .id-title { font-size: 24px; font-weight: 800; margin-bottom: 10px;}
+  .id-subtitle { font-size: 14px; padding: 0 15px; margin-bottom: 0; line-height: 1.5;}
+
+  /* URUTAN 2: Lokasi & Meja */
+  .id-location-row {
+    order: 2;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 30px; /* FIX: Jarak ke gambar diperbesar */
+    padding: 0 5px;
+  }
+  .id-loc-left { font-size: 18px; gap: 12px; line-height: 1.2; }
+  .id-loc-icon {
+    width: 42px;
+    height: 42px;
+    background: #FCE8E8; 
+    padding: 10px;
+    border-radius: 50%;
+    object-fit: contain;
+  }
+  .id-loc-left span { max-width: 80px; display: inline-block; font-size: 18px; font-weight: 800; color: #212529;}
+  .id-table-badge { font-size: 14px; padding: 10px 18px; border-radius: 12px; font-weight: 700;}
+
+  /* URUTAN 3: Gambar Hero */
+  .id-image-section {
+    order: 3;
+    height: 180px;
+    flex: none;
+    border-radius: 16px;
+    margin-bottom: 35px; /* FIX: Jarak dari gambar ke form diperbesar */
+    box-shadow: none;
+  }
+  .id-hero-img { border-radius: 16px; }
+
+  /* URUTAN 4: Form Input (Mengisi sisa bawah layar) */
+  .id-form {
+    order: 4;
+    background: #FFFFFF;
+    padding: 25px 20px;
+    border-radius: 16px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    
+    /* FIX: Membuat form otomatis mengisi sisa space kosong di bawah */
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+  }
+
+  .id-input-group { margin-bottom: 20px; }
+  .id-input-group label { font-size: 13px; color: #4A4A4A; margin-bottom: 8px;}
+  .id-input-group input { padding: 14px 16px; border-radius: 10px; background: #FAFAFA; font-size: 14px; border: 1px solid #E5E7EB;}
+
+  .id-btn-submit {
+    /* FIX: Mendorong tombol untuk selalu menempel di dasar form */
+    margin-top: auto; 
+    border-radius: 12px;
+    font-size: 16px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
 }

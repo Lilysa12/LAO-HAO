@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './MenuDetail.css';
 
-// --- IMPORT ASSETS LOKAL (JALUR SUDAH DIPERBAIKI 100%) ---
+// --- IMPORT ASSETS LOKAL ---
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconCheckout from '../../../assets/icons/icons-customer/checkout.png';
-import ImgDetail from '../../../assets/image/image9.png'; // Gambar Makanan Utama
+import ImgDetail from '../../../assets/image/image9.png'; 
 
-// Social Icons (Jalur sudah diperbaiki)
+// Social Icons 
 import IconInstagram from '../../../assets/icons/icons-customer/instagram.png';
 import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
 import IconFacebook from '../../../assets/icons/icons-customer/facebook.png';
 import IconLink from '../../../assets/icons/icons-customer/link.png';
 import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
+import IconMessage from '../../../assets/icons/Message.png'; 
+import IconCall from '../../../assets/icons/Call.png'; 
 
 export default function MenuDetail() {
   const navigate = useNavigate();
@@ -21,19 +23,11 @@ export default function MenuDetail() {
   return (
     <div className="md-container">
       
-      {/* ================= HEADER ================= */}
+      {/* ================= HEADER (Tanpa Navigasi) ================= */}
       <header className="md-header">
-        <div className="md-logo-box">
+        <div className="md-logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="md-logo" />
         </div>
-        <nav className="md-nav-links">
-          <a href="#" className="active">Home</a>
-          <a href="#">About</a>
-          <a href="#">Menu</a>
-          <a href="#">Our Partner</a>
-          <a href="#">Partnership</a>
-        </nav>
-        <div style={{ width: '100px' }}></div>
       </header>
 
       {/* ================= TOP BAR ================= */}
@@ -43,7 +37,7 @@ export default function MenuDetail() {
           <h2 className="md-page-title">Pesan Disini</h2>
         </div>
         <div className="md-table-badge">
-          <span className="badge-icon">↳</span> Meja 12
+          Meja 12
         </div>
       </div>
 
@@ -74,17 +68,14 @@ export default function MenuDetail() {
         <section className="md-content-area">
           <div className="md-closeup-card">
             
-            {/* Gambar Besar Kiri */}
             <img src={ImgDetail} alt="Nasi Lemak Detail" className="md-closeup-img" />
             
-            {/* Detail Kanan */}
             <div className="md-details-info">
               <h2 className="md-item-title">Nasi Lemak</h2>
               <p className="md-item-desc">
                 Nasi dengan rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah kalian. Sambelnya juga mantap.
               </p>
               
-              {/* Text Area Catatan */}
               <textarea 
                 className="md-notes-area" 
                 placeholder="Tambah catatan (opsional)"
@@ -97,43 +88,43 @@ export default function MenuDetail() {
             </div>
 
           </div>
-          
-          {/* Spacer untuk floating bar */}
-          <div style={{height: '150px'}}></div>
         </section>
 
-      </main>
+      </main> {/* <-- Penutup MAIN Content di sini */}
 
-      {/* ================= FLOATING CHECKOUT BAR ================= */}
-      <div className="md-floating-bar efek-klik-kartu" onClick={() => navigate('/checkout')} style={{cursor: 'pointer'}}>
-        <div className="md-fb-left">
-          <div className="md-cart-box">
-            <img src={IconCheckout} alt="Cart" className="md-cart-icon" />
-            <div className="md-cart-dot"></div>
+      {/* ================= FLOATING CHECKOUT BAR (Sticky & Sejajar) ================= */}
+      <div className="md-checkout-wrapper">
+        <div className="md-floating-bar efek-klik-kartu" onClick={() => navigate('/checkout')}>
+          <div className="md-fb-left">
+            <div className="md-cart-box">
+              <img src={IconCheckout} alt="Cart" className="md-cart-icon" />
+              <div className="md-cart-dot"></div>
+            </div>
+            <div className="md-cart-text">
+              <h4>Total (2 item)</h4>
+              <p>Rp 57.000</p>
+            </div>
           </div>
-          <div className="md-cart-text">
-            <h4>Total (2 item)</h4>
-            <p>Rp 57.000</p>
-          </div>
+          <button className="md-btn-checkout">
+            Checkout &gt;
+          </button>
         </div>
-        <button className="md-btn-checkout">
-          Checkout &gt;
-        </button>
       </div>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="md-footer">
-        <div className="md-socials">
-          <div className="md-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
-          <div className="md-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
-          <div className="md-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
-          <div className="md-soc-circle"><img src={IconLink} alt="Link" /></div>
-          <div className="md-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
-        </div>
-        <div className="md-copyright">
-          © Copyright Laoban Nusantara.
-        </div>
-      </footer>
+       {/* ================= 5. FOOTER ================= */}
+            <footer className="ml-footer">
+              <div className="ml-socials">
+                <div className="ml-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
+                <div className="ml-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
+                <div className="ml-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
+                <div className="ml-soc-circle"><img src={IconLink} alt="Link" /></div>
+                <div className="ml-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
+              </div>
+              <div className="ml-copyright">
+                © Copyright Laoban Nusantara.
+              </div>
+            </footer>
+      
 
     </div>
   );

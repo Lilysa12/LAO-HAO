@@ -9,7 +9,8 @@ import InputData from './pages/customer/order/InputData';
 import MenuList from './pages/customer/order/MenuList'; 
 import MenuDetail from './pages/customer/order/MenuDetail';
 import Checkout from './pages/customer/order/Checkout'; 
-import Payment from './pages/customer/order/Payment'; 
+import Payment from './pages/customer/order/Payment';  
+import Status from './pages/customer/order/Status'; // <-- IMPORT HALAMAN BARU
 
 import OverviewCabang from './pages/admin/OverviewCabang'; 
 import LaporanPenjualanPusat from './pages/admin/LaporanPenjualanPusat';
@@ -30,7 +31,8 @@ function App() {
         <Route path="/order-list" element={<MenuList />} /> 
         <Route path="/detail" element={<MenuDetail />} />
         <Route path="/checkout" element={<Checkout />} /> 
-        <Route path="/payment" element={<Payment />} /> 
+        <Route path="/payment" element={<Payment />} />  
+        <Route path="/status" element={<Status />} /> {/* <-- ROUTE BARU UNTUK STATUS */}
         
         <Route path="/admin" element={<OverviewCabang />} />
         <Route path="/admin/laporan-penjualan-pusat" element={<LaporanPenjualanPusat />} />
