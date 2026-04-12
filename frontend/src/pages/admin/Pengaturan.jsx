@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import './Pengaturan.css';
 
 import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
@@ -19,7 +20,84 @@ import iconKeamanan from '../../assets/Icons/icons-admin/keamanan.svg';
 import iconSimpan from '../../assets/Icons/icons-admin/simpan.svg';
 
 const Pengaturan = () => {
-  const [activeTab, setActiveTab] = useState('pos');
+  const [activeTab, setActiveTab] = useState('profil');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // STATE UNTUK SEMUA DATA PENGATURAN
+  const [formData, setFormData] = useState({
+    restaurant_name: '',
+    phone: '',
+    address: '',
+    tax_active: true,
+    tax_percentage: 0,
+    service_charge: 0,
+    receipt_footer: ''
+  });
+
+  // MENGAMBIL DATA DARI SUPABASE
+  const fetchSettings = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/admin/settings?_t=${new Date().getTime()}`);
+      const data = response.data;
+      setFormData({
+        restaurant_name: data.restaurant_name || '',
+        phone: data.phone || '',
+        address: data.address || '',
+        tax_active: data.tax_active === 1 || data.tax_active === true,
+        tax_percentage: data.tax_percentage || 0,
+        service_charge: data.service_charge || 0,
+        receipt_footer: data.receipt_footer || ''
+      });
+    } catch (error) {
+      console.error("Gagal mengambil pengaturan:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleToggleChange = (e) => {
+    setFormData({
+      ...formData,
+      tax_active: e.target.checked
+    });
+  };
+
+  // FUNGSI MENYIMPAN DATA (LEBIH AMAN)
+  const handleSaveSettings = async () => {
+    setIsSubmitting(true);
+    try {
+      // Pastikan data angka benar-benar angka murni
+      const payload = {
+        ...formData,
+        tax_percentage: formData.tax_percentage ? parseInt(formData.tax_percentage) : 0,
+        service_charge: formData.service_charge ? parseInt(formData.service_charge) : 0
+      };
+
+      await axios.post('http://127.0.0.1:8000/api/admin/settings/update', payload);
+      alert('Berhasil! Pengaturan sistem telah disimpan ke Supabase.');
+      fetchSettings();
+    } catch (error) {
+      console.error('Gagal menyimpan pengaturan:', error);
+      // Tangkap pesan error detail dari Laravel agar tidak menebak-nebak
+      const errorMsg = error.response?.data?.message || error.message || 'Koneksi ke server terputus.';
+      alert(`Gagal menyimpan pengaturan! Penyebab: ${errorMsg}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="admin-container">
@@ -97,38 +175,23 @@ const Pengaturan = () => {
             <div className="settings-layout">
               <div className="settings-sidebar">
                 <div className="settings-nav-card">
-                  <button 
-                    className={`settings-nav-btn ${activeTab === 'profil' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('profil')}
-                  >
+                  <button className={`settings-nav-btn ${activeTab === 'profil' ? 'active' : ''}`} onClick={() => setActiveTab('profil')}>
                     <img src={iconCabang} alt="Profil" className={`btn-icon-svg ${activeTab === 'profil' ? 'icon-red' : 'icon-gray'}`} />
                     Profil Restoran
                   </button>
-                  <button 
-                    className={`settings-nav-btn ${activeTab === 'pajak' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('pajak')}
-                  >
+                  <button className={`settings-nav-btn ${activeTab === 'pajak' ? 'active' : ''}`} onClick={() => setActiveTab('pajak')}>
                     <img src={iconStruk} alt="Pajak" className={`btn-icon-svg ${activeTab === 'pajak' ? 'icon-red' : 'icon-gray'}`} />
                     Pajak & Struk
                   </button>
-                  <button 
-                    className={`settings-nav-btn ${activeTab === 'pos' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('pos')}
-                  >
+                  <button className={`settings-nav-btn ${activeTab === 'pos' ? 'active' : ''}`} onClick={() => setActiveTab('pos')}>
                     <img src={iconPos} alt="POS" className={`btn-icon-svg ${activeTab === 'pos' ? 'icon-red' : 'icon-gray'}`} />
                     Tampilan POS
                   </button>
-                  <button 
-                    className={`settings-nav-btn ${activeTab === 'notifikasi' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('notifikasi')}
-                  >
+                  <button className={`settings-nav-btn ${activeTab === 'notifikasi' ? 'active' : ''}`} onClick={() => setActiveTab('notifikasi')}>
                     <img src={iconNotifikasi} alt="Notifikasi" className={`btn-icon-svg ${activeTab === 'notifikasi' ? 'icon-red' : 'icon-gray'}`} />
                     Notifikasi
                   </button>
-                  <button 
-                    className={`settings-nav-btn ${activeTab === 'keamanan' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('keamanan')}
-                  >
+                  <button className={`settings-nav-btn ${activeTab === 'keamanan' ? 'active' : ''}`} onClick={() => setActiveTab('keamanan')}>
                     <img src={iconKeamanan} alt="Keamanan" className={`btn-icon-svg ${activeTab === 'keamanan' ? 'icon-red' : 'icon-gray'}`} />
                     Keamanan
                   </button>
@@ -136,142 +199,109 @@ const Pengaturan = () => {
               </div>
 
               <div className="settings-content-area">
-                {activeTab === 'profil' && (
-                  <div className="settings-card">
-                    <div className="settings-card-header">
-                      <img src={iconCabang} alt="Store" className="btn-icon-svg icon-red" />
-                      <h2>Informasi Dasar</h2>
-                    </div>
-                    <div className="settings-form">
-                      <div className="form-row">
-                        <div className="form-group half-width">
-                          <label>NAMA OUTLET</label>
-                          <input type="text" defaultValue="Lao-Hao (Pusat)" className="form-input" />
+                
+                {isLoading ? (
+                  <div className="settings-card" style={{ textAlign: 'center', padding: '40px' }}>
+                    Memuat data pengaturan dari Supabase...
+                  </div>
+                ) : (
+                  <>
+                    {activeTab === 'profil' && (
+                      <div className="settings-card">
+                        <div className="settings-card-header">
+                          <img src={iconCabang} alt="Store" className="btn-icon-svg icon-red" />
+                          <h2>Informasi Dasar</h2>
                         </div>
-                        <div className="form-group half-width">
-                          <label>NOMOR TELEPON</label>
-                          <input type="text" defaultValue="0812-3456-7890" className="form-input" />
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label>ALAMAT LENGKAP</label>
-                        <textarea className="form-input textarea-input" rows="3" defaultValue="Jl. Merdeka No. 45, Bandung, Jawa Barat"></textarea>
-                      </div>
-                      <div className="form-group">
-                        <label>LOGO STRUK</label>
-                        <div className="logo-dropzone">
-                          <div className="logo-preview-box">
-                            <span className="logo-preview-text">LAOBAN</span>
+                        <div className="settings-form">
+                          <div className="form-row">
+                            <div className="form-group half-width">
+                              <label>NAMA OUTLET</label>
+                              <input type="text" name="restaurant_name" value={formData.restaurant_name} onChange={handleInputChange} className="form-input" />
+                            </div>
+                            <div className="form-group half-width">
+                              <label>NOMOR TELEPON</label>
+                              <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} className="form-input" />
+                            </div>
                           </div>
-                          <p className="dropzone-text">Klik untuk ubah logo (Maks 2MB, JPG/PNG)</p>
+                          <div className="form-group">
+                            <label>ALAMAT LENGKAP</label>
+                            <textarea name="address" value={formData.address} onChange={handleInputChange} className="form-input textarea-input" rows="3"></textarea>
+                          </div>
+                          
+                          <div className="form-group">
+                            <label>LOGO STRUK</label>
+                            <div className="logo-dropzone" onClick={() => alert('Fitur upload gambar akan dibuat pada tahap selanjutnya.')}>
+                              <div className="logo-preview-box">
+                                <span className="logo-preview-text">LAOBAN</span>
+                              </div>
+                              <p className="dropzone-text">Klik untuk ubah logo (Maks 2MB, JPG/PNG)</p>
+                            </div>
+                          </div>
+
+                          <div className="settings-form-actions">
+                            <button className="btn-secondary" onClick={fetchSettings}>Batal</button>
+                            <button className="btn-primary flex-btn" onClick={handleSaveSettings} disabled={isSubmitting}>
+                              <img src={iconSimpan} alt="Simpan" className="btn-icon-svg icon-white" />
+                              {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <div className="settings-form-actions">
-                        <button className="btn-secondary">Batal</button>
-                        <button className="btn-primary flex-btn">
-                          <img src={iconSimpan} alt="Simpan" className="btn-icon-svg icon-white" />
-                          Simpan Perubahan
-                        </button>
+                    )}
+
+                    {activeTab === 'pajak' && (
+                      <div className="settings-card">
+                        <div className="settings-card-header">
+                          <img src={iconStruk} alt="Pajak" className="btn-icon-svg icon-red" />
+                          <h2>Pengaturan Pajak & Struk</h2>
+                        </div>
+                        <div className="settings-form">
+                          <div className="toggle-setting-box">
+                            <div className="toggle-setting-text">
+                              <h3>Aktifkan Pajak Restoran (PB1)</h3>
+                              <p>Otomatis tambahkan pajak ke setiap transaksi</p>
+                            </div>
+                            <label className="toggle-switch">
+                              <input type="checkbox" name="tax_active" checked={formData.tax_active} onChange={handleToggleChange} className="toggle-input" />
+                              <span className="toggle-slider"></span>
+                            </label>
+                          </div>
+                          <div className="form-row">
+                            <div className="form-group half-width">
+                              <label>PERSENTASE PB1 (%)</label>
+                              <input type="number" name="tax_percentage" value={formData.tax_percentage} onChange={handleInputChange} className="form-input" disabled={!formData.tax_active} />
+                            </div>
+                            <div className="form-group half-width">
+                              <label>SERVICE CHARGE (%)</label>
+                              <input type="number" name="service_charge" value={formData.service_charge} onChange={handleInputChange} className="form-input" />
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <label>PESAN FOOTER STRUK</label>
+                            <textarea name="receipt_footer" value={formData.receipt_footer} onChange={handleInputChange} className="form-input textarea-input" rows="3"></textarea>
+                          </div>
+
+                          <div className="settings-form-actions">
+                            <button className="btn-secondary" onClick={fetchSettings}>Batal</button>
+                            <button className="btn-primary flex-btn" onClick={handleSaveSettings} disabled={isSubmitting}>
+                              <img src={iconSimpan} alt="Simpan" className="btn-icon-svg icon-white" />
+                              {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    )}
+                  </>
                 )}
 
-                {activeTab === 'pajak' && (
-                  <div className="settings-card">
-                    <div className="settings-card-header">
-                      <img src={iconStruk} alt="Pajak" className="btn-icon-svg icon-red" />
-                      <h2>Pengaturan Pajak & Struk</h2>
-                    </div>
-                    <div className="settings-form">
-                      <div className="toggle-setting-box">
-                        <div className="toggle-setting-text">
-                          <h3>Aktifkan Pajak Restoran (PB1)</h3>
-                          <p>Otomatis tambahkan pajak ke setiap transaksi</p>
-                        </div>
-                        <label className="toggle-switch">
-                          <input type="checkbox" className="toggle-input" defaultChecked />
-                          <span className="toggle-slider"></span>
-                        </label>
-                      </div>
-                      <div className="form-row">
-                        <div className="form-group half-width">
-                          <label>PERSENTASE PB1 (%)</label>
-                          <input type="number" defaultValue="10" className="form-input" />
-                        </div>
-                        <div className="form-group half-width">
-                          <label>SERVICE CHARGE (%)</label>
-                          <input type="number" defaultValue="5" className="form-input" />
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label>PESAN FOOTER STRUK</label>
-                        <textarea className="form-input textarea-input" rows="3" defaultValue="Terima kasih telah berkunjung ke Lao-Hao. Kepuasan Anda adalah kebahagiaan kami."></textarea>
-                      </div>
-                      <div className="settings-form-actions">
-                        <button className="btn-secondary">Batal</button>
-                        <button className="btn-primary flex-btn">
-                          <img src={iconSimpan} alt="Simpan" className="btn-icon-svg icon-white" />
-                          Simpan Perubahan
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'pos' && (
-                  <div className="settings-card">
-                    <div className="empty-state-wrapper">
-                      <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                      </svg>
-                      <h2 className="empty-state-title">Menu sedang dalam pengembangan</h2>
-                      <p className="empty-state-desc">Fitur pos akan segera hadir pada update berikutnya.</p>
-                    </div>
-                    <div className="settings-form-actions">
-                      <button className="btn-secondary">Batal</button>
-                      <button className="btn-primary flex-btn">
-                        <img src={iconSimpan} alt="Simpan" className="btn-icon-svg icon-white" />
-                        Simpan Perubahan
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'notifikasi' && (
+                {(activeTab === 'pos' || activeTab === 'notifikasi' || activeTab === 'keamanan') && (
                   <div className="settings-card">
                     <div className="empty-state-wrapper">
                       <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                       </svg>
                       <h2 className="empty-state-title">Menu sedang dalam pengembangan</h2>
-                      <p className="empty-state-desc">Fitur notif akan segera hadir pada update berikutnya.</p>
-                    </div>
-                    <div className="settings-form-actions">
-                      <button className="btn-secondary">Batal</button>
-                      <button className="btn-primary flex-btn">
-                        <img src={iconSimpan} alt="Simpan" className="btn-icon-svg icon-white" />
-                        Simpan Perubahan
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'keamanan' && (
-                  <div className="settings-card">
-                    <div className="empty-state-wrapper">
-                      <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                      </svg>
-                      <h2 className="empty-state-title">Menu sedang dalam pengembangan</h2>
-                      <p className="empty-state-desc">Fitur keamanan akan segera hadir pada update berikutnya.</p>
-                    </div>
-                    <div className="settings-form-actions">
-                      <button className="btn-secondary">Batal</button>
-                      <button className="btn-primary flex-btn">
-                        <img src={iconSimpan} alt="Simpan" className="btn-icon-svg icon-white" />
-                        Simpan Perubahan
-                      </button>
+                      <p className="empty-state-desc">Fitur ini akan segera hadir pada update berikutnya.</p>
                     </div>
                   </div>
                 )}

@@ -1,9 +1,10 @@
 import React, { useState, forwardRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios'; // Import Axios untuk koneksi ke API
+import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import './LaporanPenjualanPusat.css';
 
 import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
@@ -23,17 +24,25 @@ import iconList from '../../assets/Icons/icons-admin/list.svg';
 
 const LaporanPenjualanPusat = () => {
   const location = useLocation();
+  
+  // STATE TANGGAL
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // STATE UNTUK DATA DARI DATABASE (SUPABASE)
-  const [transactions, setTransactions] = useState([]);
+  // STATE DATA
+  const [allTransactions, setAllTransactions] = useState([]); // Menyimpan SEMUA data asli dari API
+  const [filteredTransactions, setFilteredTransactions] = useState([]); // Menyimpan data yang sudah difilter tanggal
   const [isLoading, setIsLoading] = useState(true);
 
-  // MENGAMBIL DATA TRANSAKSI DARI BACKEND LARAVEL
+  // STATE KARTU & GRAFIK
+  const [summary, setSummary] = useState({ totalPendapatan: 0, pendapatanKasir: 0, pendapatanQr: 0, totalTransaksi: 0 });
+  const [chartData, setChartData] = useState([]);
+
+  // 1. AMBIL SEMUA DATA SEKALI SAAT HALAMAN DIBUKA
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/admin/transactions')
+    setIsLoading(true);
+    axios.get(`http://127.0.0.1:8000/api/admin/transactions?_t=${new Date().getTime()}`)
       .then(response => {
-        setTransactions(response.data);
+        setAllTransactions(response.data);
         setIsLoading(false);
       })
       .catch(error => {
@@ -41,6 +50,103 @@ const LaporanPenjualanPusat = () => {
         setIsLoading(false);
       });
   }, []);
+
+  // 2. LOGIKA FILTERING OTOMATIS JIKA TANGGAL / DATA BERUBAH
+  useEffect(() => {
+    if (allTransactions.length === 0) return;
+
+    const monthsMap = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'Mei': 4, 'Jun': 5, 'Jul': 6, 'Agt': 7, 'Sep': 8, 'Okt': 9, 'Nov': 10, 'Des': 11 };
+    const dayIndexMap = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 0: 6 };
+
+    const targetMonth = selectedDate.getMonth();
+    const targetYear = selectedDate.getFullYear();
+
+    // A. Saring Data Berdasarkan Bulan & Tahun Kalender
+    const filteredTrx = allTransactions.filter(trx => {
+      const parts = trx.time.split(' ');
+      if (parts.length >= 3) {
+        const trxMonth = monthsMap[parts[1]];
+        const trxYear = parseInt(parts[2].replace(',', ''), 10);
+        return trxMonth === targetMonth && trxYear === targetYear;
+      }
+      return false;
+    });
+
+    setFilteredTransactions(filteredTrx);
+
+    // B. Hitung Ulang Kartu Summary
+    let tPendapatan = 0, pKasir = 0, pQr = 0, tTransaksi = filteredTrx.length;
+    const newChartData = [
+      { name: 'Sen', kasir: 0, qr: 0 }, { name: 'Sel', kasir: 0, qr: 0 }, { name: 'Rab', kasir: 0, qr: 0 },
+      { name: 'Kam', kasir: 0, qr: 0 }, { name: 'Jum', kasir: 0, qr: 0 }, { name: 'Sab', kasir: 0, qr: 0 },
+      { name: 'Min', kasir: 0, qr: 0 }
+    ];
+
+    filteredTrx.forEach(trx => {
+      if (trx.status === 'BERHASIL') {
+        const amount = parseInt(trx.total.replace(/[^0-9]/g, ''), 10) || 0;
+        tPendapatan += amount;
+        
+        if (trx.method === 'QRIS') {
+          pQr += amount;
+        } else {
+          pKasir += amount;
+        }
+
+        // Hitung Ulang Grafik
+        const parts = trx.time.split(' '); 
+        const day = parts[0].padStart(2, '0'); 
+        const monthStr = monthsMap[parts[1]] + 1; // +1 karena Date JS format bulan 01-12 di string
+        const monthPad = monthStr.toString().padStart(2, '0');
+        const year = parts[2].replace(',', '');
+        
+        const dateObj = new Date(`${year}-${monthPad}-${day}`);
+        if(!isNaN(dateObj)) {
+          const jsDay = dateObj.getDay();
+          const targetIndex = dayIndexMap[jsDay];
+          if (trx.method === 'QRIS') {
+            newChartData[targetIndex].qr += amount;
+          } else {
+            newChartData[targetIndex].kasir += amount;
+          }
+        }
+      }
+    });
+
+    setSummary({ totalPendapatan: tPendapatan, pendapatanKasir: pKasir, pendapatanQr: pQr, totalTransaksi: tTransaksi });
+    setChartData(newChartData);
+
+  }, [allTransactions, selectedDate]); // Efek ini berjalan otomatis jika `selectedDate` berubah
+
+  // 3. FUNGSI EXPORT KE EXCEL/CSV
+  const handleExportCSV = () => {
+    if (filteredTransactions.length === 0) {
+      alert("Tidak ada data untuk diexport pada bulan ini.");
+      return;
+    }
+
+    // Buat Header Tabel
+    let csvContent = "NO. INVOICE,WAKTU,PELANGGAN,METODE,TOTAL,STATUS\n";
+    
+    // Masukkan Data
+    filteredTransactions.forEach(row => {
+      // Hilangkan koma pada total agar tidak merusak format CSV
+      const cleanTotal = row.total.replace(/,/g, '');
+      csvContent += `${row.inv},"${row.time}","${row.user}",${row.method},${cleanTotal},${row.status}\n`;
+    });
+
+    // Buat File & Unduh Otomatis
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    const monthName = selectedDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Laporan_Penjualan_Laoban_${monthName.replace(' ', '_')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <button className="filter-btn" onClick={onClick} ref={ref}>
@@ -50,23 +156,17 @@ const LaporanPenjualanPusat = () => {
     </button>
   ));
 
-  const dataPenjualan = [
-    { name: 'Sen', kasir: 4000, qr: 2500 },
-    { name: 'Sel', kasir: 1500, qr: 3000 },
-    { name: 'Rab', kasir: 9800, qr: 2000 },
-    { name: 'Kam', kasir: 3900, qr: 2800 },
-    { name: 'Jum', kasir: 4800, qr: 1800 },
-    { name: 'Sab', kasir: 3800, qr: 2400 },
-    { name: 'Min', kasir: 4300, qr: 3500 },
-  ];
+  const formatRupiah = (angka) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+  };
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className="custom-tooltip">
           <p className="tooltip-label">{label}</p>
-          <p className="tooltip-data text-red">Kasir : {payload[0].value}</p>
-          <p className="tooltip-data text-yellow">QR Code : {payload[1].value}</p>
+          <p className="tooltip-data text-red">Kasir : {formatRupiah(payload[0].value)}</p>
+          <p className="tooltip-data text-yellow">QR Code : {formatRupiah(payload[1].value)}</p>
         </div>
       );
     }
@@ -147,14 +247,17 @@ const LaporanPenjualanPusat = () => {
               </div>
               <div className="action-buttons">
                 <div className="date-picker-wrapper">
+                  {/* DATEPICKER UNTUK FILTER BULAN */}
                   <DatePicker
                     selected={selectedDate}
                     onChange={(date) => setSelectedDate(date)}
-                    dateFormat="dd MMMM yyyy"
+                    dateFormat="MMMM yyyy"
+                    showMonthYearPicker // Mode pilih bulan/tahun saja
                     customInput={<CustomDateInput />}
                   />
                 </div>
-                <button className="export-btn">
+                {/* TOMBOL EXPORT DIAKTIFKAN */}
+                <button className="export-btn" onClick={handleExportCSV}>
                   <img src={iconDownload} alt="Export" className="btn-icon-svg icon-white" /> 
                   Export Laporan
                 </button>
@@ -165,60 +268,62 @@ const LaporanPenjualanPusat = () => {
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconTotal} className="card-icon-svg icon-red" alt="Total" /></div>
-                  <span className="trend positive">+15.2%</span>
+                  <span className="trend positive">Bulan Ini</span>
                 </div>
                 <span className="card-label">Total Pendapatan</span>
-                <h2 className="card-value">Rp 24.500.000</h2>
+                <h2 className="card-value">{formatRupiah(summary.totalPendapatan)}</h2>
               </div>
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconKasir} className="card-icon-svg icon-red" alt="Kasir" /></div>
-                  <span className="trend positive">+5.4%</span>
+                  <span className="trend positive">Bulan Ini</span>
                 </div>
                 <span className="card-label">Pendapatan Kasir</span>
-                <h2 className="card-value">Rp 15.200.000</h2>
+                <h2 className="card-value">{formatRupiah(summary.pendapatanKasir)}</h2>
               </div>
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconQr} className="card-icon-svg icon-red" alt="QR" /></div>
-                  <span className="trend positive">+24.1%</span>
+                  <span className="trend positive">Bulan Ini</span>
                 </div>
                 <span className="card-label">Pendapatan QR Code</span>
-                <h2 className="card-value">Rp 9.300.000</h2>
+                <h2 className="card-value">{formatRupiah(summary.pendapatanQr)}</h2>
               </div>
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconList} className="card-icon-svg icon-red" alt="List" /></div>
-                  <span className="trend positive">+12%</span>
+                  <span className="trend positive">Bulan Ini</span>
                 </div>
                 <span className="card-label">Total Transaksi</span>
-                <h2 className="card-value">1,245</h2>
+                <h2 className="card-value">{summary.totalTransaksi} Trx</h2>
               </div>
             </div>
 
             <div className="chart-container card mb-6">
-              <h3 className="section-title">Grafik Penjualan (Minggu Ini)</h3>
-              <div style={{ width: '100%', height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={dataPenjualan} margin={{ top: 20, right: 30, left: -20, bottom: 5 }} barGap={0}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(value) => `${value / 1000}k`} />
-                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-                    <Bar dataKey="kasir" fill="#a00000" radius={[4, 4, 0, 0]} barSize={40} />
-                    <Bar dataKey="qr" fill="#ffcc00" radius={[4, 4, 0, 0]} barSize={40} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <h3 className="section-title">Grafik Penjualan ({selectedDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })})</h3>
+              {isLoading ? (
+                <div style={{ padding: '20px', textAlign: 'center' }}>Memuat grafik...</div>
+              ) : (
+                <div style={{ width: '100%', height: 300 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }} barGap={0}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(value) => `${value / 1000}k`} />
+                      <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                      <Bar dataKey="kasir" fill="#a00000" radius={[4, 4, 0, 0]} barSize={40} />
+                      <Bar dataKey="qr" fill="#ffcc00" radius={[4, 4, 0, 0]} barSize={40} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </div>
 
             <div className="transaction-container card">
               <div className="table-header-row">
-                <h3 className="section-title">Detail Transaksi Terakhir</h3>
-                <button className="view-all-btn">Lihat Semua</button>
+                <h3 className="section-title">Detail Transaksi ({selectedDate.toLocaleDateString('id-ID', { month: 'long' })})</h3>
               </div>
               
-              {/* RENDER DATA DARI DATABASE */}
               {isLoading ? (
                 <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data transaksi dari Supabase...</div>
               ) : (
@@ -234,20 +339,29 @@ const LaporanPenjualanPusat = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {transactions.map((row) => (
-                      <tr key={row.id}>
-                        <td className="font-bold text-black">{row.inv}</td>
-                        <td>{row.time}</td>
-                        <td>{row.user}</td>
-                        <td>{row.method}</td>
-                        <td className="font-bold text-red">{row.total}</td>
-                        <td className="text-center">
-                          <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
-                            {row.status}
-                          </span>
+                    {/* MENAMPILKAN DATA YANG SUDAH DIFILTER TANGGAL */}
+                    {filteredTransactions.length > 0 ? (
+                      filteredTransactions.map((row) => (
+                        <tr key={row.id}>
+                          <td className="font-bold text-black">{row.inv}</td>
+                          <td>{row.time}</td>
+                          <td>{row.user}</td>
+                          <td>{row.method}</td>
+                          <td className="font-bold text-red">{row.total}</td>
+                          <td className="text-center">
+                            <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
+                              {row.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className="text-center text-gray" style={{ padding: '20px' }}>
+                          Tidak ada transaksi pada bulan ini.
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               )}

@@ -15,14 +15,18 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg'; 
 
 const ManajemenPromo = () => {
+  // STATE FILTER & TABS
   const [activeTab, setActiveTab] = useState('Semua');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // STATE TABEL
+  // STATE DATA TABEL
   const [promoData, setPromoData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // STATE FORMULIR
+  // STATE FORMULIR (EDIT/TAMBAH)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [promoDate, setPromoDate] = useState(null);
   const [formData, setFormData] = useState({
     description: '',
@@ -32,10 +36,10 @@ const ManajemenPromo = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // FUNGSI MENGAMBIL DATA PROMO
+  // MENGAMBIL DATA DENGAN ANTI-CACHE
   const fetchPromos = () => {
     setIsLoading(true);
-    axios.get('http://127.0.0.1:8000/api/admin/promos')
+    axios.get(`http://127.0.0.1:8000/api/admin/promos?_t=${new Date().getTime()}`)
       .then(response => {
         setPromoData(response.data);
         setIsLoading(false);
@@ -57,7 +61,40 @@ const ManajemenPromo = () => {
     });
   };
 
-  // FUNGSI MENYIMPAN DATA (POST)
+  // SAAT TOMBOL "+ BUAT PROMO BARU" DIKLIK
+  const handleAddClick = () => {
+    setIsEditMode(false);
+    setEditId(null);
+    setFormData({ description: '', code: '', type: 'Persentase (%)', value: '' });
+    setPromoDate(null);
+    setIsModalOpen(true);
+  };
+
+  // SAAT TOMBOL PENSIL (EDIT) DIKLIK
+  const handleEditClick = (promo) => {
+    setIsEditMode(true);
+    setEditId(promo.id);
+    
+    let rawValue = promo.value.replace(/[^0-9]/g, '');
+
+    const parseIndonesianDate = (dateStr) => {
+      const months = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'Mei': 4, 'Jun': 5, 'Jul': 6, 'Agt': 7, 'Sep': 8, 'Okt': 9, 'Nov': 10, 'Des': 11 };
+      const parts = dateStr.split(' ');
+      if (parts.length === 3) return new Date(parts[2], months[parts[1]], parts[0]);
+      return new Date();
+    };
+
+    setFormData({
+      description: promo.desc,
+      code: promo.code,
+      type: promo.type === 'Persentase' ? 'Persentase (%)' : 'Nominal (Rp)',
+      value: rawValue,
+    });
+    setPromoDate(parseIndonesianDate(promo.exp));
+    setIsModalOpen(true);
+  };
+
+  // SUBMIT FORM (CREATE / UPDATE)
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     if (!promoDate) {
@@ -68,43 +105,66 @@ const ManajemenPromo = () => {
     setIsSubmitting(true);
     const formattedDate = promoDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
-    const payload = {
-      ...formData,
-      expired_at: formattedDate
-    };
+    const payload = { ...formData, expired_at: formattedDate };
 
     try {
-      await axios.post('http://127.0.0.1:8000/api/admin/promos', payload);
-      alert('Berhasil! Promo baru telah diterbitkan.');
+      if (isEditMode) {
+        await axios.post(`http://127.0.0.1:8000/api/admin/promos/${editId}/update`, payload);
+        alert('Berhasil! Data promo telah diperbarui.');
+      } else {
+        await axios.post('http://127.0.0.1:8000/api/admin/promos', payload);
+        alert('Berhasil! Promo baru telah diterbitkan.');
+      }
       setIsModalOpen(false);
-      setFormData({ description: '', code: '', type: 'Persentase (%)', value: '' });
-      setPromoDate(null);
       fetchPromos();
     } catch (error) {
       console.error('Gagal menyimpan promo:', error);
-      alert('Gagal menambahkan promo. Pastikan Kode Voucher belum pernah digunakan.');
+      alert('Gagal menyimpan promo. Pastikan Kode Voucher belum pernah digunakan.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // FUNGSI MENGHAPUS DATA DENGAN METODE POST (Bypass CORS)
+  // HAPUS DATA
   const handleDeletePromo = async (id, promoCode) => {
     const isConfirmed = window.confirm(`Apakah Anda yakin ingin menghapus promo ${promoCode}? Data tidak dapat dikembalikan.`);
-    
     if (isConfirmed) {
       try {
-        // PERUBAHAN PENTING: Gunakan axios.post dan tambahkan /delete di belakangnya
         await axios.post(`http://127.0.0.1:8000/api/admin/promos/${id}/delete`);
         alert('Promo berhasil dihapus!');
-        fetchPromos(); // Refresh otomatis
+        fetchPromos(); 
       } catch (error) {
         console.error('Detail Error:', error);
-        const errorMsg = error.response?.data?.message || 'Server menolak koneksi.';
-        alert(`Gagal menghapus! Pesan server: ${errorMsg}`);
+        alert('Gagal menghapus promo.');
       }
     }
   };
+
+  // UBAH STATUS (AKTIF / NONAKTIF)
+  const handleToggleStatus = async (id) => {
+    try {
+      await axios.post(`http://127.0.0.1:8000/api/admin/promos/${id}/toggle-status`);
+      fetchPromos(); // Refresh otomatis agar label berubah
+    } catch (error) {
+      console.error('Detail Error:', error);
+      alert('Gagal mengubah status promo.');
+    }
+  };
+
+  // PROSES FILTERING DATA (SEARCH & TAB)
+  const filteredPromos = promoData.filter((promo) => {
+    // 1. Filter by Search Input (Kode Promo atau Deskripsi)
+    const matchesSearch = 
+      promo.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      promo.desc.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // 2. Filter by Tab (Semua, Aktif, Nonaktif)
+    let matchesTab = true;
+    if (activeTab === 'Aktif') matchesTab = promo.status === 'AKTIF';
+    if (activeTab === 'Nonaktif') matchesTab = promo.status !== 'AKTIF';
+
+    return matchesSearch && matchesTab;
+  });
 
   return (
     <div className="admin-container">
@@ -177,7 +237,7 @@ const ManajemenPromo = () => {
                 <h1 className="page-title">Manajemen Promo & Voucher</h1>
                 <p className="page-subtitle">Buat dan kelola kode promo untuk pelanggan</p>
               </div>
-              <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
+              <button className="btn-primary" onClick={handleAddClick}>
                 + Buat Promo Baru
               </button>
             </div>
@@ -189,7 +249,13 @@ const ManajemenPromo = () => {
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
-                  <input type="text" placeholder="Cari kode promo..." className="search-input" />
+                  <input 
+                    type="text" 
+                    placeholder="Cari kode promo..." 
+                    className="search-input"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)} // Fungsi Search Aktif
+                  />
                 </div>
                 
                 <div className="tab-filters">
@@ -214,58 +280,65 @@ const ManajemenPromo = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {promoData.map((promo) => (
-                      <tr key={promo.id}>
-                        <td>
-                          <div className="promo-code-cell">
-                            <div className="promo-icon-box">
-                              <img src={iconPromosi} alt="Promo Icon" className="promo-icon-svg" />
+                    {filteredPromos.length > 0 ? (
+                      filteredPromos.map((promo) => (
+                        <tr key={promo.id}>
+                          <td>
+                            <div className="promo-code-cell">
+                              <div className="promo-icon-box">
+                                <img src={iconPromosi} alt="Promo Icon" className="promo-icon-svg" />
+                              </div>
+                              <div>
+                                <div className="font-bold text-red promo-code-text">{promo.code}</div>
+                                <div className="text-gray text-small">{promo.desc}</div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="font-bold text-red promo-code-text">{promo.code}</div>
-                              <div className="text-gray text-small">{promo.desc}</div>
+                          </td>
+                          <td>
+                            <div className="font-bold text-black">{promo.value}</div>
+                            <div className="text-gray text-small">{promo.type}</div>
+                          </td>
+                          <td className="text-gray">{promo.min}</td>
+                          <td className="text-gray">{promo.exp}</td>
+                          <td>
+                            <span className={`badge ${
+                              promo.status === 'AKTIF' ? 'badge-success' : 
+                              promo.status === 'NONAKTIF' ? 'badge-danger' : 'badge-neutral'
+                            }`}>
+                              {promo.status}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="action-icons-cell">
+                              {/* TOMBOL TOGGLE STATUS (ON/OFF) */}
+                              <button className="action-icon-btn" title={promo.status === 'AKTIF' ? 'Nonaktifkan' : 'Aktifkan'} onClick={() => handleToggleStatus(promo.id)}>
+                                {promo.status === 'AKTIF' ? (
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>
+                                ) : (
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>
+                                )}
+                              </button>
+
+                              {/* TOMBOL EDIT */}
+                              <button className="action-icon-btn" title="Edit" onClick={() => handleEditClick(promo)}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                              </button>
+                              
+                              {/* TOMBOL HAPUS */}
+                              <button className="action-icon-btn" title="Hapus Promo" onClick={() => handleDeletePromo(promo.id, promo.code)}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                              </button>
                             </div>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="font-bold text-black">{promo.value}</div>
-                          <div className="text-gray text-small">{promo.type}</div>
-                        </td>
-                        <td className="text-gray">{promo.min}</td>
-                        <td className="text-gray">{promo.exp}</td>
-                        <td>
-                          <span className={`badge ${
-                            promo.status === 'AKTIF' ? 'badge-success' : 
-                            promo.status === 'NONAKTIF' ? 'badge-danger' : 'badge-neutral'
-                          }`}>
-                            {promo.status}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="action-icons-cell">
-                            <button className="action-icon-btn" title="Edit">
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect>
-                                <circle cx="16" cy="12" r="3"></circle>
-                              </svg>
-                            </button>
-                            <button className="action-icon-btn" title="Copy">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                              </svg>
-                            </button>
-                            {/* TOMBOL DELETE MENGGUNAKAN FUNGSI POST */}
-                            <button className="action-icon-btn" title="Hapus Promo" onClick={() => handleDeletePromo(promo.id, promo.code)}>
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                              </svg>
-                            </button>
-                          </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className="text-center text-gray" style={{ padding: '20px' }}>
+                          Tidak ada promo yang ditemukan sesuai pencarian.
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               )}
@@ -278,7 +351,7 @@ const ManajemenPromo = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2>Buat Promo & Voucher</h2>
+              <h2>{isEditMode ? 'Edit Promo & Voucher' : 'Buat Promo & Voucher'}</h2>
               <button className="close-modal-btn" onClick={() => setIsModalOpen(false)}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -338,7 +411,7 @@ const ManajemenPromo = () => {
               <div className="modal-footer">
                 <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
                 <button type="submit" className="btn-primary" disabled={isSubmitting}>
-                  {isSubmitting ? 'Menyimpan...' : 'Terbitkan Promo'}
+                  {isSubmitting ? 'Menyimpan...' : (isEditMode ? 'Simpan Perubahan' : 'Terbitkan Promo')}
                 </button>
               </div>
             </form>

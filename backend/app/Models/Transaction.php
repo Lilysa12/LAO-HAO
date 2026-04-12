@@ -15,6 +15,7 @@ class Transaction extends Model
         'customer_name',
         'payment_method',
         'total_amount',
-        'status'
+        'status',
+        'branch' // INI BARU DITAMBAHKAN
     ];
 }
