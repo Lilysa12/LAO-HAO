@@ -82,6 +82,7 @@ export default function InputData() {
 
       </main>
 
+
       {/* ================= FOOTER ================= */}
       <footer className="id-footer">
         <div className="id-socials">

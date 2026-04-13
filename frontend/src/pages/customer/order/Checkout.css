@@ -1,266 +1,101 @@
 /* src/pages/customer/Checkout.css */
 
-.co-container, .co-container * {
-  box-sizing: border-box;
-}
+.co-container, .co-container * { box-sizing: border-box; }
+.co-container { width: 100%; max-width: 2000px; margin: 0 auto; background-color: #FFFFFF; display: flex; flex-direction: column; min-height: 100vh; }
 
-.co-container {
-  width: 100%;
-  max-width: 2000px;
-  margin: 0 auto;
-  background-color: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* --- HEADER --- */
-.co-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; background: #fff; }
+.co-header { display: flex; justify-content: flex-start; align-items: center; min-height: 92px; padding: 0 60px; background: #fff; border-bottom: 1px solid #F3F4F6;}
 .co-logo { height: 45px; object-fit: contain; }
-.co-nav-links { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;}
-.co-nav-links a { text-decoration: none; color: #6C757D; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: 0.3s; }
-.co-nav-links a.active { color: #A00500; }
 
-/* --- TOP BAR --- */
-.co-top-bar { 
-  display: flex; 
-  align-items: center; 
-  gap: 20px; 
-  padding: 20px 60px; 
-  border-top: 1px solid #F3F4F6;
-  border-bottom: 1px solid #F3F4F6; 
-  background: #fff;
-}
-.co-back-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid #DEE2E6;
-  background: #fff;
-  color: #212529;
-  font-size: 18px;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-.co-page-title { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; color: #212529; font-weight: 800; }
+.co-top-bar { display: flex; align-items: center; gap: 20px; padding: 20px 60px; border-bottom: 1px solid #F3F4F6; }
+.co-back-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid #DEE2E6; background: #fff; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #212529;}
+.co-page-title { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; }
 
-/* --- MAIN LAYOUT (2 KOLOM) --- */
-.co-main-layout { 
-  display: flex; 
-  padding: 40px 60px; 
-  gap: 40px; 
-  flex: 1; 
-  align-items: flex-start;
-}
-
-/* --- KOLOM KIRI (ITEMS) --- */
+.co-main-layout { display: flex; padding: 40px 60px; gap: 40px; flex: 1; align-items: flex-start; }
 .co-left-column { flex: 6; display: flex; flex-direction: column; gap: 30px; }
 
-.co-item-card {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  border-bottom: 1px solid #F3F4F6;
-  padding-bottom: 30px;
-}
-.co-item-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.co-item-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  object-fit: cover;
-  background: #F8F9FA;
-}
+.co-item-card { display: flex; flex-direction: column; gap: 20px; border-bottom: 1px solid #F3F4F6; padding-bottom: 30px; }
+.co-item-header { display: flex; align-items: center; gap: 20px; }
+
+.co-item-img-frame { width: 80px; height: 80px; border-radius: 12px; background-color: #F8F9FA; border: 1.5px dashed #DEE2E6; display: flex; justify-content: center; align-items: center; text-align: center; font-size: 10px; color: #A0AEC0; flex-shrink: 0; font-family: 'Inter', sans-serif;}
+
 .co-item-info { flex: 1; }
-.co-item-info h3 { margin: 0 0 8px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; color: #212529; font-weight: 700; }
-.co-item-price { margin: 0; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; color: #A00500; }
+.co-item-info h3 { margin: 0 0 8px 0; font-size: 18px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;}
+.co-item-price { margin: 0; font-weight: 600; color: #A00500; font-family: 'Poppins', sans-serif;}
 
-/* Quantity Control */
-.co-qty-control {
-  display: flex;
-  align-items: center;
-  border: 1px solid #DEE2E6;
-  border-radius: 20px;
-  padding: 4px 8px;
-  background: #fff;
-}
-.co-qty-btn {
-  background: transparent; border: none; font-size: 18px; color: #6C757D; width: 30px; height: 30px; cursor: pointer; font-weight: 600;
-}
+.co-qty-control { display: flex; align-items: center; border: 1px solid #DEE2E6; border-radius: 25px; padding: 4px 8px; flex-shrink: 0; }
+.co-qty-btn { background: transparent; border: none; font-size: 18px; color: #6C757D; width: 30px; height: 30px; cursor: pointer; font-weight: 600;}
 .co-qty-btn.text-red { color: #A00500; }
-.co-qty-num { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #212529; width: 25px; text-align: center; }
+.co-qty-num { width: 25px; text-align: center; font-weight: 600; font-family: 'Inter', sans-serif;}
 
-/* Notes Input */
-.co-notes-input {
-  width: 100%;
-  background: #F8F9FA;
-  border: none;
-  border-radius: 12px;
-  padding: 15px 20px;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  color: #212529;
-  outline: none;
-}
-.co-notes-input::placeholder { color: #6C757D; opacity: 0.7; }
+.co-notes-input { width: 100%; background: #F8F9FA; border: none; border-radius: 12px; padding: 15px 20px; font-size: 14px; outline: none; font-family: 'Inter', sans-serif;}
 
-/* --- FIX: TOMBOL TAMBAH MENU LAIN (DISEMBUNYIKAN DI DESKTOP) --- */
-.co-add-more-btn {
-  display: none; /* Sembunyikan dari layar desktop sesuai desain */
-  border: 2px dashed #E5E7EB;
-  border-radius: 12px;
-  padding: 15px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background: #FFFFFF;
-  margin-bottom: 20px;
-  cursor: pointer;
-}
-.co-add-icon { color: #FFC627; font-size: 24px; font-weight: 400; line-height: 1; }
-.co-add-text { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #212529; }
+.co-add-more-btn { display: none; border: 2px dashed #E5E7EB; border-radius: 12px; padding: 15px; flex-direction: column; align-items: center; background: #FFFFFF; cursor: pointer; transition: 0.2s;}
 
+.co-right-column { flex: 4; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px;}
 
-/* --- KOLOM KANAN (SUMMARY) --- */
-.co-right-column { flex: 4; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 120px;}
-
-.co-promo-card {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid #DEE2E6;
-  background: #fff;
-  cursor: pointer;
-}
-.co-promo-card.yellow-tint {
-  background: linear-gradient(90deg, rgba(255, 198, 39, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
-  border-color: rgba(255, 198, 39, 0.4);
-}
-
-.co-promo-icon {
-  width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
+.co-promo-card { display: flex; align-items: center; gap: 15px; padding: 20px; border-radius: 16px; border: 1px solid #DEE2E6; background: #fff; cursor: pointer;}
+.co-promo-card.yellow-tint { background: linear-gradient(90deg, rgba(255, 198, 39, 0.1) 0%, rgba(255, 255, 255, 0) 100%); border-color: rgba(255, 198, 39, 0.4);}
+.co-promo-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: 800;}
 .co-promo-icon.text-yellow { color: #FFC627; }
 .co-promo-icon.text-red { color: #A00500; }
+.co-promo-icon.text-green { color: #1E5038; } /* Hijau saat voucher aktif */
+.co-promo-text h4 { margin: 0 0 4px 0; font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;}
+.co-promo-text p { margin: 0; font-size: 12px; color: #6C757D; font-family: 'Inter', sans-serif;}
 
-.co-promo-text h4 { margin: 0 0 4px 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; color: #212529; }
-.co-promo-text p { margin: 0; font-family: 'Inter', sans-serif; font-size: 12px; color: #6C757D; }
-
-.co-summary-card {
-  border: 1px solid #DEE2E6;
-  border-radius: 16px;
-  padding: 25px;
-  background: #fff;
-  margin-top: 10px;
-}
-.co-summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+.co-summary-card { border: 1px solid #DEE2E6; border-radius: 16px; padding: 25px; background: #fff;}
+.co-summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-family: 'Inter', sans-serif;}
 .co-sum-label { color: #6C757D; font-size: 14px; }
-.co-sum-value { color: #6C757D; font-size: 14px; font-weight: 500;}
+.co-sum-value { color: #212529; font-size: 14px; font-weight: 600;}
 
-.co-divider { height: 1px; background: #DEE2E6; margin: 20px 0; }
+/* Warna text Diskon */
+.text-green-row { color: #1E5038 !important; font-weight: 700 !important; }
 
+.co-divider { height: 1px; background: #F3F4F6; margin: 20px 0; }
 .total-row { margin-bottom: 25px; align-items: center;}
-.co-sum-label-bold { font-family: 'Plus Jakarta Sans', sans-serif; color: #212529; font-size: 16px; font-weight: 700; }
-.co-sum-total { font-family: 'Poppins', sans-serif; color: #A00500; font-size: 22px; font-weight: 700; }
+.co-sum-label-bold { color: #212529; font-size: 16px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;}
+.co-sum-total { color: #A00500; font-size: 22px; font-weight: 800; font-family: 'Poppins', sans-serif;}
 
-.co-btn-pay {
-  width: 100%;
-  background: #A00500;
-  color: #fff;
-  border: none;
-  padding: 16px;
-  border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
+.co-btn-pay { width: 100%; background: #A00500; color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; font-size: 16px;}
+.co-btn-pay:hover:not(:disabled) { background: #8B0000; transform: translateY(-2px); }
 
-/* --- FOOTER --- */
-.co-footer { background-color: #A00500; padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto; }
+/* Footer */
+.co-footer { background-color: #A00500; padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto;}
 .co-socials { display: flex; gap: 15px; }
 .co-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-.co-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
+.co-soc-circle img { width: 20px; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
 .co-copyright { font-family: 'Inter', sans-serif; font-size: 13px; opacity: 0.9; }
 
-/* EFEK KLIK (Reusable) */
-.efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
-.efek-klik:active { transform: scale(0.96); }
-.efek-klik-kartu { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.co-empty-state { text-align: center; padding: 40px; color: #6C757D; font-family: 'Inter', sans-serif; }
+.co-btn-add-initial { margin-top: 15px; padding: 10px 20px; background: #FFC627; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Poppins', sans-serif;}
+
+.efek-klik:active { transform: scale(0.95); }
 .efek-klik-kartu:active { transform: scale(0.98); }
 
-
-/* =========================================================
-   RESPONSIVE MOBILE STYLES
-========================================================= */
-/* --- GANTI SELURUH BLOK @MEDIA INI DI BAWAH CHECKOUT.CSS --- */
 @media (max-width: 768px) {
+  .co-header { display: none !important; }
+  .co-footer { display: none !important; }
+  .co-add-more-btn { display: flex; } 
   
-  /* Munculkan kembali tombol dashed khusus di HP */
-  .co-add-more-btn { display: flex; }
-
-  /* Sembunyikan header dan footer desktop */
-  .co-header { display: none; } 
-  .co-footer { display: none; } 
+  .co-top-bar { padding: 20px; border-bottom: none; }
+  .co-back-btn { width: 38px; height: 38px; background: #F8F9FA; border: none;}
+  .co-main-layout { padding: 10px 20px 280px 20px; flex-direction: column; }
+  .co-left-column { flex: none; width: 100%; gap: 15px;}
   
-  .co-container { min-height: 100vh; background: #FFFFFF; }
+  .co-item-card { padding: 16px; border-radius: 16px; border: 1px solid #F3F4F6; margin-bottom: 0;}
+  .co-item-header { gap: 15px; }
+  .co-item-img-frame { width: 64px; height: 64px; border-radius: 10px;}
+  .co-item-info h3 { font-size: 15px; margin-bottom: 4px;}
+  .co-item-price { font-size: 14px;}
+  .co-qty-control { padding: 4px 10px;}
+  .co-notes-input { margin-top: 10px;}
 
-  .co-top-bar { padding: 20px 20px 10px 20px; border-bottom: none; display: flex; align-items: center; justify-content: flex-start; gap: 15px;}
-  .co-back-btn { width: 36px; height: 36px; border-radius: 50%; background: #F8F9FA; border: none; display: flex; justify-content: center; align-items: center; font-size: 16px; color: #212529; padding: 0;}
-  .co-page-title { font-size: 20px; margin: 0; font-weight: 700;}
-  
-  /* FIX RAHASIA: Padding bawah 260px agar list makanan tidak tertutup oleh Summary Box yang menempel di bawah */
-  .co-main-layout { padding: 10px 20px 260px 20px; flex-direction: column; gap: 15px; }
-  
-  .co-item-card { padding: 16px; border-radius: 16px; box-shadow: none; border: 1px solid #F3F4F6; margin-bottom: 0;}
-  .co-item-header { flex-direction: row; align-items: center; gap: 15px; }
-  .co-item-img { width: 64px; height: 64px; border-radius: 10px; }
-  .co-item-info h3 { font-size: 15px; margin-bottom: 4px; }
-  .co-item-price { font-size: 14px; color: #A00500;}
-  .co-qty-control { margin-left: auto; gap: 12px; border: 1px solid #F3F4F6; border-radius: 20px; padding: 4px 10px;}
-  .co-qty-btn { font-size: 16px; background: transparent;}
-  .co-notes-input { padding: 12px 15px; font-size: 13px; margin-top: 15px; background: #F8F9FA; border-radius: 10px; border: none;}
+  .co-right-column { flex: none; width: 100%; position: static; gap: 15px;}
+  .co-promo-card { padding: 16px; border-radius: 16px; border: 1px solid #F3F4F6;}
 
-  .co-right-column { padding: 0; background: transparent; position: static; gap: 15px;}
-  .co-promo-card { padding: 16px; border-radius: 16px; border: 1px solid #F3F4F6; box-shadow: none; margin-bottom: 0;}
-  .co-promo-text h4 { font-size: 14px; margin-bottom: 4px;}
-  .co-promo-text p { font-size: 12px; }
-
-  /* =========================================================
-     FIX RAHASIA: SUMMARY BOX DITARIK KE DASAR LAYAR
-  ========================================================= */
   .co-summary-card { 
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 25px 20px 20px 20px; 
-    border-radius: 24px 24px 0 0; /* Sudut atas membulat manis */
-    margin-top: 0; 
-    box-shadow: 0 -4px 25px rgba(0,0,0,0.05); /* Bayangan atas yang halus */
-    border: none; 
-    border-top: 1px solid #F3F4F6; 
-    background: #FFFFFF;
-    z-index: 100;
-    box-sizing: border-box;
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    border-radius: 24px 24px 0 0; background: #fff;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.05); z-index: 100;
+    padding: 25px 20px 20px 20px; border: none; border-top: 1px solid #F3F4F6;
   }
-  
-  .co-summary-row { margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
-  .co-sum-label, .co-sum-value { font-size: 13px; color: #6C757D;}
-  
-  .total-row { margin-top: 15px; margin-bottom: 20px; align-items: center;}
-  .co-sum-label-bold { font-size: 14px; font-weight: 500; color: #4A4A4A;}
-  .co-sum-total { font-size: 20px; color: #A00500; font-weight: 800;}
-  
-  .co-btn-pay { padding: 16px; font-size: 15px; border-radius: 12px; width: 100%; margin-top: 0; background: #A00500; font-weight: 700;}
 }
