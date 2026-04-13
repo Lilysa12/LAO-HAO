@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Payment.css';
 
 // --- IMPORT ASSETS ---
@@ -13,13 +13,28 @@ import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
 import IconTunai from '../../../assets/icons/icons-customer/tunai.png';
 import IconQris from '../../../assets/icons/icons-customer/qris.png';
 import IconGopay from '../../../assets/icons/icons-customer/gopay.png';
-
-// FIX RAHASIA: Nama variabel impornya diubah jadi IconShopee agar tidak bentrok
 import IconShopee from '../../../assets/icons/icons-customer/shopee.png';
 
 export default function Payment() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedMethod, setSelectedMethod] = useState('qris');
+
+  // =========================================================
+  // TANGKAP HARGA DINAMIS DARI HALAMAN CHECKOUT
+  // =========================================================
+  // Ambil state dari checkout, jika tidak ada set ke 0
+  const passedTotalPayment = location.state?.totalPayment || 0;
+  
+  // Karena subtotal & tax tidak dioper secara eksplisit dari Checkout di instruksi sebelumnya, 
+  // kita kalkulasi ulang mundur secara sederhana dari totalPayment. 
+  // (Asumsi normal tanpa diskon tambahan di halaman ini: Total = Subtotal + 10% Pajak)
+  const calculatedSubtotal = Math.round(passedTotalPayment / 1.1);
+  const calculatedTax = passedTotalPayment - calculatedSubtotal;
+
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+  };
 
   return (
     <div className="pay-container">
@@ -33,8 +48,11 @@ export default function Payment() {
 
       {/* ================= TOP BAR ================= */}
       <div className="pay-top-bar">
+        {/* REVISI IKON BACK SESUAI PERMINTAAN */}
         <button className="pay-back-btn efek-klik" onClick={() => navigate(-1)}>
-          &lt;
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+            <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z"></path>
+          </svg>
         </button>
         <h2 className="pay-page-title">Pembayaran</h2>
       </div>
@@ -106,7 +124,6 @@ export default function Payment() {
             >
               <div className="pay-method-left">
                 <div className="pay-icon-box">
-                  {/* FIX: Menggunakan IconShopee yang sudah diimpor dengan benar */}
                   <img src={IconShopee} alt="ShopeePay" className="pay-method-icon" />
                 </div>
                 <span className="pay-method-name">ShopeePay</span>
@@ -117,26 +134,26 @@ export default function Payment() {
             </div>
           </div>
 
-          {/* --- SUMMARY & BUTTON --- */}
+          {/* --- SUMMARY & BUTTON DINAMIS --- */}
           <div className="pay-summary-box">
             <div className="pay-summary-row">
               <span className="pay-sum-label">Subtotal</span>
-              <span className="pay-sum-value">Rp 57.000</span>
+              <span className="pay-sum-value">{formatRupiah(calculatedSubtotal)}</span>
             </div>
             <div className="pay-summary-row">
               <span className="pay-sum-label">Pajak Restoran (10%)</span>
-              <span className="pay-sum-value">Rp 5.700</span>
+              <span className="pay-sum-value">{formatRupiah(calculatedTax)}</span>
             </div>
             
             <div className="pay-summary-row total-row">
               <span className="pay-sum-label-bold">Total Pembayaran</span>
-              <span className="pay-sum-total">Rp 62.700</span>
+              <span className="pay-sum-total">{formatRupiah(passedTotalPayment)}</span>
             </div>
 
             <button 
               className="pay-btn-submit efek-klik"
               onClick={() => {
-                navigate('/status'); // <-- REVISI: Sekarang diarahkan ke halaman /status
+                navigate('/status'); 
               }}
             >
               Pilih Pembayaran

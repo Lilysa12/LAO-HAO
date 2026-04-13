@@ -15,7 +15,7 @@
 }
 
 /* --- HEADER --- */
-.pay-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; background: #fff; border-bottom: 1px solid #F3F4F6; }
+.pay-header { display: flex; justify-content: flex-start; align-items: center; min-height: 92px; padding: 0 60px; background: #fff; border-bottom: 1px solid #F3F4F6; }
 .pay-logo { height: 45px; object-fit: contain; }
 
 /* --- TOP BAR --- */
@@ -28,14 +28,12 @@
   background: #fff;
 }
 .pay-back-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid #DEE2E6;
   background: #fff;
   color: #212529;
-  font-size: 18px;
-  font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,7 +94,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  z-index: 2; /* Agar di atas gradasi background */
+  z-index: 2; 
 }
 .pay-icon-box {
   background: #F3F4F6;
@@ -139,10 +137,9 @@
   transition: 0.2s;
 }
 
-/* --- ACTIVE STATE (BINGKAI MERAH & GRADASI) --- */
+/* --- ACTIVE STATE --- */
 .pay-method-card.active { 
   border-color: #A00500; 
-  /* FIX: Gradasi pink halus di sebelah kanan persis desain */
   background: linear-gradient(90deg, #FFFFFF 60%, rgba(160, 5, 0, 0.08) 100%);
 }
 .pay-method-card.active .pay-radio-circle { border-color: #A00500; border-width: 2.5px; }
@@ -185,7 +182,7 @@
 
 /* --- FOOTER --- */
 .pay-footer { background-color: #A00500; padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto; }
-.pay-socials { display: flex; gap: 15px; }
+.pay-socials { display: flex; flex-direction: row; gap: 15px; }
 .pay-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
 .pay-soc-circle img { width: 20px; height: 20px; object-fit: contain; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
 .pay-copyright { font-family: 'Inter', sans-serif; font-size: 13px; opacity: 0.9; }
@@ -197,20 +194,19 @@
 /* =========================================================
    RESPONSIVE MOBILE STYLES
 ========================================================= */
-/* --- GANTI BLOK @MEDIA INI DI BAWAH PAYMENT.CSS --- */
 @media (max-width: 768px) {
-  .pay-header { display: none; } 
-  .pay-footer { display: none; }
+  .pay-header { display: none !important; } 
+  .pay-footer { display: none !important; } /* FOOTER HILANG TOTAL DI MOBILE */
 
   .pay-container { min-height: 100vh; background-color: #FFFFFF;}
   
   .pay-top-bar { padding: 20px 20px 10px 20px; border-bottom: none; display: flex; align-items: center; justify-content: flex-start; gap: 15px;}
-  .pay-back-btn { width: 36px; height: 36px; border-radius: 50%; background: #F8F9FA; border: none; font-size: 16px; color: #212529; padding: 0;}
+  .pay-back-btn { width: 36px; height: 36px; border-radius: 50%; background: #F8F9FA; border: none; padding: 0;}
+  .pay-back-btn svg { width: 20px; height: 20px; }
   .pay-page-title { font-size: 20px; margin: 0; font-weight: 700;}
   
   .pay-main-layout { padding: 10px 20px; display: block; flex: none; height: auto;}
   
-  /* FIX: Memberikan ruang di bagian bawah agar daftar metode tidak tertutup rincian harga */
   .pay-content-wrapper { padding: 0; display: flex; flex-direction: column; gap: 24px; padding-bottom: 250px; }
 
   .pay-section { gap: 12px; }
@@ -229,14 +225,13 @@
   .pay-radio-dot { width: 10px; height: 10px; border-radius: 50%; background: transparent; transition: 0.2s;}
   .pay-method-card.active .pay-radio-dot { background: #A00500; }
 
-  /* FIX RAHASIA: SUMMARY BOX Nempel di bawah layar persis desain */
   .pay-summary-box { 
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     padding: 25px 20px 20px 20px; 
-    border-radius: 24px 24px 0 0; /* Sudut atas membulat */
+    border-radius: 24px 24px 0 0; 
     margin-top: 0; 
     box-shadow: 0 -4px 20px rgba(0,0,0,0.04); 
     border: none; 

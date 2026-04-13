@@ -70,10 +70,10 @@ export default function Status() {
             Kami akan segera mengantarkan hidangan hangat langsung ke mejamu.
           </p>
 
-          {/* Tombol Pesan Lagi */}
+          {/* REVISI: Tombol Pesan Lagi diarahkan ke /order-list */}
           <button 
             className="st-btn-again efek-klik" 
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/order-list')}
           >
             Pesan Lagi
           </button>

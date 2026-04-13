@@ -8,7 +8,7 @@
   width: 100%;
   max-width: 2000px;
   margin: 0 auto;
-  background-color: #F8F9FA; /* Latar belakang abu-abu sangat muda untuk Desktop */
+  background-color: #F8F9FA; 
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -207,9 +207,8 @@
 .efek-klik:active { transform: scale(0.97); }
 
 /* =========================================================
-   RESPONSIVE MOBILE STYLES (Plek Ketiplek Gambar 2)
+   RESPONSIVE MOBILE STYLES 
 ========================================================= */
-/* --- GANTI SELURUH BLOK @MEDIA INI DI BAWAH STATUS.CSS --- */
 @media (max-width: 768px) {
   /* Sembunyikan Header dan Footer */
   .st-header { display: none; }
@@ -220,7 +219,6 @@
   
   .st-main-layout { 
     padding: 20px; 
-    /* FIX: Hapus flex-start agar otomatis kembali ke CENTER (tengah layar) */
     align-items: center; 
   }
 
@@ -230,7 +228,6 @@
     box-shadow: none;
     border-radius: 0;
     width: 100%;
-    /* Sedikit diangkat ke atas agar proposinya pas di mata */
     margin-top: -5vh; 
   }
 
