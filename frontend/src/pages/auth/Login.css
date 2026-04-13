@@ -1,0 +1,166 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.login-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* --- SISI KIRI (GAMBAR BACKGROUND) --- */
+.login-left {
+  flex: 1.1;
+  /* Menggunakan gambar dummy restoran, dan diberi gradasi hitam di bawah agar teks putih terlihat jelas */
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%), 
+              url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=1974');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end; /* Memindahkan konten ke bagian bawah */
+  padding: 60px;
+}
+
+.login-left-content {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.login-left-content h1 {
+  font-size: 40px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.login-left-content p {
+  font-size: 18px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+/* --- SISI KANAN (FORM LOGIN) --- */
+.login-right {
+  flex: 1;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.login-logo {
+  height: 80px; /* Sesuaikan ukuran logo sesuai gambar aslimu */
+  object-fit: contain;
+  margin-bottom: 24px;
+}
+
+.login-header h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.login-header p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 14px 16px 14px 44px; /* Padding kiri lebih besar untuk space icon */
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.input-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+.input-wrapper input:focus {
+  border-color: #aa0000;
+  box-shadow: 0 0 0 3px rgba(170, 0, 0, 0.05);
+}
+
+.login-btn {
+  background-color: #aa0000; /* Warna merah gelap sesuai gambar */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: #880000;
+}
+
+.login-footer {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.login-footer p {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Responsivitas untuk layar kecil/HP */
+@media (max-width: 900px) {
+  .login-left { display: none; }
+  .login-right { background-color: #f8fafc; }
+  .login-box { background: white; padding: 40px 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+}
