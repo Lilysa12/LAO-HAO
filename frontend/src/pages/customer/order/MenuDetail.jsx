@@ -38,12 +38,10 @@ export default function MenuDetail() {
   const location = useLocation();
 
   const [cart, setCart] = useState(location.state?.cart || []);
-  
-  const defaultItem = { 
-    id: 1, category: 'MAIN', name: 'Nasi Lemak', desc: 'Rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah.', price: 'Rp 30.000' 
-  };
-  const [currentItem, setCurrentItem] = useState(location.state?.item || defaultItem);
-  const activeCategory = currentItem.category;
+
+  // Ambil item yang dikirim dari MenuList
+  const [currentItem, setCurrentItem] = useState(location.state?.item || null);
+  const activeCategory = currentItem.category || 'MAIN';
 
   // =========================================================
   // LOGIKA KEMBALI KE MENU LIST DENGAN MEMBAWA CART
@@ -55,11 +53,11 @@ export default function MenuDetail() {
       'DIMSUM': 'Dimsum',
       'DRINK': 'Hot Drink'
     };
-    navigate('/order-list', { 
-      state: { 
-        category: categoryNames[categoryCode], 
-        cart: cart 
-      } 
+    navigate('/order-list', {
+      state: {
+        category: categoryNames[categoryCode],
+        cart: cart
+      }
     });
   };
 
@@ -67,8 +65,11 @@ export default function MenuDetail() {
     setCart([...cart, currentItem]);
   };
 
-  const parsePrice = (priceStr) => parseInt(priceStr.replace(/[^0-9]/g, ''), 10);
-  const totalItems = cart.length; 
+  const parsePrice = (p) => {
+  if (typeof p === 'number') return p;
+  return parseInt(p?.replace(/[^0-9]/g, ''), 10) || 0;
+};
+  const totalItems = cart.length;
   const totalPrice = cart.reduce((total, item) => total + parsePrice(item.price), 0);
 
   const formatRupiah = (number) => {
@@ -117,29 +118,33 @@ export default function MenuDetail() {
         <section className="md-content-area">
           <div className="md-closeup-card">
             <div className="md-closeup-img img-frame">
-              Gambar<br/>{currentItem.name}
+              <img
+                src={currentItem.image_url}
+                alt={currentItem.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }}
+              />
             </div>
             <div className="md-details-info">
               <h2 className="md-item-title">{currentItem.name}</h2>
-              <p className="md-item-desc">{currentItem.desc}</p>
+              <p className="md-item-desc">{currentItem.description}</p>
               
-              <textarea 
-                className="md-notes-area" 
+              <textarea
+                className="md-notes-area"
                 placeholder="Tambah catatan (opsional)"
               ></textarea>
 
               <div className="md-action-row">
-                <span className="md-price">{currentItem.price}</span>
+                <span className="md-price">{formatRupiah(currentItem.price)}</span>
                 <button className="md-btn-add efek-klik" onClick={handleAddToCart}>+ Add</button>
               </div>
             </div>
           </div>
         </section>
-      </main> 
+      </main>
 
       {cart.length > 0 && (
         <div className="md-checkout-wrapper slide-up-animation">
-          <div 
+          <div
             className="md-floating-bar efek-klik-kartu" 
             onClick={() => navigate('/checkout', { state: { cart, totalPrice } })}
           >
@@ -153,8 +158,8 @@ export default function MenuDetail() {
                 <p>{formatRupiah(totalPrice)}</p>
               </div>
             </div>
-            <button 
-              className="md-btn-checkout" 
+            <button
+              className="md-btn-checkout"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/checkout', { state: { cart, totalPrice } });

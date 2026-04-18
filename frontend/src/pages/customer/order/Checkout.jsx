@@ -19,14 +19,15 @@ export default function Checkout() {
   // =========================================================
   const initialCart = location.state?.cart || [];
   const groupedCart = initialCart.reduce((acc, item) => {
-    const existing = acc.find(i => i.id === item.id);
-    if (existing) {
-      existing.quantity += (item.quantity || 1);
-    } else {
-      acc.push({ ...item, quantity: item.quantity || 1 });
-    }
-    return acc;
-  }, []);
+  const existing = acc.find(i => i.id === item.id);
+  if (existing) {
+    existing.quantity += 1; // Jika item sama, tambah jumlahnya
+  } else {
+    // Pastikan seluruh properti item (id, name, price, image_url, description) ikut masuk
+    acc.push({ ...item, quantity: 1 });
+  }
+  return acc;
+}, []);
 
   const [cart, setCart] = useState(groupedCart);
 
@@ -34,15 +35,13 @@ export default function Checkout() {
   const appliedVoucher = location.state?.appliedVoucher || null;
 
   // Helper Pembersih Harga
-  const parsePrice = (priceStr) => {
-    if (!priceStr) return 0;
-    if (typeof priceStr === 'number') return priceStr;
-    const parsed = parseInt(priceStr.toString().replace(/[^0-9]/g, ''), 10);
-    return isNaN(parsed) ? 0 : parsed;
-  };
+  const parsePrice = (p) => {
+  if (typeof p === 'number') return p;
+  return parseInt(p?.toString().replace(/[^0-9]/g, ''), 10) || 0;
+};
 
   const updateQty = (id, delta) => {
-    setCart(prevCart => 
+    setCart(prevCart =>
       prevCart.map(item => {
         if (item.id === id) {
           const newQty = Math.max(0, item.quantity + delta);
@@ -75,7 +74,7 @@ export default function Checkout() {
   // KALKULASI TOTAL & DISKON
   // =========================================================
   const subtotal = cart.reduce((sum, item) => sum + (parsePrice(item.price) * item.quantity), 0);
-  const tax = Math.round(subtotal * 0.1); 
+  const tax = Math.round(subtotal * 0.1);
 
   let discountAmount = 0;
   if (appliedVoucher) {
@@ -120,10 +119,16 @@ export default function Checkout() {
             cart.map((item) => (
               <div className="co-item-card" key={item.id}>
                 <div className="co-item-header">
-                  <div className="co-item-img-frame">Gambar<br/>{item.name}</div>
+                  <div className="co-item-img-frame">
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                  </div>
                   <div className="co-item-info">
                     <h3>{item.name}</h3>
-                    <p className="co-item-price">{item.price}</p>
+                    <p className="co-item-price">{formatRupiah(parsePrice(item.price))}</p>
                   </div>
                   <div className="co-qty-control">
                     <button className="co-qty-btn" onClick={() => updateQty(item.id, -1)}>-</button>
@@ -159,8 +164,8 @@ export default function Checkout() {
           </div>
 
           {/* KIRIM DATA CART KE HALAMAN VOUCHER */}
-          <div 
-            className="co-promo-card efek-klik-kartu" 
+          <div
+            className="co-promo-card efek-klik-kartu"
             onClick={() => navigate('/voucher', { state: { cart, subtotal } })}
           >
             <div className={`co-promo-icon ${appliedVoucher ? 'text-green' : 'text-red'}`}>%</div>
@@ -193,8 +198,8 @@ export default function Checkout() {
               <span className="co-sum-label-bold">Total Pembayaran</span>
               <span className="co-sum-total">{formatRupiah(totalPayment)}</span>
             </div>
-            <button 
-              className="co-btn-pay efek-klik" 
+            <button
+              className="co-btn-pay efek-klik"
               disabled={cart.length === 0}
               onClick={() => navigate('/payment', { state: { totalPayment } })}
               style={{ opacity: cart.length === 0 ? 0.5 : 1 }}
