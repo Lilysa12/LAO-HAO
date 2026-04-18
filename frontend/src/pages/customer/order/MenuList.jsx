@@ -39,6 +39,9 @@ export default function MenuList() {
   const navigate = useNavigate();
   const location = useLocation();
   
+// Tangkap nama dari InputData, kalau kosong kasih default 'Laoban'
+  const customerName = location.state?.customerName || 'Laoban';
+
   const [activeCategory, setActiveCategory] = useState('MAIN');
   
   // FIX: Tangkap cart dari MenuDetail (jika ada navigasi balik), atau mulai kosong
@@ -119,7 +122,7 @@ export default function MenuList() {
 
       <div className="ml-top-bar">
         <div className="ml-welcome-text">
-          <p className="ml-greeting">Hi, Budi!</p>
+          <h2 className="ml-greeting">Halo, {customerName}!</h2>
           <h2 className="ml-page-title">Pilih Menu</h2>
         </div>
         <div className="ml-table-badge">Meja 12</div>
@@ -151,9 +154,15 @@ export default function MenuList() {
             {displayedItems.length > 0 ? (
               displayedItems.map((item, index) => (
                 <div
-                  key={`${activeCategory}-${item.id}`} 
-                  className="ml-card-row animate-slide-up" 
-                  onClick={() => navigate('/detail', { state: { item: item, cart: cart } })} 
+                  key={`${activeCategory}-${item.id}`}
+                  className="ml-card-row animate-slide-up"
+                  onClick={() => navigate('/detail', { 
+  state: {
+    item: item,
+    cart: cart,
+    customerName: customerName // <--- Tambahkan ini
+  }
+})}
                   style={{cursor: 'pointer', animationDelay: `${index * 0.08}s`}}
                 >
                   <div className="ml-card-img img-frame">
@@ -196,11 +205,17 @@ export default function MenuList() {
                 <p>{formatRupiah(totalPrice)}</p>
               </div>
             </div>
-            <button 
-              className="ml-btn-checkout" 
+            <button
+              className="ml-btn-checkout"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate('/checkout', { state: { cart, totalPrice } });
+                navigate('/checkout', {
+                  state: {
+                    cart,
+                    totalPrice,
+                    customerName: customerName
+                  }
+                });
               }}
             >
               Checkout &gt;

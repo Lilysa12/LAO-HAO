@@ -36,6 +36,7 @@ const SvgDrink = () => (
 export default function MenuDetail() {
   const navigate = useNavigate();
   const location = useLocation();
+  const customerName = location.state?.customerName || 'Laoban';
 
   const [cart, setCart] = useState(location.state?.cart || []);
 
@@ -78,6 +79,7 @@ export default function MenuDetail() {
 
   return (
     <div className="md-container">
+      <p>Pesanan atas nama: <strong>{customerName}</strong></p>
       
       {/* HEADER DIBERSIHKAN: HANYA LOGO */}
       <header className="md-header">
