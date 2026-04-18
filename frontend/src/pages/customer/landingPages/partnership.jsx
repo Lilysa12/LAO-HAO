@@ -7,13 +7,12 @@ import LogoLaoban from '../../../assets/icons/LogoLaoban.png';
 import IconInstagram from '../../../assets/icons/Instagram.png';
 import IconWhatsapp from '../../../assets/icons/Whatsapp.png';
 import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
-import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
 import IconTiktok from '../../../assets/icons/Tiktok.png';
 import IconMessage from '../../../assets/icons/Message.png'; 
 import IconCall from '../../../assets/icons/Call.png'; 
 
-// --- IMPORT ASSETS PARTNERSHIP (Sesuai Struktur Folder Screenshot 1) ---
-import BgHero from '../../../assets/icons/icons-partner/image1.png'; // Ubah ke .jpg jika aslinya JPG
+// --- IMPORT ASSETS PARTNERSHIP ---
+import BgHero from '../../../assets/icons/icons-partner/image1.png'; 
 
 // Icons Kenapa Bergabung
 import IconBrand from '../../../assets/icons/icons-partner/brand.png';
@@ -38,7 +37,16 @@ import IconEmail from '../../../assets/icons/icons-partner/email.png';
 export default function Partnership() {
   const navigate = useNavigate();
 
-  // Animasi Scroll (Sama seperti Home)
+  // Helper untuk navigasi dan scroll ke atas otomatis
+  const navigateToTop = (path) => {
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
+  // URL WhatsApp untuk digunakan berulang kali
+  const waLink = "https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0";
+
+  // Animasi Scroll
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -61,30 +69,24 @@ export default function Partnership() {
       
       {/* ================= 1. NAVBAR ================= */}
       <nav className="pt-navbar fade-in-up">
-        <div className="pt-logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
+        <div className="pt-logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="pt-logo-img" />
         </div>
         <div className="pt-nav-links">
-          {/* FIX: Dikembalikan ke tag <a> bawaan Abang agar CSS warna merahnya jalan! */}
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>About</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/menu'); }}>Menu</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/our-partner'); }}>Our Partner</a>
-          {/* Menu Partnership dibuat Active */}
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
           <a href="#" onClick={(e) => e.preventDefault()} className="active">Partnership</a>
         </div>
-        {/* Tombol Pesan Sekarang terhubung ke /order */}
-        <button className="pt-btn-red" onClick={() => navigate('/order')}>Pesan Sekarang</button>
+        <button className="pt-btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
       </nav>
 
       {/* ================= 2. HERO SECTION ================= */}
       <section className="pt-hero fade-in-up delay-1" style={{ position: 'relative', minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '80px 40px' }}>
         
-        {/* Gambar Latar Belakang & Gradasi Merah */}
         <div className="pt-hero-bg" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
           <img src={BgHero} alt="Laoban Outlet" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          
-          {/* FIX JURUS PAMUNGKAS: Gradasi transparan ditembak langsung di sini! */}
           <div style={{
             position: 'absolute',
             top: 0, left: 0, width: '100%', height: '100%',
@@ -100,7 +102,13 @@ export default function Partnership() {
           <p className="pt-hero-desc" style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', lineHeight: '1.6', margin: '0 auto 35px auto', maxWidth: '700px', opacity: '0.95' }}>
             Anda berkesempatan menjadi bagian dalam pertumbuhan industri minuman dan makanan dengan konsep kopitiam ala Laoban di Indonesia. Tentunya bersama dengan menu-menu kebanggaan Laoban seperti Nasi-nasi khas Laoban, Kudapan Khas Laoban, Minuman Khas Laoban.
           </p>
-          <button className="pt-btn-dark-red" style={{ background: '#750300', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.2)', padding: '14px 35px', borderRadius: '8px', fontFamily: 'Poppins', fontSize: '15px', fontWeight: '600', cursor: 'pointer', textShadow: 'none' }}>
+          
+          {/* REVISI 1: Tombol "Initiate Partnership" diarahkan ke WA */}
+          <button 
+            className="pt-btn-dark-red" 
+            onClick={() => window.open(waLink, '_blank')}
+            style={{ background: '#750300', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.2)', padding: '14px 35px', borderRadius: '8px', fontFamily: 'Poppins', fontSize: '15px', fontWeight: '600', cursor: 'pointer', textShadow: 'none' }}
+          >
             Initiate Partnership
           </button>
         </div>
@@ -162,7 +170,6 @@ export default function Partnership() {
             <h4>Renovation and<br/>preparing outlet</h4>
             <p>Transforming the space into a heritage experience.</p>
           </div>
-          
           <div className="pt-journey-card">
             <div className="pt-circle-icon"><img src={IconDelivering} alt="Delivering" /></div>
             <h4>Delivering goods</h4>
@@ -185,9 +192,9 @@ export default function Partnership() {
           </div>
         </div>
 
-        {/* Info Kontak Cards */}
+        {/* Info Kontak Cards (REVISI 2: Dibuat clickable) */}
         <div className="pt-contact-cards fade-in-up">
-          <div className="pt-contact-card">
+          <div className="pt-contact-card clickable" onClick={() => window.open(waLink, '_blank')}>
             <div className="pt-contact-icon-bg bg-yellow">
               <img src={IconPhone} alt="Phone" />
             </div>
@@ -197,7 +204,8 @@ export default function Partnership() {
               <h4 className="text-red">0822-4450-3221</h4>
             </div>
           </div>
-          <div className="pt-contact-card">
+
+          <div className="pt-contact-card clickable" onClick={() => window.location.href = 'mailto:laobankopitiam@gmail.com'}>
             <div className="pt-contact-icon-bg bg-green">
               <img src={IconEmail} alt="Email" />
             </div>
@@ -213,59 +221,61 @@ export default function Partnership() {
       {/* ================= 5. CTA BOTTOM SECTION ================= */}
       <section className="pt-cta-bottom fade-in-up">
         <h2 className="pt-cta-title">Ready to build the legacy?</h2>
-        <button className="pt-btn-white">Contact Our Team</button>
+        {/* REVISI 3: Tombol "Contact Our Team" diarahkan ke WA */}
+        <button className="pt-btn-white" onClick={() => window.open(waLink, '_blank')}>
+          Contact Our Team
+        </button>
       </section>
 
-      {/* ================= 6. FOOTER ================= */}
-      <footer className="pt-footer fade-in-up delay-1">
-        <div className="pt-foot-grid">
-          <div className="pt-foot-brand">
-            <img src={LogoLaoban} alt="Logo Laoban" className="pt-logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigate('/home')} />
+      {/* ================= 6. FOOTER MODERN (REVISI 4: Seragam dengan Home) ================= */}
+      <footer className="footer-modern fade-in-up delay-1">
+        <div className="foot-grid">
+          <div className="foot-brand">
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
-            <div className="pt-socials">
-               <div className="pt-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
-               <div className="pt-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
-               <div className="pt-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
+            
+            <div className="socials socials-colored unified-socmed">
+               <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open(waLink, '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.facebook.com/laoban.nusantara/', '_blank')}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
             </div>
           </div>
           
-          <div className="pt-foot-links">
+          <div className="foot-links">
             <h4>Navigasi</h4>
             <ul>
-              {/* FIX ROUTING FOOTER */}
-              <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
-              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
-              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
-              <li onClick={() => navigate('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+              <li onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>Home</li>
+              <li onClick={() => navigateToTop('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigateToTop('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
+              <li onClick={() => navigateToTop('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
             </ul>
           </div>
           
-          <div className="pt-foot-links">
+          <div className="foot-links">
             <h4>Kemitraan</h4>
             <ul>
-              {/* FIX ROUTING FOOTER KEMITRAAN */}
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Proposal Bisnis</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+              <li onClick={() => navigateToTop('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
+              <li onClick={() => window.open(waLink, '_blank')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
             </ul>
           </div>
           
-          <div className="pt-foot-links">
+          <div className="foot-links">
             <h4>Hubungi Kami</h4>
-            <ul className="pt-contact-list">
-              <li>
-                <img src={IconMessage} alt="Email" /> 
-                <span className="contact-link">hello@laobannusantara.com</span>
+            <ul className="contact-list contact-modern">
+              <li onClick={() => window.location.href = 'mailto:laobankopitiam@gmail.com'} style={{cursor: 'pointer'}}>
+                <img src={IconMessage} alt="Email" className="contact-icon" /> 
+                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
               </li>
-              <li>
-                <img src={IconCall} alt="Phone" /> 
-                <span className="contact-bold">+62 812 3456 7890</span>
+              <li onClick={() => window.open(waLink, '_blank')} style={{cursor: 'pointer'}}>
+                <img src={IconCall} alt="Phone" className="contact-icon" /> 
+                <span className="contact-info contact-bold">+62 822 4450 3221</span>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="pt-foot-bottom">
+        <div className="foot-bottom">
           <p>© 2026 Laoban by Uncle Osh. All rights reserved.</p>
           <p>Kebijakan Privasi &nbsp;&nbsp;•&nbsp;&nbsp; Syarat & Ketentuan</p>
         </div>

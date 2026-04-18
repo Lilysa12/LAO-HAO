@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import './Home.css'; 
 
 // --- IMPORT ASSETS GAMBAR HERO ---
@@ -28,7 +31,6 @@ import LogoLaoban from '../../../assets/icons/LogoLaoban.png';
 import IconInstagram from '../../../assets/icons/Instagram.png';
 import IconWhatsapp from '../../../assets/icons/Whatsapp.png';
 import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
-import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
 import IconTiktok from '../../../assets/icons/Tiktok.png';
 
 import IconMainDish from '../../../assets/icons/MainDish.png';
@@ -42,13 +44,41 @@ import IconMessage from '../../../assets/icons/Message.png';
 import IconCall from '../../../assets/icons/Call.png'; 
 import IconKemitraan from '../../../assets/icons/kemitraan.png'; 
 
+// --- FIX ICON LEAFLET (Mengatasi bug icon hilang di React) ---
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// --- REVISI 2: DATA CABANG (Sama seperti Our Partner) ---
+const branchData = [
+  { id: 1, name: 'Laoban Kopitiam Tebet', lat: -6.240, lng: 106.840 },
+  { id: 2, name: 'Laoban Kopitiam SCBD', lat: -6.225, lng: 106.808 },
+  { id: 3, name: 'Laoban Kopitiam Cilandak', lat: -6.290, lng: 106.810 },
+  { id: 4, name: 'Laoban Kopitiam Kelapa Gading', lat: -6.150, lng: 106.900 },
+  { id: 5, name: 'Laoban Kopitiam Margonda', lat: -6.390, lng: 106.830 },
+  { id: 6, name: 'Laoban Kopitiam Kemang Pratama', lat: -6.240, lng: 107.000 },
+  { id: 7, name: 'Laoban Kopitiam Suryakencana', lat: -6.600, lng: 106.800 },
+  { id: 8, name: 'Laoban Kopitiam Suhat, Malang', lat: -7.940, lng: 112.620 },
+  { id: 9, name: 'Laoban Kopitiam Binus Malang', lat: -7.930, lng: 112.650 },
+  { id: 10, name: 'Laoban Kopitiam Wiyung Surabaya', lat: -7.310, lng: 112.700 },
+  { id: 11, name: 'Laoban Kopitiam Mulyosari Surabaya', lat: -7.260, lng: 112.800 },
+  { id: 12, name: 'Laoban Kopitiam Baratajaya Surabaya', lat: -7.280, lng: 112.750 },
+  { id: 13, name: 'Laoban Kopitiam Cirebon', lat: -6.730, lng: 108.550 },
+];
+
 export default function Home() {
   const navigate = useNavigate();
   const [hoveredGridIndex, setHoveredGridIndex] = useState(null);
 
-  // ==============================================================
-  // ANIMASI ANGKA MENGHITUNG DARI NOL (COUNTER)
-  // ==============================================================
+  // Helper untuk pindah halaman dan scroll ke atas
+  const navigateToTop = (path) => {
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
   const [cabang, setCabang] = useState(0);
   const [kota, setKota] = useState(0);
   const [tahun, setTahun] = useState(0);
@@ -62,9 +92,7 @@ export default function Home() {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         setFn(Math.floor(progress * (end - start) + start));
-        if (progress < 1) {
-          window.requestAnimationFrame(step);
-        }
+        if (progress < 1) window.requestAnimationFrame(step);
       };
       window.requestAnimationFrame(step);
     };
@@ -79,10 +107,7 @@ export default function Home() {
       }
     }, { threshold: 0.5 }); 
 
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
-    }
-
+    if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -103,18 +128,13 @@ export default function Home() {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-        }
+        if (entry.isIntersecting) entry.target.classList.add('is-visible');
       });
     }, { threshold: 0.15 }); 
 
     const hiddenElements = document.querySelectorAll('.fade-in-up');
     hiddenElements.forEach((el) => observer.observe(el));
-
-    return () => {
-      hiddenElements.forEach((el) => observer.unobserve(el));
-    };
+    return () => hiddenElements.forEach((el) => observer.unobserve(el));
   }, []);
 
   return (
@@ -123,24 +143,23 @@ export default function Home() {
       {/* ================= 1. NAVBAR ================= */}
       <nav className="navbar fade-in-up">
         <div className="logo-box">
-          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{cursor: 'pointer'}} onClick={() => navigate('/home')} />
+          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
         </div>
         <div className="nav-links">
-          {/* FIX ROUTING NAVBAR: Kembali pakai tag <a> biar CSS merahnya jalan! */}
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }} className="active">Home</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>About</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/menu'); }}>Menu</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/our-partner'); }}>Our Partner</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/partnership'); }}>Partnership</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }} className="active">Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
         </div>
-        <button className="btn-red" onClick={() => navigate('/order')}>Pesan Sekarang</button>
+        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
       </nav>
 
       {/* ================= 2. HERO SECTION ================= */}
       <section className="hero fade-in-up delay-1">
         <div className="hero-text">
-          <div className="hero-subtitle">
-            <span className="line"></span> 老板 Nusantara · By Uncle Osh <span className="line"></span>
+          <div className="hero-subtitle-left">
+            老板 Nusantara · By Uncle Osh
           </div>
           <h1 className="hero-title">
             LAOBAN <br />
@@ -159,9 +178,8 @@ export default function Home() {
           </p>
           
           <div className="hero-action">
-            <button className="btn-red" onClick={() => navigate('/menu')}>Lihat Menu Pilihan</button>
-            {/* FIX ROUTING TOMBOL KEMITRAAN */}
-            <button className="btn-outline" onClick={() => navigate('/partnership')}>Gabung Kemitraan</button>
+            <button className="btn-red" onClick={() => navigateToTop('/menu')}>Lihat Menu Pilihan</button>
+            <button className="btn-outline" onClick={() => navigateToTop('/partnership')}>Gabung Kemitraan</button>
           </div>
         </div>
 
@@ -176,6 +194,7 @@ export default function Home() {
       {/* ================= 3. MARQUEE CABANG ================= */}
       <div className="red-marquee-container">
         <div className="red-marquee-track">
+          {/* Loop 1 */}
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
@@ -190,8 +209,7 @@ export default function Home() {
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> SAMARINDA</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> MANADO</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PONTIANAK</div>
-          
-          {/* Duplicate for infinite loop */}
+          {/* Loop 2 */}
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
@@ -246,7 +264,7 @@ export default function Home() {
           <p className="desc-gray">
             Kami berkomitmen untuk selalu menyajikan kualitas terbaik dengan harga yang bersahabat. Kebersihan, pelayanan ramah, dan cita rasa autentik adalah kunci yang membawa kami terus berekspansi hingga memiliki lebih dari 50 cabang di seluruh Indonesia.
           </p>
-          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>
+          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>
             Baca Selengkapnya &rarr;
           </a>
         </div>
@@ -259,28 +277,29 @@ export default function Home() {
           <h2 className="title-dark">Menu Perguruan Laoban</h2>
         </div>
 
-        <div className="menu-tabs">
-          <div className="tab active" onClick={() => navigate('/menu', { state: { category: 'Main Dish' }})} style={{cursor: 'pointer'}}>
+        {/* REVISI 1: Tampilan seragam (hapus efek khusus first-child di JSX) */}
+        <div className="menu-tabs static-tabs">
+          <div className="tab-static">
             <div className="icon"><img src={IconMainDish} alt="Main Dish" className="tab-img" /></div>
             <span>Main Dish</span>
           </div>
-          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Snack' }})} style={{cursor: 'pointer'}}>
+          <div className="tab-static">
             <div className="icon"><img src={IconSnack} alt="Snack" className="tab-img" /></div>
             <span>Snack</span>
           </div>
-          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Dimsum' }})} style={{cursor: 'pointer'}}>
+          <div className="tab-static">
             <div className="icon"><img src={IconDimsum} alt="Dimsum" className="tab-img" /></div>
             <span>Dimsum</span>
           </div>
-          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Hot Drink' }})} style={{cursor: 'pointer'}}>
+          <div className="tab-static">
             <div className="icon"><img src={IconHotDrink} alt="Hot Drink" className="tab-img" /></div>
             <span>Hot Drink</span>
           </div>
-          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Cold Drink' }})} style={{cursor: 'pointer'}}>
+          <div className="tab-static">
             <div className="icon"><img src={IconColdDrink} alt="Cold Drink" className="tab-img" /></div>
             <span>Cold Drink</span>
           </div>
-          <div className="tab" onClick={() => navigate('/menu', { state: { category: 'Ice & Dessert' }})} style={{cursor: 'pointer'}}>
+          <div className="tab-static">
             <div className="icon"><img src={IconIceDessert} alt="Ice & Dessert" className="tab-img" /></div>
             <span>Ice & Dessert</span>
           </div>
@@ -318,31 +337,43 @@ export default function Home() {
         </div>
 
         <div className="center-btn">
-          <button className="btn-outline-red" onClick={() => navigate('/menu')}>Lihat Seluruh Menu</button>
+          <button className="btn-outline-red" onClick={() => navigateToTop('/menu')}>Lihat Seluruh Menu</button>
         </div>
       </section>
 
       {/* ================= 6. MAP SECTION ================= */}
       <section className="map-section fade-in-up">
+        
         <h2 className="title-dark center-title">50+ Titik Kenikmatan di Seluruh Nusantara</h2>
         <p className="desc-gray text-center max-w">
           Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk mendekatkan kehangatan Kopitiam autentik ke kota Anda.
         </p>
         
-        <div className="map-box">
-          <div className="pin p-1">📍</div>
-          <div className="pin p-2">📍</div>
+        {/* REVISI 2: Peta Interaktif Leaflet (Sama seperti Our Partner) */}
+        <div className="home-map-wrapper">
+          <MapContainer center={[-6.200000, 106.816666]} zoom={6} scrollWheelZoom={true} className="home-map-container">
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {branchData.map((branch) => (
+              <Marker key={branch.id} position={[branch.lat, branch.lng]}>
+                <Popup>
+                  <strong style={{color: '#A00500'}}>{branch.name}</strong>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+
+          {/* Widget Info Overlay */}
           <div className="popup">
             <h2>54</h2>
             <p>CABANG AKTIF</p>
           </div>
-          <div className="pin-red p-3">📍 Jawa</div>
-          <div className="pin-red p-4">📍</div>
         </div>
         
         <div className="center-btn">
-          {/* FIX ROUTING TOMBOL LIHAT DETAIL CABANG */}
-          <button className="btn-outline-red" onClick={() => navigate('/our-partner')}>Lihat Detail Cabang</button>
+          <button className="btn-outline-red" onClick={() => navigateToTop('/our-partner')}>Lihat Detail Cabang</button>
         </div>
       </section>
 
@@ -364,7 +395,6 @@ export default function Home() {
               style={{ cursor: 'pointer' }}
             >
               <img src={image} alt={`IG ${index + 1}`} className="ig-img" />
-
               {index === hoveredGridIndex && (
                 <div className="ig-overlay-card">
                   <div className="ig-card-header">
@@ -390,11 +420,11 @@ export default function Home() {
             <h2>Jadilah Bagian dari Kesuksesan<br/>Laoban</h2>
             <p>Sudah 50+ cabang membuktikan kualitas dan profitabilitas bisnis Laoban Nusantara. Kini giliran Anda membuka peluang sukses dan bertumbuh bersama kami.</p>
             <div className="cta-action">
-              <button className="btn-yellow" style={{ display: 'flex', alignItems: 'center', gap: '10px' }} onClick={() => navigate('/partnership')}>
+              <button className="btn-yellow" style={{ display: 'flex', alignItems: 'center', gap: '10px' }} onClick={() => navigateToTop('/partnership')}>
                 <img src={IconKemitraan} alt="Kemitraan Icon" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                 Pelajari Kemitraan
               </button>
-              <button className="btn-outline-white" onClick={() => navigate('/partnership')}>Hubungi Tim Sales</button>
+              <button className="btn-outline-white" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}>Hubungi Tim Sales</button>
             </div>
           </div>
         </div>
@@ -404,46 +434,45 @@ export default function Home() {
       <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
-            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigate('/home')} />
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
-            <div className="socials socials-colored">
-               <div className="soc-colored"><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+            {/* REVISI 3: Icons Socmed Abu-abu uniform via CSS */}
+            <div className="socials socials-colored unified-socmed">
+               <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.facebook.com/laoban.nusantara/', '_blank')}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
             </div>
           </div>
           
           <div className="foot-links">
             <h4>Navigasi</h4>
             <ul>
-              {/* FIX ROUTING FOOTER */}
-              <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
-              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
-              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
-              <li onClick={() => navigate('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+              <li onClick={() => navigateToTop('/home')}>Home</li>
+              <li onClick={() => navigateToTop('/about')}>Tentang Kami</li>
+              <li onClick={() => navigateToTop('/menu')}>Menu Perguruan</li>
+              <li onClick={() => navigateToTop('/our-partner')}>Daftar Cabang</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Kemitraan</h4>
             <ul>
-              {/* FIX ROUTING FOOTER KEMITRAAN */}
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Proposal Bisnis</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+              <li onClick={() => navigateToTop('/partnership')}>Info Franchise</li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}>Hubungi Sales</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Hubungi Kami</h4>
             <ul className="contact-list contact-modern">
-              <li>
+              <li onClick={() => window.location.href = 'mailto:laobankopitiam@gmail.com'} style={{cursor: 'pointer'}}>
                 <img src={IconMessage} alt="Email" className="contact-icon" /> 
-                <span className="contact-info contact-link">hello@laobannusantara.com</span>
+                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
               </li>
-              <li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>
                 <img src={IconCall} alt="Phone" className="contact-icon" /> 
-                <span className="contact-info contact-bold">+62 812 3456 7890</span>
+                <span className="contact-info contact-bold">+62 822 4450 3221</span>
               </li>
             </ul>
           </div>

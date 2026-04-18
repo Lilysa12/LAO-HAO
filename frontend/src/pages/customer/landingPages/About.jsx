@@ -2,15 +2,12 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './About.css';
 
-// --- IMPORT ASSETS HEADER & FOOTER (Disamakan dengan Home) ---
+// --- IMPORT ASSETS HEADER & FOOTER ---
 import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; 
 import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; 
 import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; 
 import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
-import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
 import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; 
-
-// Pastikan dua icon ini ada di folder Abang (sama seperti di Home)
 import IconMessage from '../../../assets/icons/Message.png'; 
 import IconCall from '../../../assets/icons/Call.png'; 
 
@@ -20,6 +17,12 @@ import ImgFounder from '../../../assets/home/image2.png';
 
 export default function About() {
   const navigate = useNavigate();
+
+  // Helper untuk pindah halaman dan otomatis scroll ke atas
+  const navigateToTop = (path) => {
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -41,20 +44,19 @@ export default function About() {
   return (
     <div className="ab-container">
       
-      {/* ================= HEADER NAVBAR (MODERN) ================= */}
+      {/* ================= HEADER NAVBAR ================= */}
       <nav className="navbar fade-in-up">
-        <div className="logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
+        <div className="logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
         <div className="nav-links">
-          {/* FIX: Dikembalikan ke tag <a> bawaan Abang agar CSS warna merahnya jalan! */}
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">About</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/menu'); }}>Menu</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/our-partner'); }}>Our Partner</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/partnership'); }}>Partnership</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }} className="active">About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
         </div>
-        <button className="btn-red" onClick={() => navigate('/order')}>Pesan Sekarang</button>
+        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
       </nav>
 
       {/* ================= MAIN CONTENT ================= */}
@@ -116,48 +118,51 @@ export default function About() {
 
       </main>
 
-      {/* ================= FOOTER MODERN (Sama dengan Home) ================= */}
+      {/* ================= FOOTER MODERN (REVISI) ================= */}
       <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
-            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigate('/home')} />
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
-            <div className="socials socials-colored">
-               <div className="soc-colored"><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+            
+            {/* SOCIAL ICONS: Sudah ditambah Facebook dan pakai class unified-socmed biar abu-abu */}
+            <div className="socials socials-colored unified-socmed">
+               <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.facebook.com/laoban.nusantara/', '_blank')}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
             </div>
           </div>
           
           <div className="foot-links">
             <h4>Navigasi</h4>
             <ul>
-              <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
-              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
-              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
-              <li onClick={() => navigate('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+              <li onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>Home</li>
+              <li onClick={() => navigateToTop('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigateToTop('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
+              <li onClick={() => navigateToTop('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Kemitraan</h4>
             <ul>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Proposal Bisnis</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+              <li onClick={() => navigateToTop('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
+              {/* Proposal Bisnis sudah dihapus */}
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Hubungi Kami</h4>
             <ul className="contact-list contact-modern">
-              <li>
+              <li onClick={() => window.location.href = 'mailto:laobankopitiam@gmail.com'} style={{cursor: 'pointer'}}>
                 <img src={IconMessage} alt="Email" className="contact-icon" /> 
-                <span className="contact-info contact-link">hello@laobannusantara.com</span>
+                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
               </li>
-              <li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>
                 <img src={IconCall} alt="Phone" className="contact-icon" /> 
-                <span className="contact-info contact-bold">+62 812 3456 7890</span>
+                <span className="contact-info contact-bold">+62 822 4450 3221</span>
               </li>
             </ul>
           </div>
