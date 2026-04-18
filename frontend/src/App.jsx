@@ -27,6 +27,7 @@ import Pengaturan from './pages/admin/Pengaturan';
 
 // --- KASIR PAGES ---
 import Kasir from './pages/kasir/DenahMeja';
+import Pos from './pages/kasir/Pos'; // <--- IMPORT POS DITAMBAHKAN DI SINI
 import PesananDapur from './pages/kasir/PesananDapur';
 import StokMenu from './pages/kasir/StokMenu';
 import LaporanRiwayat from './pages/kasir/LaporanRiwayat';
@@ -73,6 +74,7 @@ function App() {
 
         {/* --- AREA KASIR (PROTECTED) --- */}
         <Route path="/kasir" element={<ProtectedRoute><Kasir /></ProtectedRoute>} />
+        <Route path="/kasir/pos" element={<ProtectedRoute><Pos /></ProtectedRoute>} /> {/* <--- RUTE POS DITAMBAHKAN DI SINI */}
         <Route path="/kasir/pesanan" element={<ProtectedRoute><PesananDapur /></ProtectedRoute>} />
         <Route path="/kasir/stok" element={<ProtectedRoute><StokMenu /></ProtectedRoute>} />
         <Route path="/kasir/laporan" element={<ProtectedRoute><LaporanRiwayat /></ProtectedRoute>} />
