@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Menu.css';
 
-// --- IMPORT ASSETS HEADER & FOOTER (Disamakan dengan Home) ---
+// --- IMPORT ASSETS HEADER & FOOTER (Sama dengan Home & About) ---
 import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; 
 import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; 
 import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; 
 import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
-import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
 import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; 
 import IconMessage from '../../../assets/icons/Message.png'; 
 import IconCall from '../../../assets/icons/Call.png'; 
@@ -20,7 +19,7 @@ import IconHotDrink from '../../../assets/icons/hotDrink.png';
 import IconColdDrink from '../../../assets/icons/coldDrink.png';
 import IconIceDessert from '../../../assets/icons/ice&Dessert.png';
 
-// --- IMPORT GAMBAR SLIDER (Dari Home) ---
+// --- IMPORT GAMBAR SLIDER ---
 import Slide1 from '../../../assets/home/nic_1497.jpg';
 import Slide2 from '../../../assets/home/nic_1941.jpg';
 import Slide3 from '../../../assets/home/nic_4125.jpg';
@@ -30,16 +29,21 @@ export default function Menu() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Helper untuk pindah halaman dan otomatis scroll ke atas
+  const navigateToTop = (path) => {
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
   // State Kategori Aktif
   const [activeCategory, setActiveCategory] = useState(location.state?.category || 'Main Dish');
   const [hoveredMenuItemIndex, setHoveredMenuItemIndex] = useState(null);
 
-  // Slider Logic
+  // Slider Logic (Otomatis saja, tombol manual dihapus)
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = [Slide1, Slide2, Slide3, Slide4];
 
   const nextSlide = () => setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-  const prevSlide = () => setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
 
   useEffect(() => {
     const slideInterval = setInterval(nextSlide, 3500);
@@ -81,7 +85,7 @@ export default function Menu() {
     { name: 'Ice & Dessert', icon: IconIceDessert },
   ];
 
-  // ================= DATABASE MENU LENGKAP & TERSORTIR =================
+  // ================= DATABASE MENU LENGKAP =================
   const menuData = [
     // --- MAIN DISH ---
     { id: 1, category: 'Main Dish', name: 'Nasi Lemak', desc: 'Rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah.', price: 'Rp 30.000' },
@@ -161,31 +165,29 @@ export default function Menu() {
       
       {/* ================= HEADER NAVBAR (MODERN) ================= */}
       <nav className="navbar fade-in-up">
-        <div className="logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
+        <div className="logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
         <div className="nav-links">
-          {/* FIX: Dikembalikan ke tag <a> bawaan Abang agar CSS warna merahnya jalan! */}
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
           <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">Menu</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/our-partner'); }}>Our Partner</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/partnership'); }}>Partnership</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
         </div>
-        {/* Tombol Pesan Sekarang terhubung ke /order */}
-        <button className="btn-red" onClick={() => navigate('/order')}>Pesan Sekarang</button>
+        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
       </nav>
 
-      {/* ================= HERO SECTION (TETAP SAMA) ================= */}
+      {/* ================= HERO SECTION ================= */}
       <section className="mn-hero">
         <div className="mn-hero-left">
           <div className="mn-hero-watermark">LAOBAN</div>
           <div className="mn-hero-content">
+            {/* REVISI 2: Tambahan tulisan "Menu" */}
+            <p className="mn-hero-subtitle-top">MENU</p>
             <h1 className="mn-hero-title">LaobanNusantara</h1>
             <p className="mn-hero-subtitle">BY UNCLE OSH</p>
-            <button className="mn-btn-white efek-klik" onClick={() => navigate('/order')}>
-              Grow Together With Us
-            </button>
+            {/* REVISI 1: Tombol "Grow Together With Us" dihapus */}
           </div>
         </div>
 
@@ -199,17 +201,7 @@ export default function Menu() {
             />
           ))}
           
-          <button className="mn-slider-btn left" onClick={prevSlide}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-
-          <button className="mn-slider-btn right" onClick={nextSlide}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
+          {/* REVISI 3: Tombol slider Kiri & Kanan dihapus, cukup dots saja */}
 
           <div className="mn-slider-dots">
             {slides.map((_, index) => (
@@ -280,48 +272,50 @@ export default function Menu() {
         </div>
       </main>
 
-      {/* ================= FOOTER MODERN (Sama dengan Home) ================= */}
+      {/* ================= FOOTER MODERN (REVISI 4: Disamakan dengan Home) ================= */}
       <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
-            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px'}} />
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
-            <div className="socials socials-colored">
-               <div className="soc-colored"><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+            
+            {/* SOCIAL ICONS (Warna seragam abu-abu) */}
+            <div className="socials socials-colored unified-socmed">
+               <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.facebook.com/laoban.nusantara/', '_blank')}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
             </div>
           </div>
           
           <div className="foot-links">
             <h4>Navigasi</h4>
             <ul>
-              <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
-              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
-              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
-              <li onClick={() => navigate('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+              <li onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>Home</li>
+              <li onClick={() => navigateToTop('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigateToTop('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
+              <li onClick={() => navigateToTop('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Kemitraan</h4>
             <ul>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Proposal Bisnis</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+              <li onClick={() => navigateToTop('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Hubungi Kami</h4>
             <ul className="contact-list contact-modern">
-              <li>
+              <li onClick={() => window.location.href = 'mailto:laobankopitiam@gmail.com'} style={{cursor: 'pointer'}}>
                 <img src={IconMessage} alt="Email" className="contact-icon" /> 
-                <span className="contact-info contact-link">hello@laobannusantara.com</span>
+                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
               </li>
-              <li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>
                 <img src={IconCall} alt="Phone" className="contact-icon" /> 
-                <span className="contact-info contact-bold">+62 812 3456 7890</span>
+                <span className="contact-info contact-bold">+62 822 4450 3221</span>
               </li>
             </ul>
           </div>

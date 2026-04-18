@@ -31,7 +31,7 @@
 }
 
 /* =======================================================
-   1. NAVBAR (SAMA DENGAN HOME)
+   1. NAVBAR
 ======================================================= */
 .navbar { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; background-color: var(--c-bg-white); border-bottom: 1px solid var(--c-gray-border); position: relative; z-index: 50; }
 .logo-box { display: flex; align-items: center; }
@@ -55,7 +55,7 @@
 
 .ab-section {
   display: flex;
-  align-items: center; /* FIX: Dikembalikan ke center agar gambar tidak ditarik paksa (stretch) */
+  align-items: center;
   gap: 80px;
   padding: 100px 60px;
 }
@@ -97,7 +97,6 @@
   position: relative; 
 }
 
-/* FIX: Tinggi dikunci di 600px agar estetik, tidak kepanjangan */
 .ab-main-img { 
   width: 100%; 
   max-width: 600px; 
@@ -150,7 +149,7 @@
 }
 
 /* =======================================================
-   3. FOOTER (SAMA DENGAN HOME)
+   3. FOOTER
 ======================================================= */
 .footer-modern { background: var(--c-bg-white); padding: 60px 60px 40px 60px; border-top: 1px solid var(--c-gray-border); margin-top: auto; display: flex; flex-direction: column; justify-content: space-between; position: relative; z-index: 40;}
 .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
@@ -159,7 +158,15 @@
 /* SOCIAL ICONS */
 .socials-colored { display: flex; gap: 12px; flex-wrap: wrap;}
 .soc-colored { width: 40px; height: 40px; background: #F8F9FA; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--c-gray); cursor: pointer; border: 1px solid var(--c-gray-border); transition: 0.3s; }
-.soc-colored:hover { border-color: var(--c-red); background: var(--c-white); }
+
+/* CLASS UNTUK MEMBUAT ICON ABU-ABU */
+.unified-socmed .soc-colored .soc-img {
+  filter: grayscale(100%) opacity(0.7);
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+.unified-socmed .soc-colored:hover { border-color: var(--c-border); background: #EAEAEA; }
+.unified-socmed .soc-colored:hover .soc-img { filter: grayscale(100%) opacity(1); }
+
 .soc-img { width: 16px; height: 16px; object-fit: contain; } 
 
 /* FOOTER LINKS */

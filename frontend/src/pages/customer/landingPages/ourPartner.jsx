@@ -10,7 +10,6 @@ import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png';
 import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; 
 import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; 
 import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
-import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
 import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; 
 import IconMessage from '../../../assets/icons/Message.png'; 
 import IconCall from '../../../assets/icons/Call.png'; 
@@ -45,11 +44,37 @@ export default function OurPartner() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBranch, setSelectedBranch] = useState(null);
 
+  // Helper navigasi ke atas
+  const navigateToTop = (path) => {
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
   // Filter cabang berdasarkan pencarian
   const filteredBranches = branchData.filter(branch => 
     branch.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     branch.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // REVISI 3: FUNGSI MENGECEK APAKAH TOKO BUKA (REAL-TIME)
+  const checkIsOpen = (hoursText) => {
+    try {
+      const timeParts = hoursText.split(' - ');
+      const parseTime = (str) => {
+        const parts = str.split('.');
+        return parseInt(parts[0]) + (parseInt(parts[1] || 0) / 60);
+      };
+      const start = parseTime(timeParts[0]);
+      const end = parseTime(timeParts[1]);
+      
+      const now = new Date();
+      const current = now.getHours() + (now.getMinutes() / 60);
+      
+      return current >= start && current < end;
+    } catch(e) {
+      return true; // Jika gagal parsing, anggap buka
+    }
+  };
 
   // Animasi Scroll
   useEffect(() => {
@@ -70,17 +95,17 @@ export default function OurPartner() {
       
       {/* ================= 1. NAVBAR ================= */}
       <nav className="navbar fade-in-up">
-        <div className="logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
+        <div className="logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
         <div className="nav-links">
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>About</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/menu'); }}>Menu</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
           <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">Our Partner</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/partnership'); }}>Partnership</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
         </div>
-        <button className="btn-red" onClick={() => navigate('/order')}>Pesan Sekarang</button>
+        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
       </nav>
 
       <main className="op-main-content fade-in-up delay-1">
@@ -105,7 +130,6 @@ export default function OurPartner() {
 
         {/* ================= MAP SECTION (REACT-LEAFLET) ================= */}
         <section className="op-map-wrapper fade-in-up">
-          {/* FIX: scrollWheelZoom={true} agar peta bisa di zoom pakai scroll mouse/touch */}
           <MapContainer center={[-6.200000, 106.816666]} zoom={6} scrollWheelZoom={true} className="op-map-container">
             <TileLayer
               attribution='© OpenStreetMap contributors'
@@ -123,7 +147,6 @@ export default function OurPartner() {
 
           <div className="op-map-widget">
             <div className="op-widget-icon">
-              {/* Ikon Store Kuning */}
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#750300" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -136,14 +159,14 @@ export default function OurPartner() {
           </div>
         </section>
 
-        {/* ================= CARD SLIDER SECTION ================= */}
+        {/* ================= CARD GRID SECTION (REVISI 2: 3 KOLOM BAWAH) ================= */}
         <section className="op-list-section fade-in-up">
           <div className="op-list-header">
             <div className="op-yellow-line-vert"></div>
             <h2>Daftar Cabang Perguruan Laoban</h2>
           </div>
 
-          <div className="op-card-slider">
+          <div className="op-card-grid">
             {filteredBranches.length > 0 ? (
               filteredBranches.map((branch) => (
                 <div key={branch.id} className="op-card" onClick={() => setSelectedBranch(branch)}>
@@ -175,7 +198,11 @@ export default function OurPartner() {
             
             <div className="op-modal-header-img">
               <img src={selectedBranch.img} alt={selectedBranch.name} />
-              <div className="op-badge-open">✓ Buka Sekarang</div>
+              
+              {/* REVISI 3: Render label Buka/Tutup secara cerdas otomatis */}
+              <div className={`op-badge-status ${checkIsOpen(selectedBranch.hours) ? 'open' : 'closed'}`}>
+                {checkIsOpen(selectedBranch.hours) ? '✓ Buka Sekarang' : '✕ Tutup Sekarang'}
+              </div>
             </div>
 
             <div className="op-modal-content">
@@ -220,39 +247,46 @@ export default function OurPartner() {
       <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
-            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigate('/home')} />
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
-            <div className="socials-colored">
-               <div className="soc-colored"><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
-               <div className="soc-colored"><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+            
+            <div className="socials socials-colored unified-socmed">
+               <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.facebook.com/laoban.nusantara/', '_blank')}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
             </div>
           </div>
           
           <div className="foot-links">
             <h4>Navigasi</h4>
             <ul>
-              <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
-              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
-              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
-              <li onClick={() => navigate('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+              <li onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>Home</li>
+              <li onClick={() => navigateToTop('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigateToTop('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
+              <li onClick={() => navigateToTop('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Kemitraan</h4>
             <ul>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Proposal Bisnis</li>
-              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+              <li onClick={() => navigateToTop('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
             </ul>
           </div>
           
           <div className="foot-links">
             <h4>Hubungi Kami</h4>
             <ul className="contact-list contact-modern">
-              <li><img src={IconMessage} alt="Email" className="contact-icon" /> <span className="contact-info contact-link">hello@laobannusantara.com</span></li>
-              <li><img src={IconCall} alt="Phone" className="contact-icon" /> <span className="contact-info contact-bold">+62 812 3456 7890</span></li>
+              <li onClick={() => window.location.href = 'mailto:laobankopitiam@gmail.com'} style={{cursor: 'pointer'}}>
+                <img src={IconMessage} alt="Email" className="contact-icon" /> 
+                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
+              </li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>
+                <img src={IconCall} alt="Phone" className="contact-icon" /> 
+                <span className="contact-info contact-bold">+62 822 4450 3221</span>
+              </li>
             </ul>
           </div>
         </div>
