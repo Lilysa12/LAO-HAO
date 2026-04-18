@@ -5,12 +5,14 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/customer/landingPages/Home'; 
 import About from './pages/customer/landingPages/About';
 import Menu from './pages/customer/landingPages/Menu'; 
+import Partnership from './pages/customer/landingPages/partnership'; 
+import OurPartner from './pages/customer/landingPages/ourPartner'; 
 import InputData from './pages/customer/order/InputData';
 import MenuList from './pages/customer/order/MenuList'; 
 import MenuDetail from './pages/customer/order/MenuDetail';
 import Checkout from './pages/customer/order/Checkout'; 
 import Voucher from './pages/customer/order/Voucher';
-import Payment from './pages/customer/order/Payment';  
+import Payment from './pages/customer/order/Payment';
 import Status from './pages/customer/order/Status';
 
 // --- AUTH PAGE ---
@@ -33,7 +35,6 @@ import LaporanRiwayat from './pages/kasir/LaporanRiwayat';
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
   
-  // Jika belum login, arahkan ke login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -50,8 +51,11 @@ function App() {
         <Route path="/home" element={<Home />} /> 
         <Route path="/about" element={<About />} />
         <Route path="/menu" element={<Menu />} />
+        <Route path="/partnership" element={<Partnership />} /> 
+        <Route path="/our-partner" element={<OurPartner />} /> 
+        <Route path="/login" element={<Login />} />
 
-        {/* --- ROUTE CUSTOMER: ORDER FLOW --- */}
+        {/* --- CUSTOMER ORDER FLOW --- */}
         <Route path="/order" element={<InputData />} />
         <Route path="/order-list" element={<MenuList />} /> 
         <Route path="/detail" element={<MenuDetail />} />
@@ -59,9 +63,6 @@ function App() {
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/payment" element={<Payment />} />  
         <Route path="/status" element={<Status />} />
-        
-        {/* --- AUTH --- */}
-        <Route path="/login" element={<Login />} />
         
         {/* --- AREA ADMIN (PROTECTED) --- */}
         <Route path="/admin" element={<ProtectedRoute><OverviewCabang /></ProtectedRoute>} />
