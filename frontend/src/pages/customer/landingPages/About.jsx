@@ -1,39 +1,61 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './About.css';
 
-// --- IMPORT ICONS (FIX JALUR: Sesuai persis dengan huruf besar/kecil di folder) ---
-import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; // L besar
-import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; // I besar
-import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; // W besar
-import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; // f kecil (khusus ini)
-import IconLink from '../../../assets/icons/icons-customer/Link.png'; // L besar
-import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; // T besar
+// --- IMPORT ASSETS HEADER & FOOTER (Disamakan dengan Home) ---
+import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; 
+import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; 
+import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; 
+import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
+import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
+import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; 
 
-// --- IMPORT GAMBAR ABOUT (FIX JALUR: Sesuaikan dengan nama file) ---
+// Pastikan dua icon ini ada di folder Abang (sama seperti di Home)
+import IconMessage from '../../../assets/icons/Message.png'; 
+import IconCall from '../../../assets/icons/Call.png'; 
+
+// --- IMPORT GAMBAR ABOUT MAIN CONTENT ---
 import ImgHistory from '../../../assets/home/image1.png'; 
 import ImgFounder from '../../../assets/home/image2.png'; 
 
 export default function About() {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.15 }); 
+
+    const hiddenElements = document.querySelectorAll('.slide-up, .fade-in-up');
+    hiddenElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      hiddenElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+
   return (
     <div className="ab-container">
       
-      {/* ================= HEADER NAVBAR ================= */}
-      <header className="ab-header">
-        <div className="ab-logo-box" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="ab-logo" />
+      {/* ================= HEADER NAVBAR (MODERN) ================= */}
+      <nav className="navbar fade-in-up">
+        <div className="logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
+          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
-        <nav className="ab-nav-links">
+        <div className="nav-links">
+          {/* FIX: Dikembalikan ke tag <a> bawaan Abang agar CSS warna merahnya jalan! */}
           <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
-          <a href="#" className="active">About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">About</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigate('/menu'); }}>Menu</a>
-          <a href="#">Our Partner</a>
-          <a href="#">Partnership</a>
-        </nav>
-        <div style={{ width: '100px' }}></div>
-      </header>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/our-partner'); }}>Our Partner</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/partnership'); }}>Partnership</a>
+        </div>
+        <button className="btn-red" onClick={() => navigate('/order')}>Pesan Sekarang</button>
+      </nav>
 
       {/* ================= MAIN CONTENT ================= */}
       <main className="ab-main-content">
@@ -42,8 +64,7 @@ export default function About() {
         <section className="ab-section ab-history slide-up">
           <div className="ab-text-area">
             <div className="ab-label-wrapper">
-              <span className="ab-line"></span>
-              <span className="ab-label">ABOUT US</span>
+              <span className="ab-label red-text">ABOUT US</span>
             </div>
             <h1 className="ab-title">HISTORY LAOBAN<br/>NUSANTARA</h1>
             
@@ -95,22 +116,56 @@ export default function About() {
 
       </main>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="ab-footer">
-        <div className="ab-socials">
-          <div className="ab-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
-          <div className="ab-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
-          <div className="ab-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
-          <div className="ab-soc-circle"><img src={IconLink} alt="Link" /></div>
-          <div className="ab-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
+      {/* ================= FOOTER MODERN (Sama dengan Home) ================= */}
+      <footer className="footer-modern fade-in-up delay-1">
+        <div className="foot-grid">
+          <div className="foot-brand">
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigate('/home')} />
+            <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
+            <div className="socials socials-colored">
+               <div className="soc-colored"><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored"><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored"><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+            </div>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Navigasi</h4>
+            <ul>
+              <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
+              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
+              <li onClick={() => navigate('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+            </ul>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Kemitraan</h4>
+            <ul>
+              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
+              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Proposal Bisnis</li>
+              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+            </ul>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Hubungi Kami</h4>
+            <ul className="contact-list contact-modern">
+              <li>
+                <img src={IconMessage} alt="Email" className="contact-icon" /> 
+                <span className="contact-info contact-link">hello@laobannusantara.com</span>
+              </li>
+              <li>
+                <img src={IconCall} alt="Phone" className="contact-icon" /> 
+                <span className="contact-info contact-bold">+62 812 3456 7890</span>
+              </li>
+            </ul>
+          </div>
         </div>
         
-        <div className="ab-footer-logo-box" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="ab-footer-logo" />
-        </div>
-
-        <div className="ab-copyright">
-          © Copyright Laoban Nusantara.
+        <div className="foot-bottom">
+          <p>© 2026 Laoban by Uncle Osh. All rights reserved.</p>
+          <p>Kebijakan Privasi &nbsp;&nbsp;•&nbsp;&nbsp; Syarat & Ketentuan</p>
         </div>
       </footer>
 

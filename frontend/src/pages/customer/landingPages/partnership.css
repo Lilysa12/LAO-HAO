@@ -1,0 +1,453 @@
+/* src/pages/customer/Partnership.css */
+
+:root {
+  --pt-red: #A00500;
+  --pt-dark-red: #750300;
+  --pt-yellow: #FDC424;
+  --pt-green: #285741;
+  --pt-dark: #1A1A1A;
+  --pt-gray: #6C757D;
+  --pt-gray-light: #E4E2DF;
+  --pt-bg-cream: #F5F3F0;
+  --pt-white: #FFFFFF;
+  
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+/* --- RESET & LAYOUT --- */
+.pt-container, .pt-container * { box-sizing: border-box; }
+
+.pt-container {
+  max-width: 2000px;
+  width: 100%;
+  margin: 0 auto;
+  background-color: var(--pt-white);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.text-center { text-align: center; }
+.text-red { color: var(--pt-red) !important; font-family: var(--font-poppins); font-weight: 700; margin: 0;}
+
+/* --- ANIMASI SCROLL --- */
+.fade-in-up { 
+  opacity: 0; 
+  transform: translateY(60px) translateZ(0); 
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+.fade-in-up.is-visible { 
+  opacity: 1; 
+  transform: translateY(0) translateZ(0); 
+}
+.delay-1 { transition-delay: 0.2s; }
+
+/* ================= 1. NAVBAR (SAMA DENGAN HOME) ================= */
+.pt-navbar { 
+  display: flex; justify-content: space-between; align-items: center; 
+  min-height: 92px; padding: 0 60px; 
+  background-color: var(--pt-white); border-bottom: 1px solid #EAEAEA; 
+  position: relative; z-index: 50; 
+}
+.pt-logo-box { display: flex; align-items: center; }
+.pt-logo-img { height: 45px; object-fit: contain; }
+.pt-nav-links { display: flex; gap: 40px; flex-wrap: wrap; }
+.pt-nav-links a { text-decoration: none; color: var(--pt-gray); font-family: var(--font-poppins); font-size: 14px; font-weight: 500; transition: 0.3s; }
+.pt-nav-links a:hover { color: var(--pt-red); }
+.pt-nav-links a.active { color: var(--pt-red); border-bottom: 2px solid var(--pt-red); padding-bottom: 4px; font-weight: 600;}
+.pt-btn-red { background: var(--pt-red); color: #fff; border: none; padding: 12px 28px; border-radius: 30px; font-family: var(--font-poppins); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s;}
+.pt-btn-red:hover { background: var(--pt-dark-red); }
+
+/* ================= 2. HERO SECTION ================= */
+.pt-hero {
+  position: relative;
+  min-height: 80vh; /* Saya tinggikan sedikit biar ada ruang lega di bawah tombol */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 40px;
+}
+
+.pt-hero-bg {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1;
+}
+
+.pt-bg-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* FIX FINAL: Merah hilang total sampai bawah tombol! */
+.pt-hero-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 0.6) 0%,       /* Agak gelap di pucuk atas biar teks terbaca */
+    transparent 20%,             /* BENING TOTAL */
+    transparent 85%,             /* TETAP BENING TOTAL sampai melewati tombol */
+    var(--pt-red) 100%           /* Merah baru muncul di ujung lantai paling bawah */
+  ) !important;
+}
+
+.pt-hero-content {
+  position: relative;
+  z-index: 2;
+  color: var(--pt-white);
+  max-width: 900px;
+  /* Bayangan teks hitam agar tulisan putih tidak tenggelam oleh background gambar yang terang */
+  text-shadow: 0px 4px 8px rgba(0, 0, 0, 0.8) !important; 
+}
+
+.pt-hero-label {
+  font-family: var(--font-poppins);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.pt-hero-title {
+  font-family: var(--font-jakarta);
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 25px 0;
+}
+
+.pt-hero-desc {
+  font-family: var(--font-inter);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 auto 35px auto;
+  max-width: 700px;
+  opacity: 0.95;
+}
+
+.pt-btn-dark-red {
+  background: var(--pt-dark-red);
+  color: var(--pt-white);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 14px 35px;
+  border-radius: 8px;
+  font-family: var(--font-poppins);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  text-shadow: none !important; /* Tombol tidak perlu bayangan teks */
+}
+
+.pt-btn-dark-red:hover {
+  background: #5A0200;
+}
+
+/* ================= 3. KENAPA BERGABUNG SECTION ================= */
+.pt-why-section {
+  background-color: var(--pt-red);
+  padding: 0 60px 100px 60px; /* Padding atas 0 karena nyambung dari hero */
+  position: relative;
+  z-index: 2;
+}
+
+.pt-section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.pt-title-white {
+  font-family: var(--font-jakarta);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--pt-white);
+  margin: 0 0 15px 0;
+}
+
+.pt-yellow-line {
+  width: 60px;
+  height: 3px;
+  background-color: var(--pt-yellow);
+  margin: 0 auto;
+}
+
+.pt-why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pt-why-card {
+  background: var(--pt-white);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.pt-why-card:hover {
+  transform: translateY(-10px);
+}
+
+.pt-icon-wrap img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.pt-why-card h3 {
+  font-family: var(--font-poppins);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--pt-dark-red);
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.pt-why-card p {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  color: var(--pt-gray);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ================= 4. JOURNEY SECTION ================= */
+.pt-journey-section {
+  background-color: var(--pt-bg-cream);
+  padding: 100px 60px;
+  position: relative;
+  z-index: 2;
+}
+
+.pt-title-darkred {
+  font-family: var(--font-jakarta);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--pt-dark-red);
+  margin: 0;
+}
+
+.pt-journey-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto 60px auto;
+}
+
+.pt-journey-card {
+  background: var(--pt-white);
+  border-radius: 12px;
+  padding: 30px 25px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+  transition: transform 0.3s ease;
+}
+
+.pt-journey-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(160, 5, 0, 0.08);
+}
+
+.pt-circle-icon {
+  width: 45px;
+  height: 45px;
+  background-color: #FDF4F4; /* Lingkaran merah sangat muda */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pt-circle-icon img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.pt-journey-card h4 {
+  font-family: var(--font-poppins);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pt-dark-red);
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+}
+
+.pt-journey-card p {
+  font-family: var(--font-inter);
+  font-size: 12px;
+  color: var(--pt-gray);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Contact Cards (Bawah Journey) */
+.pt-contact-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.pt-contact-card {
+  background: var(--pt-white);
+  border-radius: 12px;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+}
+
+.pt-contact-icon-bg {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.bg-yellow { background-color: var(--pt-yellow); }
+.bg-green { background-color: var(--pt-green); }
+
+.pt-contact-icon-bg img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* Memutihkan ikon jika aslinya berwarna */
+}
+.bg-yellow img { filter: none; } /* Ikon di kuning biasanya tetap gelap */
+
+.pt-contact-text h5 {
+  font-family: var(--font-poppins);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--pt-dark);
+  margin: 0 0 5px 0;
+}
+
+.pt-contact-text p {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  color: var(--pt-gray);
+  margin: 0 0 10px 0;
+}
+
+/* ================= 5. CTA BOTTOM ================= */
+.pt-cta-bottom {
+  background-color: var(--pt-dark-red);
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.pt-cta-title {
+  font-family: var(--font-jakarta);
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--pt-white);
+  margin: 0 0 30px 0;
+}
+
+.pt-btn-white {
+  background: var(--pt-white);
+  color: var(--pt-dark-red);
+  border: none;
+  padding: 14px 35px;
+  border-radius: 8px;
+  font-family: var(--font-poppins);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.pt-btn-white:hover {
+  background: #F0F0F0;
+  transform: translateY(-2px);
+}
+
+/* ================= 6. FOOTER ================= */
+.pt-footer { 
+  background: var(--pt-white); 
+  padding: 60px 60px 40px 60px; 
+  border-top: 1px solid var(--pt-gray-light); 
+  margin-top: auto; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: space-between; 
+}
+.pt-foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
+.pt-foot-brand p { font-family: var(--font-inter); font-size: 13px; color: var(--pt-gray); line-height: 1.7; margin: 15px 0 25px 0; max-width: 280px; }
+.pt-socials { display: flex; gap: 12px; flex-wrap: wrap;}
+.pt-soc-circle { width: 40px; height: 40px; background: #F8F9FA; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--pt-gray-light); transition: 0.3s; }
+.pt-soc-circle:hover { border-color: var(--pt-red); background: var(--pt-white); }
+.pt-soc-circle img { width: 16px; height: 16px; object-fit: contain; } 
+.pt-foot-links h4 { font-family: var(--font-poppins); font-size: 15px; color: var(--pt-dark); margin: 0 0 20px 0; font-weight: 700; }
+.pt-foot-links ul, .pt-contact-list { list-style: none; padding: 0; margin: 0; }
+.pt-foot-links ul li { font-family: var(--font-inter); font-size: 14px; color: var(--pt-gray); margin-bottom: 15px; cursor: pointer; transition: 0.3s; }
+.pt-foot-links ul li:hover { color: var(--pt-red); }
+.pt-contact-list li { display: flex; align-items: center; gap: 12px; margin-bottom: 15px;}
+.pt-contact-list img { width: 18px; height: 18px; object-fit: contain; }
+.contact-link { color: var(--pt-dark); font-weight: 500; font-family: var(--font-inter); font-size: 14px;}
+.contact-bold { color: var(--pt-dark); font-weight: 600; font-family: var(--font-inter); font-size: 14px;}
+.pt-foot-bottom { display: flex; justify-content: space-between; padding-top: 30px; border-top: 1px solid var(--pt-gray-light); font-family: var(--font-inter); font-size: 12px; color: var(--pt-gray); margin-top: 50px; flex-wrap: wrap; gap: 20px;}
+.pt-foot-bottom p:last-child { cursor: pointer; transition: 0.3s; }
+.pt-foot-bottom p:last-child:hover { color: var(--pt-red); }
+
+
+/* ========================================= */
+/* --- RESPONSIVE MOBILE LAYOUT --- */
+/* ========================================= */
+
+@media (max-width: 1024px) {
+  .pt-why-grid, .pt-journey-grid { grid-template-columns: repeat(2, 1fr); }
+  .pt-navbar { padding: 0 40px; }
+  .pt-hero { padding: 80px 40px; }
+  .pt-hero-title { font-size: 42px; }
+  .pt-why-section { padding: 0 40px 80px 40px; }
+  .pt-journey-section { padding: 80px 40px; }
+  .pt-footer { padding: 60px 40px 40px 40px; }
+}
+
+@media (max-width: 768px) {
+  .pt-navbar, .pt-hero, .pt-why-section, .pt-journey-section, .pt-cta-bottom, .pt-footer { padding-left: 20px !important; padding-right: 20px !important; }
+
+  .pt-navbar { min-height: 80px; }
+  .pt-nav-links { display: none; } 
+  .pt-logo-img { height: 35px; } 
+  .pt-navbar .pt-btn-red { padding: 10px 18px; font-size: 12px; border-radius: 20px; }
+
+  .pt-hero-title { font-size: 32px; margin-bottom: 15px; line-height: 1.2;}
+  .pt-hero-desc { font-size: 13px; margin-bottom: 25px; }
+
+  .pt-title-white { font-size: 26px; }
+  .pt-title-darkred { font-size: 28px; margin-bottom: 30px !important; }
+
+  .pt-why-grid, .pt-journey-grid, .pt-contact-cards { grid-template-columns: 1fr; gap: 20px;}
+  
+  .pt-contact-card { flex-direction: column; text-align: center; padding: 25px 20px;}
+
+  .pt-cta-title { font-size: 26px; }
+  .pt-cta-bottom { padding: 60px 20px; }
+
+  .pt-foot-grid { grid-template-columns: 1fr; text-align: center; }
+  .pt-foot-brand p { margin: 10px auto 15px auto; }
+  .pt-socials { justify-content: center; margin-bottom: 20px;}
+  .pt-contact-list li { justify-content: center; }
+  .pt-foot-bottom { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+}

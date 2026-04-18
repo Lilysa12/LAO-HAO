@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import './Menu.css';
 
-// --- IMPORT ICONS & LOGO ---
-import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
-import IconInstagram from '../../../assets/icons/icons-customer/instagram.png';
-import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
-import IconFacebook from '../../../assets/icons/icons-customer/facebook.png';
-import IconLink from '../../../assets/icons/icons-customer/link.png';
-import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
+// --- IMPORT ASSETS HEADER & FOOTER (Disamakan dengan Home) ---
+import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; 
+import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; 
+import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; 
+import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
+import IconLink from '../../../assets/icons/icons-customer/Link.png'; 
+import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; 
+import IconMessage from '../../../assets/icons/Message.png'; 
+import IconCall from '../../../assets/icons/Call.png'; 
 
 // --- IMPORT KATEGORI ICONS ---
 import IconMainDish from '../../../assets/icons/mainDish.png';
@@ -44,6 +46,24 @@ export default function Menu() {
     return () => clearInterval(slideInterval);
   }, [currentSlide]);
 
+  // Animasi Navbar (Fade in up)
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.15 }); 
+
+    const hiddenElements = document.querySelectorAll('.fade-in-up');
+    hiddenElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      hiddenElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+
   // Tangkap kategori dari routing halaman Home
   useEffect(() => {
     if (location.state?.category) {
@@ -51,7 +71,7 @@ export default function Menu() {
     }
   }, [location.state]);
 
-  // Daftar Kategori (Dikembalikan menjadi 6 kategori)
+  // Daftar Kategori
   const categories = [
     { name: 'Main Dish', icon: IconMainDish },
     { name: 'Snack', icon: IconSnack },
@@ -133,28 +153,30 @@ export default function Menu() {
     { id: 57, category: 'Ice & Dessert', name: 'Es ABCD', desc: 'Es serut campur sirup manis ala melayu penutup makan.', price: 'Rp 24.000' }
   ];
 
-  // Filter menu berdasarkan tab kategori yang sedang di-klik
+  // Filter menu
   const activeProducts = menuData.filter(product => product.category === activeCategory);
 
   return (
     <div className="mn-container">
       
-      {/* ================= HEADER ================= */}
-      <header className="mn-header">
-        <div className="mn-logo-box" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="mn-logo" />
+      {/* ================= HEADER NAVBAR (MODERN) ================= */}
+      <nav className="navbar fade-in-up">
+        <div className="logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
+          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
-        <nav className="mn-nav-links">
-          <Link to="/home">Home</Link>
-          <Link to="/about">About</Link>
-          <Link to="/menu" className="active">Menu</Link>
-          <Link to="#">Our Partner</Link>
-          <Link to="#">Partnership</Link>
-        </nav>
-        <div style={{ width: '100px' }}></div>
-      </header>
+        <div className="nav-links">
+          {/* FIX: Dikembalikan ke tag <a> bawaan Abang agar CSS warna merahnya jalan! */}
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">Menu</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/our-partner'); }}>Our Partner</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/partnership'); }}>Partnership</a>
+        </div>
+        {/* Tombol Pesan Sekarang terhubung ke /order */}
+        <button className="btn-red" onClick={() => navigate('/order')}>Pesan Sekarang</button>
+      </nav>
 
-      {/* ================= HERO SECTION ================= */}
+      {/* ================= HERO SECTION (TETAP SAMA) ================= */}
       <section className="mn-hero">
         <div className="mn-hero-left">
           <div className="mn-hero-watermark">LAOBAN</div>
@@ -244,7 +266,6 @@ export default function Menu() {
                     <div className="mn-item-overlay-content">
                       <h4 className="mn-item-food-name">{prod.name}</h4>
                       <p className="mn-item-food-desc">{prod.desc}</p>
-                      {/* Harga Menu Muncul Disini */}
                       <span className="mn-item-food-price">{prod.price}</span>
                     </div>
                   </div>
@@ -259,22 +280,56 @@ export default function Menu() {
         </div>
       </main>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="mn-footer">
-        <div className="mn-socials">
-          <div className="mn-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
-          <div className="mn-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
-          <div className="mn-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
-          <div className="mn-soc-circle"><img src={IconLink} alt="Link" /></div>
-          <div className="mn-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
+      {/* ================= FOOTER MODERN (Sama dengan Home) ================= */}
+      <footer className="footer-modern fade-in-up delay-1">
+        <div className="foot-grid">
+          <div className="foot-brand">
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px'}} />
+            <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
+            <div className="socials socials-colored">
+               <div className="soc-colored"><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored"><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored"><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+            </div>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Navigasi</h4>
+            <ul>
+              <li onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>Home</li>
+              <li onClick={() => navigate('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigate('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
+              <li onClick={() => navigate('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+            </ul>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Kemitraan</h4>
+            <ul>
+              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
+              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Proposal Bisnis</li>
+              <li onClick={() => navigate('/partnership')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+            </ul>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Hubungi Kami</h4>
+            <ul className="contact-list contact-modern">
+              <li>
+                <img src={IconMessage} alt="Email" className="contact-icon" /> 
+                <span className="contact-info contact-link">hello@laobannusantara.com</span>
+              </li>
+              <li>
+                <img src={IconCall} alt="Phone" className="contact-icon" /> 
+                <span className="contact-info contact-bold">+62 812 3456 7890</span>
+              </li>
+            </ul>
+          </div>
         </div>
         
-        <div className="mn-footer-logo-box" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="mn-footer-logo" />
-        </div>
-
-        <div className="mn-copyright">
-          © Copyright Laoban Nusantara.
+        <div className="foot-bottom">
+          <p>© 2026 Laoban by Uncle Osh. All rights reserved.</p>
+          <p>Kebijakan Privasi &nbsp;&nbsp;•&nbsp;&nbsp; Syarat & Ketentuan</p>
         </div>
       </footer>
 
