@@ -103,7 +103,7 @@
 .link-red:hover { text-decoration: underline; }
 
 /* ========================================================= */
-/* --- MENU SECTION (FIX LAYOUT BOCOR DARI MENU.CSS) --- */
+/* --- MENU SECTION (FIX LAYOUT SESUAI GAMBAR 2) --- */
 /* ========================================================= */
 .home-container .menu-section { padding: 100px 60px; background: var(--c-bg-white); position: relative; z-index: 10; }
 
@@ -112,15 +112,18 @@
 .home-container .tab-static .icon { width: 60px; height: 60px; background-color: #FFF7F7; border-radius: 20px; display: flex; justify-content: center; align-items: center; border: 1px solid transparent; transition: all 0.3s ease; }
 .home-container .tab-img { width: 22px; height: 22px; object-fit: contain; transition: 0.3s; }
 .home-container .tab-static span { font-family: var(--font-poppins); font-size: 16px; font-weight: 600; color: #333333; transition: 0.3s; white-space: nowrap; padding-bottom: 8px; border-bottom: 2px solid transparent; }
-.home-container .tab-static:hover .icon { background-color: var(--c-white); border-color: var(--c-gray-border); }
-.home-container .tab-static:hover span { color: var(--c-red); }
 
-/* GRID MENU DIPAKSA HORIZONTAL & TANPA BORDER */
+/* Menghilangkan hover state agar sama rata/statis */
+.home-container .tab-static:first-child .icon { background-color: #FFF7F7; border: 1px solid transparent; box-shadow: none; }
+.home-container .tab-static:first-child span { border-bottom: 2px solid transparent; color: #333333; font-weight: 600; }
+
+
+/* GRID MENU KEMBALI KE BENTUK KIRI KANAN TANPA BORDER (GAMBAR 2) */
 .home-container .menu-list { 
-  display: grid !important; 
-  grid-template-columns: repeat(2, 1fr) !important; 
-  column-gap: 50px !important;
-  row-gap: 40px !important;
+  display: grid; 
+  grid-template-columns: repeat(2, 1fr); 
+  column-gap: 50px;
+  row-gap: 50px;
   margin-bottom: 60px; 
   max-width: 1100px;
   margin-left: auto;
@@ -129,19 +132,19 @@
 
 .home-container .menu-card { 
   display: flex !important; 
-  flex-direction: row !important; /* Paksa layout kiri-kanan */
+  flex-direction: row !important; /* Paksa layout gambar kiri, teks kanan */
   align-items: center !important; /* Tengahkan vertikal */
   gap: 25px !important; 
-  border: none !important; /* Buang border nyasar dari css lain */
-  box-shadow: none !important; /* Buang shadow nyasar */
+  border: none !important; /* Hilangkan bingkai (CSS bocor dari Menu.css) */
+  box-shadow: none !important; 
   background: transparent !important;
   padding: 0 !important;
 }
 
 .home-container .menu-card img, 
 .home-container .img-blank { 
-  width: 110px !important; 
-  height: 110px !important; 
+  width: 120px !important; 
+  height: 120px !important; 
   border-radius: 16px !important; 
   object-fit: cover !important; 
   flex-shrink: 0 !important;
@@ -153,7 +156,7 @@
 .home-container .menu-info h4 { font-family: var(--font-poppins); font-size: 18px; margin: 0 0 8px 0; color: var(--c-dark); font-weight: 700; line-height: 1.2;}
 .home-container .menu-info p { font-family: var(--font-inter); font-size: 13px; color: var(--c-gray); line-height: 1.5; margin: 0; }
 
-/* FIX TOMBOL AGAR TIDAK MELAR PANJANG 100% */
+/* FIX TOMBOL PILL DI TENGAH */
 .home-container .center-btn { 
   text-align: center; 
   margin-top: 30px; 
@@ -162,24 +165,36 @@
   width: 100%;
 }
 .home-container .center-btn button.btn-outline-red {
-  width: auto !important; /* Mencegah tombol melar */
+  width: auto !important; 
   display: inline-block !important;
 }
 
 
-/* --- MAP SECTION --- */
+/* ========================================================= */
+/* --- MAP SECTION (PETA LEAFLET INTERAKTIF) --- */
+/* ========================================================= */
 .map-section { padding: 100px 60px; background: var(--c-bg-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; }
+
 .map-section .desc-gray { margin-bottom: 50px; }
-.map-box { position: relative; width: 100%; max-width: 900px; height: 450px; background: #fff; margin: 0 auto 40px auto; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid var(--c-gray-border); overflow: hidden; }
-.pin { position: absolute; font-size: 28px; filter: drop-shadow(0 4px 4px rgba(255,198,39,0.4)); }
-.p-1 { top: 40%; left: 25%; }
-.p-2 { top: 30%; left: 55%; }
-.popup { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px 40px; border-radius: 12px; box-shadow: 0 15px 30px rgba(160,5,0,0.1); text-align: center; z-index: 10; border: 1px solid var(--c-yellow); width: max-content; max-width: 90%;}
-.popup h2 { color: var(--c-red); font-family: var(--font-jakarta); font-size: 42px; margin: 0; line-height: 1; }
-.popup p { font-family: var(--font-poppins); font-size: 11px; font-weight: 700; color: var(--c-dark); margin: 5px 0 0 0; letter-spacing: 1px; }
-.pin-red { position: absolute; font-size: 20px; color: var(--c-red); font-weight: bold; font-family: var(--font-inter); }
-.p-3 { top: 65%; left: 40%; }
-.p-4 { top: 70%; left: 60%; }
+
+.home-map-wrapper { 
+  width: 100%; 
+  max-width: 1150px; 
+  height: 480px;     
+  border-radius: 24px; 
+  overflow: hidden; 
+  position: relative; 
+  box-shadow: 0 15px 30px rgba(0,0,0,0.05); 
+  margin-bottom: 60px; 
+  z-index: 10; 
+}
+
+.home-map-container { width: 100%; height: 100%; z-index: 1; filter: saturate(0.8) brightness(1.05); }
+
+/* Widget Info Total Cabang Overlay */
+.map-section .popup { position: absolute; bottom: 30px; left: 30px; transform: none; background: #fff; padding: 15px 25px; border-radius: 12px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; border: none; width: auto; max-width: none;}
+.map-section .popup h2 { color: var(--c-red); font-family: var(--font-jakarta); font-size: 32px; margin: 0; line-height: 1; }
+.map-section .popup p { font-family: var(--font-poppins); font-size: 11px; font-weight: 700; color: var(--c-dark); margin: 0; letter-spacing: 1px; }
 
 /* --- INSTAGRAM GRID SECTION --- */
 .ig-section { padding: 100px 60px 140px 60px; background-color: var(--c-bg-white); display: flex; flex-direction: column; align-items: center; position: relative; z-index: 20; }
@@ -291,9 +306,8 @@
   .home-container .menu-info p { font-size: 12px !important; line-height: 1.4 !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
   
   .map-section { padding: 60px 20px; }
-  .map-box { height: auto; padding: 40px 20px; border: none; box-shadow: none; background: transparent;}
-  .pin, .pin-red { display: none; } 
-  .popup { position: relative; top: 0; left: 0; transform: none; margin: 0 auto; width: 100%; padding: 25px;}
+  .home-map-wrapper { height: auto; padding: 40px 20px; border: none; box-shadow: none; background: transparent;}
+  .map-section .popup { position: relative; top: 0; left: 0; transform: none; margin: 0 auto; width: 100%; padding: 25px; bottom: auto;}
   .popup h2 { font-size: 32px; }
   .ig-section { padding: 60px 20px; }
   .ig-header-container { margin-bottom: 40px; }

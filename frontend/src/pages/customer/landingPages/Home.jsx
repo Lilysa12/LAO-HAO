@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import './Home.css'; 
 
 // --- IMPORT ASSETS GAMBAR HERO ---
@@ -23,9 +26,6 @@ import Grid7 from '../../../assets/home/img7.png';
 import Grid8 from '../../../assets/home/img8.png';
 import Grid9 from '../../../assets/home/img9.png';
 
-// --- IMPORT GAMBAR PETA STATIC ---
-import BgHero from '../../../assets/icons/icons-partner/image1.png'; 
-
 // --- IMPORT ICONS & LOGO ---
 import LogoLaoban from '../../../assets/icons/LogoLaoban.png';
 import IconInstagram from '../../../assets/icons/Instagram.png';
@@ -44,10 +44,36 @@ import IconMessage from '../../../assets/icons/Message.png';
 import IconCall from '../../../assets/icons/Call.png'; 
 import IconKemitraan from '../../../assets/icons/kemitraan.png'; 
 
+// --- FIX ICON LEAFLET (Mengatasi bug icon hilang di React) ---
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// --- REVISI 2: DATA CABANG (Sama seperti Our Partner) ---
+const branchData = [
+  { id: 1, name: 'Laoban Kopitiam Tebet', lat: -6.240, lng: 106.840 },
+  { id: 2, name: 'Laoban Kopitiam SCBD', lat: -6.225, lng: 106.808 },
+  { id: 3, name: 'Laoban Kopitiam Cilandak', lat: -6.290, lng: 106.810 },
+  { id: 4, name: 'Laoban Kopitiam Kelapa Gading', lat: -6.150, lng: 106.900 },
+  { id: 5, name: 'Laoban Kopitiam Margonda', lat: -6.390, lng: 106.830 },
+  { id: 6, name: 'Laoban Kopitiam Kemang Pratama', lat: -6.240, lng: 107.000 },
+  { id: 7, name: 'Laoban Kopitiam Suryakencana', lat: -6.600, lng: 106.800 },
+  { id: 8, name: 'Laoban Kopitiam Suhat, Malang', lat: -7.940, lng: 112.620 },
+  { id: 9, name: 'Laoban Kopitiam Binus Malang', lat: -7.930, lng: 112.650 },
+  { id: 10, name: 'Laoban Kopitiam Wiyung Surabaya', lat: -7.310, lng: 112.700 },
+  { id: 11, name: 'Laoban Kopitiam Mulyosari Surabaya', lat: -7.260, lng: 112.800 },
+  { id: 12, name: 'Laoban Kopitiam Baratajaya Surabaya', lat: -7.280, lng: 112.750 },
+  { id: 13, name: 'Laoban Kopitiam Cirebon', lat: -6.730, lng: 108.550 },
+];
+
 export default function Home() {
   const navigate = useNavigate();
   const [hoveredGridIndex, setHoveredGridIndex] = useState(null);
 
+  // Helper untuk pindah halaman dan scroll ke atas
   const navigateToTop = (path) => {
     navigate(path);
     window.scrollTo(0, 0);
@@ -66,9 +92,7 @@ export default function Home() {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         setFn(Math.floor(progress * (end - start) + start));
-        if (progress < 1) {
-          window.requestAnimationFrame(step);
-        }
+        if (progress < 1) window.requestAnimationFrame(step);
       };
       window.requestAnimationFrame(step);
     };
@@ -170,6 +194,7 @@ export default function Home() {
       {/* ================= 3. MARQUEE CABANG ================= */}
       <div className="red-marquee-container">
         <div className="red-marquee-track">
+          {/* Loop 1 */}
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
@@ -184,7 +209,7 @@ export default function Home() {
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> SAMARINDA</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> MANADO</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PONTIANAK</div>
-          
+          {/* Loop 2 */}
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
@@ -252,6 +277,7 @@ export default function Home() {
           <h2 className="title-dark">Menu Perguruan Laoban</h2>
         </div>
 
+        {/* REVISI 1: Tampilan seragam (hapus efek khusus first-child di JSX) */}
         <div className="menu-tabs static-tabs">
           <div className="tab-static">
             <div className="icon"><img src={IconMainDish} alt="Main Dish" className="tab-img" /></div>
@@ -315,22 +341,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= 6. MAP SECTION (KEMBALI STATIS) ================= */}
+      {/* ================= 6. MAP SECTION ================= */}
       <section className="map-section fade-in-up">
+        
         <h2 className="title-dark center-title">50+ Titik Kenikmatan di Seluruh Nusantara</h2>
         <p className="desc-gray text-center max-w">
           Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk mendekatkan kehangatan Kopitiam autentik ke kota Anda.
         </p>
         
-        <div className="map-box">
-          <div className="pin p-1">📍</div>
-          <div className="pin p-2">📍</div>
+        {/* REVISI 2: Peta Interaktif Leaflet (Sama seperti Our Partner) */}
+        <div className="home-map-wrapper">
+          <MapContainer center={[-6.200000, 106.816666]} zoom={6} scrollWheelZoom={true} className="home-map-container">
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {branchData.map((branch) => (
+              <Marker key={branch.id} position={[branch.lat, branch.lng]}>
+                <Popup>
+                  <strong style={{color: '#A00500'}}>{branch.name}</strong>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+
+          {/* Widget Info Overlay */}
           <div className="popup">
             <h2>54</h2>
             <p>CABANG AKTIF</p>
           </div>
-          <div className="pin-red p-3">📍 Jawa</div>
-          <div className="pin-red p-4">📍</div>
         </div>
         
         <div className="center-btn">
@@ -397,6 +436,7 @@ export default function Home() {
           <div className="foot-brand">
             <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
+            {/* REVISI 3: Icons Socmed Abu-abu uniform via CSS */}
             <div className="socials socials-colored unified-socmed">
                <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
                <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
