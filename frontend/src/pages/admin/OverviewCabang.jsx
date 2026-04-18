@@ -60,7 +60,16 @@ const OverviewCabang = () => {
           }
         });
         const branchCount = uniqueBranches.size > 0 ? uniqueBranches.size : 1;
-
+         // ─── STATE: CRUD CABANG ───
+  const [cabangList, setCabangList] = useState([]);
+  const [cabangLoading, setCabangLoading] = useState(true);
+  const [searchCabang, setSearchCabang] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({ name: '', address: '', phone: '', manager: '', status: 'Aktif' });
+  
         // 3. KALKULASI TRANSAKSI (Pendapatan, Grafik, & Perbandingan)
         let tPendapatan = 0;
         const daysTemplate = [

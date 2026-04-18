@@ -3,6 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AdminController;
+;
+
+Route::get('/test', function () {
+    return response()->json(['message' => 'Backend terhubung!']);
+});
 
 Route::get('/user', function (Request $request) {
     return $request->user();

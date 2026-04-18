@@ -39,7 +39,7 @@ const ManajemenPromo = () => {
   // MENGAMBIL DATA DENGAN ANTI-CACHE
   const fetchPromos = () => {
     setIsLoading(true);
-    axios.get(`http://127.0.0.1:8000/api/admin/promos?_t=${new Date().getTime()}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/admin/promos`)
       .then(response => {
         setPromoData(response.data);
         setIsLoading(false);

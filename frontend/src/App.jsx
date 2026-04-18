@@ -1,11 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// --- CUSTOMER: LANDING PAGES ---
-import Home from './pages/customer/landingPages/Home'; 
-import About from './pages/customer/landingPages/About';
-import Menu from './pages/customer/landingPages/Menu'; 
-
 // --- CUSTOMER: ORDER FLOW ---
 // --- CUSTOMER PAGES ---
 import Home from './pages/customer/landingPages/Home'; 
@@ -18,8 +13,6 @@ import Checkout from './pages/customer/order/Checkout';
 import Voucher from './pages/customer/order/Voucher'; // <-- IMPORT HALAMAN VOUCHER BARU
 import Payment from './pages/customer/order/Payment';  
 import Status from './pages/customer/order/Status';
-
-import Payment from './pages/customer/order/Payment'; 
 
 // --- AUTH PAGE ---
 import Login from './pages/auth/Login';
