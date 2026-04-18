@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // <-- Ditambahkan useNavigate
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './DenahMeja.css';
 
 import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
@@ -12,31 +13,40 @@ import iconQrMeja from '../../assets/Icons/icons-admin/QrMeja.svg';
 import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
 const DenahMeja = () => {
-  const navigate = useNavigate(); // <-- Inisialisasi navigasi
+  const navigate = useNavigate();
   const [activeArea, setActiveArea] = useState('indoor');
+  
+  // STATE UNTUK DATA ASLI DARI SUPABASE
+  const [tables, setTables] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // --- FUNGSI LOGOUT ---
+  // MENGAMBIL DATA MEJA
+  const fetchTables = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/kasir/tables?_t=${new Date().getTime()}`);
+      setTables(response.data);
+    } catch (error) {
+      console.error("Gagal mengambil data meja:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTables();
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userRole');
-    navigate('/login'); // <-- Melempar user kembali ke halaman login
+    navigate('/login');
   };
 
-  const tablesIndoor = [
-    { id: '01', status: 'tersedia', capacity: 2 },
-    { id: '02', status: 'lunas', capacity: 2 },
-    { id: '03', status: 'tersedia', capacity: 4 },
-    { id: '04', status: 'pending', capacity: 4 },
-    { id: '05', status: 'tersedia', capacity: 6 },
-    { id: 'VIP-1', status: 'lunas', capacity: 8 },
-  ];
-
-  const tablesOutdoor = [
-    { id: 'OUT-1', status: 'tersedia', capacity: 2 },
-    { id: 'OUT-2', status: 'pending', capacity: 4 },
-    { id: 'OUT-3', status: 'tersedia', capacity: 4 },
-  ];
-
+  // MEMISAHKAN DATA BERDASARKAN AREA
+  const tablesIndoor = tables.filter(t => t.area === 'indoor');
+  const tablesOutdoor = tables.filter(t => t.area === 'outdoor');
+  
   const currentTables = activeArea === 'indoor' ? tablesIndoor : tablesOutdoor;
 
   return (
@@ -85,7 +95,6 @@ const DenahMeja = () => {
         </nav>
 
         <div className="sidebar-footer">
-          {/* <-- Event onClick={handleLogout} dipasang di sini --> */}
           <button className="logout-btn" onClick={handleLogout}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
             Logout
@@ -132,29 +141,37 @@ const DenahMeja = () => {
               </button>
             </div>
 
-            <div className="tables-grid">
-              {currentTables.map((table) => (
-                <div key={table.id} className={`table-card ${table.status}`}>
-                  <div className="table-card-top">
-                    <span className="table-status-label">
-                      {table.status === 'tersedia' && 'Tersedia'}
-                      {table.status === 'lunas' && 'Dine-in (Lunas)'}
-                      {table.status === 'pending' && 'Open Table (Belum Bayar)'}
-                    </span>
-                    <div className="table-capacity">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                      </svg>
-                      {table.capacity}
+            {isLoading ? (
+              <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>Memuat status meja dari Supabase...</div>
+            ) : (
+              <div className="tables-grid">
+                {currentTables.length > 0 ? (
+                  currentTables.map((table) => (
+                    <div key={table.id} className={`table-card ${table.status}`}>
+                      <div className="table-card-top">
+                        <span className="table-status-label">
+                          {table.status === 'tersedia' && 'Tersedia'}
+                          {table.status === 'lunas' && 'Dine-in (Lunas)'}
+                          {table.status === 'pending' && 'Open Table (Belum Bayar)'}
+                        </span>
+                        <div className="table-capacity">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                          </svg>
+                          {table.capacity}
+                        </div>
+                      </div>
+                      <h1 className="table-number">{table.table_number}</h1>
                     </div>
-                  </div>
-                  <h1 className="table-number">{table.id}</h1>
-                </div>
-              ))}
-            </div>
+                  ))
+                ) : (
+                  <div style={{ padding: '20px', color: '#64748b' }}>Belum ada meja di area ini.</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </main>

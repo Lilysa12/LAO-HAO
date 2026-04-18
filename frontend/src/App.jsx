@@ -6,13 +6,13 @@ import Home from './pages/customer/landingPages/Home';
 import About from './pages/customer/landingPages/About';
 import Menu from './pages/customer/landingPages/Menu'; 
 import Partnership from './pages/customer/landingPages/partnership'; 
-import OurPartner from './pages/customer/landingPages/ourPartner'; // FIX: Component huruf besar
+import OurPartner from './pages/customer/landingPages/ourPartner'; 
 import InputData from './pages/customer/order/InputData';
 import MenuList from './pages/customer/order/MenuList'; 
 import MenuDetail from './pages/customer/order/MenuDetail';
 import Checkout from './pages/customer/order/Checkout'; 
 import Voucher from './pages/customer/order/Voucher';
-import Payment from './pages/customer/order/Payment';  
+import Payment from './pages/customer/order/Payment';
 import Status from './pages/customer/order/Status';
 
 // --- AUTH PAGE ---
@@ -34,9 +34,11 @@ import LaporanRiwayat from './pages/kasir/LaporanRiwayat';
 // --- KOMPONEN PROTECTED ROUTE ---
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+  
   return children;
 };
 
@@ -44,13 +46,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* --- PUBLIC ROUTES --- */}
+        {/* --- ROUTE CUSTOMER: LANDING (PUBLIC) --- */}
         <Route path="/" element={<Navigate to="/home" replace />} /> 
         <Route path="/home" element={<Home />} /> 
         <Route path="/about" element={<About />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/partnership" element={<Partnership />} /> 
-        <Route path="/our-partner" element={<OurPartner />} /> {/* FIX: Path rapi */}
+        <Route path="/our-partner" element={<OurPartner />} /> 
         <Route path="/login" element={<Login />} />
 
         {/* --- CUSTOMER ORDER FLOW --- */}

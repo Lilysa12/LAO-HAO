@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './PesananDapur.css';
 
 import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
@@ -14,6 +15,53 @@ import iconCeklis from '../../assets/Icons/icons-admin/ceklis.svg';
 import iconJam from '../../assets/Icons/icons-admin/jam.svg';
 
 const PesananDapur = () => {
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // MENGAMBIL DATA DARI SUPABASE
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/kasir/orders?_t=${new Date().getTime()}`);
+      setOrders(response.data);
+    } catch (error) {
+      console.error("Gagal mengambil data pesanan:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+    
+    // (Opsional) Refresh otomatis tiap 10 detik agar kasir selalu dapat update terbaru
+    const intervalId = setInterval(fetchOrders, 10000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // FUNGSI LOGOUT
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    navigate('/login');
+  };
+
+  // FUNGSI UBAH STATUS PESANAN
+  const handleUpdateStatus = async (id, newStatus) => {
+    try {
+      await axios.post(`http://127.0.0.1:8000/api/kasir/orders/${id}/status`, { status: newStatus });
+      fetchOrders(); // Refresh data otomatis setelah tombol diklik
+    } catch (error) {
+      console.error("Gagal mengupdate status:", error);
+      alert("Terjadi kesalahan saat mengupdate status pesanan.");
+    }
+  };
+
+  // PISAHKAN DATA BERDASARKAN STATUS
+  const processingOrders = orders.filter(order => order.status === 'diproses');
+  const readyOrders = orders.filter(order => order.status === 'siap');
+
   return (
     <div className="admin-container">
       <aside className="sidebar">
@@ -60,7 +108,7 @@ const PesananDapur = () => {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="logout-btn">
+          <button className="logout-btn" onClick={handleLogout}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
             Logout
           </button>
@@ -91,90 +139,115 @@ const PesananDapur = () => {
               </div>
             </div>
 
-            <div className="orders-grid">
-              <div className="order-column column-processing">
-                <div className="column-header">
-                  <h2>Sedang Diproses</h2>
-                  <span className="count-badge">1</span>
-                </div>
+            {isLoading && orders.length === 0 ? (
+               <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>Mensinkronkan pesanan dari Supabase...</div>
+            ) : (
+              <div className="orders-grid">
                 
-                <div className="order-card">
-                  <div className="order-card-header">
-                    <div className="table-info-box">
-                      <span className="label">MEJA</span>
-                      <span className="number">15</span>
-                    </div>
-                    <div className="customer-info">
-                      <div className="customer-name">Andi</div>
-                      <div className="order-time">
-                        <img src={iconJam} alt="Jam" className="jam-icon" />
-                        10:20 AM
+                {/* KOLOM 1: SEDANG DIPROSES */}
+                <div className="order-column column-processing">
+                  <div className="column-header">
+                    <h2>Sedang Diproses</h2>
+                    <span className="count-badge">{processingOrders.length}</span>
+                  </div>
+                  
+                  {processingOrders.length > 0 ? (
+                    processingOrders.map((order) => (
+                      <div key={order.id} className="order-card">
+                        <div className="order-card-header">
+                          <div className="table-info-box">
+                            <span className="label">MEJA</span>
+                            <span className="number">{order.table_number}</span>
+                          </div>
+                          <div className="customer-info">
+                            <div className="customer-name">{order.customer_name}</div>
+                            <div className="order-time">
+                              <img src={iconJam} alt="Jam" className="jam-icon" />
+                              {order.formatted_time}
+                            </div>
+                          </div>
+                          <span className={`status-badge ${order.payment_status === 'LUNAS' ? 'lunas' : 'pending'}`}>
+                            {order.payment_status}
+                          </span>
+                        </div>
+                        
+                        <div className="order-items">
+                          {order.items.map((item, index) => (
+                            <div key={index} className="order-item">
+                              <span className="item-qty">{item.qty}x</span>
+                              <span className="item-name">{item.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="order-card-footer">
+                          <span className="order-id">ID: {order.order_id}</span>
+                          {/* TOMBOL UNTUK PINDAH KE KOLOM KANAN */}
+                          <button className="btn-action" onClick={() => handleUpdateStatus(order.id, 'siap')}>
+                            <img src={iconCeklis} alt="Check" className="icon-white ceklis-icon" />
+                            Sajikan / Selesai
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <span className="status-badge lunas">LUNAS</span>
-                  </div>
-                  
-                  <div className="order-items">
-                    <div className="order-item">
-                      <span className="item-qty">3x</span>
-                      <span className="item-name">Kopi Susu Lao-Hao</span>
-                    </div>
-                    <div className="order-item">
-                      <span className="item-qty">2x</span>
-                      <span className="item-name">Roti Bakar Kaya</span>
-                    </div>
-                  </div>
-                  
-                  <div className="order-card-footer">
-                    <span className="order-id">ID: ORD-003</span>
-                    <button className="btn-action">
-                      <img src={iconCeklis} alt="Check" className="icon-white ceklis-icon" />
-                      Sajikan / Selesai
-                    </button>
-                  </div>
+                    ))
+                  ) : (
+                    <div style={{ padding: '20px', color: '#64748b', textAlign: 'center', fontSize: '14px' }}>Tidak ada pesanan masuk.</div>
+                  )}
                 </div>
-              </div>
 
-              <div className="order-column column-ready">
-                <div className="column-header">
-                  <h2>Siap Disajikan</h2>
-                  <span className="count-badge">1</span>
-                </div>
-                
-                <div className="order-card">
-                  <div className="order-card-header">
-                    <div className="table-info-box">
-                      <span className="label">MEJA</span>
-                      <span className="number">04</span>
-                    </div>
-                    <div className="customer-info">
-                      <div className="customer-name">Joko</div>
-                      <div className="order-time">
-                        <img src={iconJam} alt="Jam" className="jam-icon" />
-                        10:15 AM
+                {/* KOLOM 2: SIAP DISAJIKAN */}
+                <div className="order-column column-ready">
+                  <div className="column-header">
+                    <h2>Siap Disajikan</h2>
+                    <span className="count-badge">{readyOrders.length}</span>
+                  </div>
+                  
+                  {readyOrders.length > 0 ? (
+                    readyOrders.map((order) => (
+                      <div key={order.id} className="order-card">
+                        <div className="order-card-header">
+                          <div className="table-info-box">
+                            <span className="label">MEJA</span>
+                            <span className="number">{order.table_number}</span>
+                          </div>
+                          <div className="customer-info">
+                            <div className="customer-name">{order.customer_name}</div>
+                            <div className="order-time">
+                              <img src={iconJam} alt="Jam" className="jam-icon" />
+                              {order.formatted_time}
+                            </div>
+                          </div>
+                          <span className={`status-badge ${order.payment_status === 'LUNAS' ? 'lunas' : 'pending'}`}>
+                            {order.payment_status}
+                          </span>
+                        </div>
+                        
+                        <div className="order-items">
+                          {order.items.map((item, index) => (
+                            <div key={index} className="order-item">
+                              <span className="item-qty">{item.qty}x</span>
+                              <span className="item-name">{item.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="order-card-footer">
+                          <span className="order-id">ID: {order.order_id}</span>
+                          {/* TOMBOL UNTUK MENGHILANGKAN PESANAN DARI LAYAR */}
+                          <button className="btn-action" style={{ backgroundColor: '#10b981' }} onClick={() => handleUpdateStatus(order.id, 'selesai')}>
+                            <img src={iconCeklis} alt="Check" className="icon-white ceklis-icon" />
+                            Pesanan Diserahkan
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <span className="status-badge lunas">LUNAS</span>
-                  </div>
-                  
-                  <div className="order-items">
-                    <div className="order-item">
-                      <span className="item-qty">1x</span>
-                      <span className="item-name">Nasi Lemak</span>
-                    </div>
-                    <div className="order-item">
-                      <span className="item-qty">1x</span>
-                      <span className="item-name">Kopi Hitam</span>
-                    </div>
-                  </div>
-                  
-                  <div className="order-card-footer">
-                    <span className="order-id">ID: ORD-004</span>
-                  </div>
+                    ))
+                  ) : (
+                    <div style={{ padding: '20px', color: '#64748b', textAlign: 'center', fontSize: '14px' }}>Tidak ada pesanan siap saji.</div>
+                  )}
                 </div>
-              </div>
-            </div>
 
+              </div>
+            )}
           </div>
         </div>
       </main>
