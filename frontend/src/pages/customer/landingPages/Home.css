@@ -102,64 +102,110 @@
 .link-red { color: var(--c-red); font-family: var(--font-poppins); font-weight: 700; font-size: 15px; text-decoration: none; transition: 0.3s; display: inline-block; margin-top: 15px; }
 .link-red:hover { text-decoration: underline; }
 
+
 /* ========================================================= */
-/* --- MENU SECTION (FIX LAYOUT SESUAI GAMBAR 2) --- */
+/* --- MENU SECTION (ICON KECIL, MENU DIBESARKAN) --- */
 /* ========================================================= */
 .home-container .menu-section { padding: 100px 60px; background: var(--c-bg-white); position: relative; z-index: 10; }
 
-.home-container .static-tabs { display: flex; justify-content: center; gap: 30px; margin: 40px 0 60px 0; flex-wrap: wrap; }
-.home-container .tab-static { display: flex; flex-direction: column; align-items: center; gap: 15px; text-align: center; }
-.home-container .tab-static .icon { width: 60px; height: 60px; background-color: #FFF7F7; border-radius: 20px; display: flex; justify-content: center; align-items: center; border: 1px solid transparent; transition: all 0.3s ease; }
-.home-container .tab-img { width: 22px; height: 22px; object-fit: contain; transition: 0.3s; }
-.home-container .tab-static span { font-family: var(--font-poppins); font-size: 16px; font-weight: 600; color: #333333; transition: 0.3s; white-space: nowrap; padding-bottom: 8px; border-bottom: 2px solid transparent; }
+.home-container .menu-tabs { display: flex; justify-content: center; gap: 25px; margin: 30px 0 50px 0; flex-wrap: wrap; }
 
-/* Menghilangkan hover state agar sama rata/statis */
-.home-container .tab-static:first-child .icon { background-color: #FFF7F7; border: 1px solid transparent; box-shadow: none; }
-.home-container .tab-static:first-child span { border-bottom: 2px solid transparent; color: #333333; font-weight: 600; }
+.home-container .tab { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s; text-align: center; }
+.home-container .tab:hover { transform: translateY(-3px); }
 
+/* ICON TETAP KECIL (AMAN!) */
+.home-container .tab .icon { 
+  width: 56px !important; 
+  height: 56px !important; 
+  background-color: #FFF7F7; 
+  border-radius: 50%; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  border: 1px solid transparent; 
+  transition: all 0.3s ease; 
+}
+.home-container .tab.active .icon { 
+  background-color: #FFFFFF; 
+  border: 1px solid var(--c-red); 
+  box-shadow: none; 
+}
+.home-container .tab-img { 
+  width: 24px !important; 
+  height: 24px !important; 
+  object-fit: contain !important; 
+  transition: 0.3s; 
+}
 
-/* GRID MENU KEMBALI KE BENTUK KIRI KANAN TANPA BORDER (GAMBAR 2) */
+.home-container .tab span { font-family: var(--font-poppins); font-size: 15px; font-weight: 600; color: #333333; transition: 0.3s; white-space: nowrap; padding-bottom: 0; border-bottom: none; }
+.home-container .tab:hover span { color: var(--c-red); }
+.home-container .tab.active span { color: var(--c-red); font-weight: 700; }
+
+/* FIX GRID MENU DIBESARKAN MAX-WIDTH-NYA */
 .home-container .menu-list { 
-  display: grid; 
-  grid-template-columns: repeat(2, 1fr); 
-  column-gap: 50px;
-  row-gap: 50px;
+  display: grid !important; 
+  grid-template-columns: repeat(2, 1fr) !important; 
+  column-gap: 60px !important; 
+  row-gap: 60px !important;    /* Jarak vertikal dijauhin dikit biar lega */
   margin-bottom: 60px; 
-  max-width: 1100px;
+  max-width: 1200px !important; /* DIBESARKAN supaya menu mengisi layar lebih luas */
   margin-left: auto;
   margin-right: auto;
 }
 
 .home-container .menu-card { 
   display: flex !important; 
-  flex-direction: row !important; /* Paksa layout gambar kiri, teks kanan */
-  align-items: center !important; /* Tengahkan vertikal */
-  gap: 25px !important; 
-  border: none !important; /* Hilangkan bingkai (CSS bocor dari Menu.css) */
+  flex-direction: row !important; 
+  align-items: flex-start !important; 
+  gap: 25px !important; /* Jarak kotak ke teks diperlebar biar proporsional */
+  border: none !important; 
   box-shadow: none !important; 
   background: transparent !important;
   padding: 0 !important;
+  cursor: default !important; 
 }
 
-.home-container .menu-card img, 
+/* UKURAN GAMBAR MENU DIBESARKAN JADI 130px */
+.home-container .menu-card img.menu-item-img,
 .home-container .img-blank { 
-  width: 120px !important; 
-  height: 120px !important; 
+  width: 130px !important; 
+  height: 130px !important; 
   border-radius: 16px !important; 
-  object-fit: cover !important; 
+  object-fit: cover !important;
   flex-shrink: 0 !important;
 }
 
-.home-container .img-blank { background: var(--c-bg-gray); border: 1px solid var(--c-gray-border); }
+.home-container .img-blank { 
+  background: #F8F9FA !important; 
+  border: 1px solid #EAEAEA !important; 
+}
 
-.home-container .menu-info { text-align: left !important; }
-.home-container .menu-info h4 { font-family: var(--font-poppins); font-size: 18px; margin: 0 0 8px 0; color: var(--c-dark); font-weight: 700; line-height: 1.2;}
-.home-container .menu-info p { font-family: var(--font-inter); font-size: 13px; color: var(--c-gray); line-height: 1.5; margin: 0; }
+/* TEKS MENU DIBESARKAN BIAR GAGAH */
+.home-container .menu-info { 
+  text-align: left !important; 
+  padding-top: 0 !important; 
+  display: flex !important;
+  flex-direction: column !important;
+}
+.home-container .menu-info h4 { 
+  font-family: var(--font-jakarta) !important; 
+  font-size: 22px !important; /* DIBESARKAN */
+  margin: -4px 0 8px 0 !important; /* Tarik judul rata atas frame */
+  color: var(--c-dark) !important; 
+  font-weight: 800 !important; 
+  line-height: 1.2 !important;
+}
+.home-container .menu-info p { 
+  font-family: var(--font-inter) !important; 
+  font-size: 15px !important; /* DIBESARKAN */
+  color: #777777 !important; 
+  line-height: 1.6 !important; 
+  margin: 0 !important; 
+}
 
-/* FIX TOMBOL PILL DI TENGAH */
 .home-container .center-btn { 
   text-align: center; 
-  margin-top: 30px; 
+  margin-top: 40px; 
   display: flex !important; 
   justify-content: center !important; 
   width: 100%;
@@ -171,7 +217,7 @@
 
 
 /* ========================================================= */
-/* --- MAP SECTION (PETA LEAFLET INTERAKTIF) --- */
+/* --- MAP SECTION --- */
 /* ========================================================= */
 .map-section { padding: 100px 60px; background: var(--c-bg-gray); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; }
 
@@ -292,18 +338,19 @@
   .about-img-left { transform: translateY(-15px); width: 48%; }
   .about-img-right { transform: translateY(15px); width: 48%; }
   
-  .home-container .static-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 15px; -webkit-overflow-scrolling: touch; gap: 20px; margin-top: 30px; }
-  .home-container .static-tabs::-webkit-scrollbar { display: none; } 
-  .home-container .tab-static { min-width: 80px; flex-shrink: 0; }
-  .home-container .tab-static .icon { width: 50px; height: 50px; border-radius: 16px;}
-  .home-container .tab-static span { font-size: 14px;}
+  .home-container .menu-tabs { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 15px; -webkit-overflow-scrolling: touch; gap: 20px; margin-top: 30px; }
+  .home-container .menu-tabs::-webkit-scrollbar { display: none; } 
+  .home-container .tab { min-width: 80px; flex-shrink: 0; }
+  .home-container .tab .icon { width: 50px !important; height: 50px !important; border-radius: 50%; }
+  .home-container .tab span { font-size: 14px;}
   
-  /* OVERRIDE BALIK KE VERTICAL SAAT HP */
-  .home-container .menu-list { grid-template-columns: 1fr !important; gap: 20px !important; margin-bottom: 30px;} 
-  .home-container .menu-card { flex-direction: row !important; align-items: center !important; text-align: left !important; gap: 15px !important; padding: 10px 0 !important;}
-  .home-container .menu-card img, .home-container .img-blank { width: 80px !important; height: 80px !important; border-radius: 12px !important; flex-shrink: 0 !important; }
-  .home-container .menu-info h4 { font-size: 15px !important; margin-bottom: 4px !important; }
-  .home-container .menu-info p { font-size: 12px !important; line-height: 1.4 !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+  /* OVERRIDE HP KEMBALI RAPAT */
+  .home-container .menu-list { grid-template-columns: 1fr !important; gap: 40px !important; margin-bottom: 40px;} 
+  .home-container .menu-card { flex-direction: row !important; align-items: flex-start !important; text-align: left !important; gap: 15px !important; padding: 0 !important;}
+  .home-container .menu-card img.menu-item-img, .home-container .img-blank { width: 100px !important; height: 100px !important; border-radius: 12px !important; flex-shrink: 0 !important; }
+  .home-container .menu-info { padding-top: 0 !important; }
+  .home-container .menu-info h4 { font-size: 16px !important; margin-bottom: 6px !important; }
+  .home-container .menu-info p { font-size: 13px !important; line-height: 1.5 !important; }
   
   .map-section { padding: 60px 20px; }
   .home-map-wrapper { height: auto; padding: 40px 20px; border: none; box-shadow: none; background: transparent;}

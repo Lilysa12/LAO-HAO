@@ -44,7 +44,7 @@ import IconMessage from '../../../assets/icons/Message.png';
 import IconCall from '../../../assets/icons/Call.png'; 
 import IconKemitraan from '../../../assets/icons/kemitraan.png'; 
 
-// --- FIX ICON LEAFLET (Mengatasi bug icon hilang di React) ---
+// --- FIX ICON LEAFLET ---
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -52,7 +52,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// --- REVISI 2: DATA CABANG (Sama seperti Our Partner) ---
+// --- DATA CABANG ---
 const branchData = [
   { id: 1, name: 'Laoban Kopitiam Tebet', lat: -6.240, lng: 106.840 },
   { id: 2, name: 'Laoban Kopitiam SCBD', lat: -6.225, lng: 106.808 },
@@ -73,7 +73,49 @@ export default function Home() {
   const navigate = useNavigate();
   const [hoveredGridIndex, setHoveredGridIndex] = useState(null);
 
-  // Helper untuk pindah halaman dan scroll ke atas
+  // ========================================================
+  // STATE KHUSUS UNTUK MENU INTERAKTIF (DENGAN DESKRIPSI)
+  // ========================================================
+  const [activeMenuCategory, setActiveMenuCategory] = useState('Main Dish');
+
+  const menuCategories = [
+    { name: 'Main Dish', icon: IconMainDish },
+    { name: 'Snack', icon: IconSnack },
+    { name: 'Dimsum', icon: IconDimsum },
+    { name: 'Hot Drink', icon: IconHotDrink },
+    { name: 'Cold Drink', icon: IconColdDrink },
+    { name: 'Ice & Dessert', icon: IconIceDessert },
+  ];
+
+  // Deskripsi dikembalikan agar tampil di sebelah frame gambar
+  const homeMenuData = [
+    { id: 1, category: 'Main Dish', name: 'Nasi Lemak', desc: 'Nasi dengan rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah kalian. Sambelnya juga mantap.' },
+    { id: 2, category: 'Main Dish', name: 'Mie Hainan', desc: 'Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu coklat yang muantab!' },
+    { id: 3, category: 'Main Dish', name: 'Nasi Mala', desc: 'Nasi putih dengan rempah mala sechuan yang rasanya pedas asin gurih. Pecinta pedas? Wajib cobain!' },
+    { id: 4, category: 'Main Dish', name: 'Mie Jasio', desc: 'Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu merah yang tebal dan juicy!' },
+    { id: 16, category: 'Snack', name: 'Butter Kaya Toast', desc: 'Favorite semua orang karena roti dan selai kayanya homemade. Wajib coba!' },
+    { id: 17, category: 'Snack', name: 'Choco Toast', desc: 'Jelas isinya selai coklat lumer, solusi para kaum suka badmood!' },
+    { id: 25, category: 'Snack', name: 'Kulit Crispy Original', desc: 'Kulit ayam krispi original yang super renyah.' },
+    { id: 23, category: 'Snack', name: 'Pisang Goreng Wijen', desc: 'Pisang goreng renyah bertabur wijen dengan cocolan manis.' },
+    { id: 28, category: 'Dimsum', name: 'Udang Keju', desc: 'Olahan udang goreng dengan isian keju lumer di dalamnya.' },
+    { id: 30, category: 'Dimsum', name: 'Gyoza', desc: 'Pangsit ala Jepang isian daging ayam dan sayuran.' },
+    { id: 39, category: 'Dimsum', name: 'Pao Durian', desc: 'Bakpao kukus super lembut dengan isian selai durian asli.' },
+    { id: 43, category: 'Dimsum', name: 'Siomay Ayam', desc: 'Siomay kukus ayam original klasik.' },
+    { id: 46, category: 'Hot Drink', name: 'Kopi Laoban', desc: 'Kopi hitam otentik rasa Kopitiam.' },
+    { id: 47, category: 'Hot Drink', name: 'Teh Tarik', desc: 'Teh susu perpaduan khas yang ditarik sempurna.' },
+    { id: 50, category: 'Hot Drink', name: 'Kopi Telor Vietnam', desc: 'Kopi dengan buih kocokan telur manis khas Vietnam.' },
+    { id: 49, category: 'Hot Drink', name: 'Kopi Butter', desc: 'Kopi panas dengan potongan mentega gurih.' },
+    { id: 45, category: 'Cold Drink', name: 'Kopi Susu Laoban', desc: 'Es kopi susu gula aren andalan khas Laoban.' },
+    { id: 51, category: 'Cold Drink', name: 'Matcha Biscoff', desc: 'Minuman matcha green tea dingin dengan olesan selai Biscoff.' },
+    { id: 54, category: 'Cold Drink', name: 'Lychee Yakult', desc: 'Perpaduan manis leci dan segarnya probiotik Yakult dingin.' },
+    { id: 56, category: 'Cold Drink', name: 'Kopi Susu Havana', desc: 'Es kopi susu racikan sirup havana Laoban.' },
+    { id: 57, category: 'Ice & Dessert', name: 'Es ABCD', desc: 'Es serut campur sirup manis ala melayu penutup makan.' },
+    { id: 58, category: 'Ice & Dessert', name: 'Kacang Merah Es', desc: 'Es campur spesial dengan topping kacang merah manis.' },
+  ];
+
+  const displayedMenus = homeMenuData.filter(menu => menu.category === activeMenuCategory);
+  // ========================================================
+
   const navigateToTop = (path) => {
     navigate(path);
     window.scrollTo(0, 0);
@@ -270,70 +312,46 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= 5. MENU SECTION ================= */}
+      {/* ================= 5. MENU SECTION (FRAME KOSONG, TAPI ADA DESKRIPSI) ================= */}
       <section className="menu-section fade-in-up">
         <div className="center-title">
           <p className="label-red">OUR MENU</p>
           <h2 className="title-dark">Menu Perguruan Laoban</h2>
         </div>
 
-        {/* REVISI 1: Tampilan seragam (hapus efek khusus first-child di JSX) */}
-        <div className="menu-tabs static-tabs">
-          <div className="tab-static">
-            <div className="icon"><img src={IconMainDish} alt="Main Dish" className="tab-img" /></div>
-            <span>Main Dish</span>
-          </div>
-          <div className="tab-static">
-            <div className="icon"><img src={IconSnack} alt="Snack" className="tab-img" /></div>
-            <span>Snack</span>
-          </div>
-          <div className="tab-static">
-            <div className="icon"><img src={IconDimsum} alt="Dimsum" className="tab-img" /></div>
-            <span>Dimsum</span>
-          </div>
-          <div className="tab-static">
-            <div className="icon"><img src={IconHotDrink} alt="Hot Drink" className="tab-img" /></div>
-            <span>Hot Drink</span>
-          </div>
-          <div className="tab-static">
-            <div className="icon"><img src={IconColdDrink} alt="Cold Drink" className="tab-img" /></div>
-            <span>Cold Drink</span>
-          </div>
-          <div className="tab-static">
-            <div className="icon"><img src={IconIceDessert} alt="Ice & Dessert" className="tab-img" /></div>
-            <span>Ice & Dessert</span>
-          </div>
+        {/* TAB ICONS (Bisa di-klik tanpa garis merah) */}
+        <div className="menu-tabs">
+          {menuCategories.map((cat, idx) => (
+            <div 
+              key={idx}
+              className={`tab ${activeMenuCategory === cat.name ? 'active' : ''}`}
+              onClick={() => setActiveMenuCategory(cat.name)}
+            >
+              <div className="icon"><img src={cat.icon} alt={cat.name} className="tab-img" /></div>
+              <span>{cat.name}</span>
+            </div>
+          ))}
         </div>
 
+        {/* DAFTAR MENU MENGGUNAKAN DATA YANG DIFILTER */}
         <div className="menu-list">
-          <div className="menu-card">
-            <img src="https://images.unsplash.com/photo-1555126634-323283e090fa?w=300&q=80" alt="Nasi Lemak" />
-            <div className="menu-info">
-              <h4>Nasi Lemak</h4>
-              <p>Nasi dengan rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah kalian. Sambelnya juga mantap.</p>
-            </div>
-          </div>
-          <div className="menu-card">
-            <img src="https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300&q=80" alt="Mie Hainan" />
-            <div className="menu-info">
-              <h4>Mie Hainan ⭐</h4>
-              <p>Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu coklat yang muantab!</p>
-            </div>
-          </div>
-          <div className="menu-card">
-            <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=300&q=80" alt="Nasi Mala" />
-            <div className="menu-info">
-              <h4>Nasi Mala</h4>
-              <p>Nasi putih dengan rempah mala sechuan yang rasanya pedas asin gurih. Pecinta pedas? Wajib cobain!</p>
-            </div>
-          </div>
-          <div className="menu-card">
-            <div className="img-blank"></div>
-            <div className="menu-info">
-              <h4>Mie Jasio</h4>
-              <p>Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu merah yang tebal dan juicy!</p>
-            </div>
-          </div>
+          {displayedMenus.length > 0 ? (
+            displayedMenus.map((item) => (
+              <div className="menu-card" key={item.id}>
+                {/* Frame Kosong Menunggu Kiriman Backend */}
+                <div className="img-blank"></div>
+                <div className="menu-info">
+                  <h4>{item.name}</h4>
+                  {/* Teks Deskripsi Dikembalikan! */}
+                  <p>{item.desc}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#888' }}>
+              Belum ada menu di kategori ini.
+            </p>
+          )}
         </div>
 
         <div className="center-btn">
@@ -349,7 +367,6 @@ export default function Home() {
           Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk mendekatkan kehangatan Kopitiam autentik ke kota Anda.
         </p>
         
-        {/* REVISI 2: Peta Interaktif Leaflet (Sama seperti Our Partner) */}
         <div className="home-map-wrapper">
           <MapContainer center={[-6.200000, 106.816666]} zoom={6} scrollWheelZoom={true} className="home-map-container">
             <TileLayer
@@ -365,7 +382,6 @@ export default function Home() {
             ))}
           </MapContainer>
 
-          {/* Widget Info Overlay */}
           <div className="popup">
             <h2>54</h2>
             <p>CABANG AKTIF</p>
@@ -436,7 +452,6 @@ export default function Home() {
           <div className="foot-brand">
             <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
-            {/* REVISI 3: Icons Socmed Abu-abu uniform via CSS */}
             <div className="socials socials-colored unified-socmed">
                <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
                <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
