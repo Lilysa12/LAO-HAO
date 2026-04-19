@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Menu.css';
 
-// --- IMPORT ASSETS HEADER & FOOTER (Sama dengan Home & About) ---
+// --- IMPORT ASSETS HEADER & FOOTER ---
 import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; 
 import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; 
 import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; 
@@ -29,17 +29,18 @@ export default function Menu() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Helper untuk pindah halaman dan otomatis scroll ke atas
+  // --- STATE MENU MOBILE ---
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const navigateToTop = (path) => {
+    setIsMobileMenuOpen(false); // Tutup overlay menu HP jika sedang buka
     navigate(path);
     window.scrollTo(0, 0);
   };
 
-  // State Kategori Aktif
   const [activeCategory, setActiveCategory] = useState(location.state?.category || 'Main Dish');
   const [hoveredMenuItemIndex, setHoveredMenuItemIndex] = useState(null);
 
-  // Slider Logic (Otomatis saja, tombol manual dihapus)
   const [currentSlide, setCurrentSlide] = useState(0);
   const slides = [Slide1, Slide2, Slide3, Slide4];
 
@@ -50,7 +51,6 @@ export default function Menu() {
     return () => clearInterval(slideInterval);
   }, [currentSlide]);
 
-  // Animasi Navbar (Fade in up)
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -68,14 +68,12 @@ export default function Menu() {
     };
   }, []);
 
-  // Tangkap kategori dari routing halaman Home
   useEffect(() => {
     if (location.state?.category) {
       setActiveCategory(location.state.category);
     }
   }, [location.state]);
 
-  // Daftar Kategori
   const categories = [
     { name: 'Main Dish', icon: IconMainDish },
     { name: 'Snack', icon: IconSnack },
@@ -85,7 +83,6 @@ export default function Menu() {
     { name: 'Ice & Dessert', icon: IconIceDessert },
   ];
 
-  // ================= DATABASE MENU LENGKAP =================
   const menuData = [
     // --- MAIN DISH ---
     { id: 1, category: 'Main Dish', name: 'Nasi Lemak', desc: 'Rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah.', price: 'Rp 30.000' },
@@ -157,25 +154,40 @@ export default function Menu() {
     { id: 57, category: 'Ice & Dessert', name: 'Es ABCD', desc: 'Es serut campur sirup manis ala melayu penutup makan.', price: 'Rp 24.000' }
   ];
 
-  // Filter menu
   const activeProducts = menuData.filter(product => product.category === activeCategory);
 
   return (
     <div className="mn-container">
       
-      {/* ================= HEADER NAVBAR (MODERN) ================= */}
+      {/* ================= HEADER NAVBAR (FIX MOBILE HAMBURGER) ================= */}
       <nav className="navbar fade-in-up">
         <div className="logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
-        <div className="nav-links">
+
+        {/* --- MENU OVERLAY MOBILE / DESKTOP LINKS --- */}
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
           <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">Menu</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
+          
+          {/* Tombol Pesan Khusus Tampil di Overlay Menu HP */}
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
         </div>
-        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+
+        <div className="nav-actions">
+          {/* Tombol Pesan Desktop */}
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          
+          {/* --- HAMBURGER TOGGLE --- */}
+          <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </div>
+        </div>
       </nav>
 
       {/* ================= HERO SECTION ================= */}
@@ -183,11 +195,9 @@ export default function Menu() {
         <div className="mn-hero-left">
           <div className="mn-hero-watermark">LAOBAN</div>
           <div className="mn-hero-content">
-            {/* REVISI 2: Tambahan tulisan "Menu" */}
             <p className="mn-hero-subtitle-top">MENU</p>
             <h1 className="mn-hero-title">LaobanNusantara</h1>
             <p className="mn-hero-subtitle">BY UNCLE OSH</p>
-            {/* REVISI 1: Tombol "Grow Together With Us" dihapus */}
           </div>
         </div>
 
@@ -200,9 +210,6 @@ export default function Menu() {
               className={`mn-slide-img ${index === currentSlide ? 'active' : ''}`} 
             />
           ))}
-          
-          {/* REVISI 3: Tombol slider Kiri & Kanan dihapus, cukup dots saja */}
-
           <div className="mn-slider-dots">
             {slides.map((_, index) => (
               <span 
@@ -238,7 +245,7 @@ export default function Menu() {
           ))}
         </div>
 
-        {/* Grid Frame Gambar */}
+        {/* Grid Frame Gambar (DIBUAT KOTAK RAPI DI MOBILE) */}
         <div className="mn-square-grid">
           {activeProducts.length > 0 ? (
             activeProducts.map((prod) => (
@@ -272,14 +279,13 @@ export default function Menu() {
         </div>
       </main>
 
-      {/* ================= FOOTER MODERN (REVISI 4: Disamakan dengan Home) ================= */}
+      {/* ================= FOOTER MODERN (FIX CENTER MOBILE) ================= */}
       <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
             <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
             
-            {/* SOCIAL ICONS (Warna seragam abu-abu) */}
             <div className="socials socials-colored unified-socmed">
                <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
                <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>

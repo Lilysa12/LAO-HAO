@@ -14,7 +14,7 @@ import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png';
 import IconMessage from '../../../assets/icons/Message.png'; 
 import IconCall from '../../../assets/icons/Call.png'; 
 
-// --- FIX ICON LEAFLET (Mengatasi bug icon hilang di React) ---
+// --- FIX ICON LEAFLET ---
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -43,20 +43,21 @@ export default function OurPartner() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBranch, setSelectedBranch] = useState(null);
+  
+  // STATE MENU MOBILE (HAMBURGER)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Helper navigasi ke atas
   const navigateToTop = (path) => {
+    setIsMobileMenuOpen(false); 
     navigate(path);
     window.scrollTo(0, 0);
   };
 
-  // Filter cabang berdasarkan pencarian
   const filteredBranches = branchData.filter(branch => 
     branch.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     branch.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // REVISI 3: FUNGSI MENGECEK APAKAH TOKO BUKA (REAL-TIME)
   const checkIsOpen = (hoursText) => {
     try {
       const timeParts = hoursText.split(' - ');
@@ -72,11 +73,10 @@ export default function OurPartner() {
       
       return current >= start && current < end;
     } catch(e) {
-      return true; // Jika gagal parsing, anggap buka
+      return true; 
     }
   };
 
-  // Animasi Scroll
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -84,7 +84,8 @@ export default function OurPartner() {
           entry.target.classList.add('is-visible');
         }
       });
-    }, { threshold: 0.15 }); 
+    }, { threshold: 0.1 }); // Dipersempit agar lebih sensitif di layar HP
+    
     const hiddenElements = document.querySelectorAll('.fade-in-up');
     hiddenElements.forEach((el) => observer.observe(el));
     return () => hiddenElements.forEach((el) => observer.unobserve(el));
@@ -98,20 +99,33 @@ export default function OurPartner() {
         <div className="logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
-        <div className="nav-links">
+
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
           <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">Our Partner</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
+          
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
         </div>
-        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+
+        <div className="nav-actions">
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          
+          <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </div>
+        </div>
       </nav>
 
-      <main className="op-main-content fade-in-up delay-1">
+      {/* REVISI PENTING: Class fade-in-up dihapus dari main agar HP tidak nge-blank */}
+      <main className="op-main-content">
         
         {/* ================= HEADER TITLE & SEARCH ================= */}
-        <section className="op-header-section">
+        <section className="op-header-section fade-in-up delay-1">
           <h1 className="op-title">Kunjungi Lokasi Kami!</h1>
           <p className="op-subtitle">Temukan kehangatan rasa otentik Kopitiam di cabang terdekat Anda.</p>
           
@@ -128,7 +142,7 @@ export default function OurPartner() {
           </div>
         </section>
 
-        {/* ================= MAP SECTION (REACT-LEAFLET) ================= */}
+        {/* ================= MAP SECTION ================= */}
         <section className="op-map-wrapper fade-in-up">
           <MapContainer center={[-6.200000, 106.816666]} zoom={6} scrollWheelZoom={true} className="op-map-container">
             <TileLayer
@@ -159,7 +173,7 @@ export default function OurPartner() {
           </div>
         </section>
 
-        {/* ================= CARD GRID SECTION (REVISI 2: 3 KOLOM BAWAH) ================= */}
+        {/* ================= CARD GRID SECTION ================= */}
         <section className="op-list-section fade-in-up">
           <div className="op-list-header">
             <div className="op-yellow-line-vert"></div>
@@ -199,7 +213,6 @@ export default function OurPartner() {
             <div className="op-modal-header-img">
               <img src={selectedBranch.img} alt={selectedBranch.name} />
               
-              {/* REVISI 3: Render label Buka/Tutup secara cerdas otomatis */}
               <div className={`op-badge-status ${checkIsOpen(selectedBranch.hours) ? 'open' : 'closed'}`}>
                 {checkIsOpen(selectedBranch.hours) ? '✓ Buka Sekarang' : '✕ Tutup Sekarang'}
               </div>

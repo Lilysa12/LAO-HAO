@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Partnership.css'; 
 
@@ -37,8 +37,12 @@ import IconEmail from '../../../assets/icons/icons-partner/email.png';
 export default function Partnership() {
   const navigate = useNavigate();
 
+  // STATE MENU MOBILE (HAMBURGER) - SAMA PERSIS DENGAN HOME
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   // Helper untuk navigasi dan scroll ke atas otomatis
   const navigateToTop = (path) => {
+    setIsMobileMenuOpen(false); // Tutup menu kalau pindah
     navigate(path);
     window.scrollTo(0, 0);
   };
@@ -46,7 +50,7 @@ export default function Partnership() {
   // URL WhatsApp untuk digunakan berulang kali
   const waLink = "https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0";
 
-  // Animasi Scroll
+  // Animasi Scroll (Sama dengan Home, threshold diatur kecil biar responsif di HP)
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -54,7 +58,7 @@ export default function Partnership() {
           entry.target.classList.add('is-visible');
         }
       });
-    }, { threshold: 0.15 }); 
+    }, { threshold: 0.1 }); 
 
     const hiddenElements = document.querySelectorAll('.fade-in-up');
     hiddenElements.forEach((el) => observer.observe(el));
@@ -67,48 +71,53 @@ export default function Partnership() {
   return (
     <div className="pt-container">
       
-      {/* ================= 1. NAVBAR ================= */}
-      <nav className="pt-navbar fade-in-up">
-        <div className="pt-logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="pt-logo-img" />
+      {/* ================= 1. NAVBAR (SAMA PERSIS DENGAN HOME) ================= */}
+      <nav className="navbar fade-in-up">
+        <div className="logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
+          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
         </div>
-        <div className="pt-nav-links">
+
+        {/* --- MENU OVERLAY MOBILE / DESKTOP LINKS --- */}
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
-          <a href="#" onClick={(e) => e.preventDefault()} className="active">Partnership</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">Partnership</a>
+          
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
         </div>
-        <button className="pt-btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+
+        <div className="nav-actions">
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          
+          {/* --- HAMBURGER TOGGLE --- */}
+          <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </div>
+        </div>
       </nav>
 
       {/* ================= 2. HERO SECTION ================= */}
-      <section className="pt-hero fade-in-up delay-1" style={{ position: 'relative', minHeight: '80vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '80px 40px' }}>
+      <section className="pt-hero fade-in-up delay-1">
         
-        <div className="pt-hero-bg" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
-          <img src={BgHero} alt="Laoban Outlet" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          <div style={{
-            position: 'absolute',
-            top: 0, left: 0, width: '100%', height: '100%',
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 25%, transparent 75%, #A00500 100%)'
-          }}></div>
+        <div className="pt-hero-bg">
+          <img src={BgHero} alt="Laoban Outlet" className="pt-bg-img" />
+          <div className="pt-hero-overlay"></div>
         </div>
 
-        <div className="pt-hero-content" style={{ position: 'relative', zIndex: 2, color: '#FFFFFF', maxWidth: '900px', textShadow: '0px 4px 10px rgba(0,0,0,0.8)' }}>
-          <p className="pt-hero-label" style={{ fontFamily: 'Poppins', fontSize: '14px', fontWeight: '600', letterSpacing: '2px', marginBottom: '15px', textTransform: 'uppercase' }}>GROW WITH US!</p>
-          <h1 className="pt-hero-title" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontSize: '56px', fontWeight: '800', lineHeight: '1.1', margin: '0 0 25px 0' }}>
+        <div className="pt-hero-content">
+          <p className="pt-hero-label">GROW WITH US!</p>
+          <h1 className="pt-hero-title">
             BERGABUNGLAH BERSAMA<br/>LAOBAN NUSANTARA
           </h1>
-          <p className="pt-hero-desc" style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', lineHeight: '1.6', margin: '0 auto 35px auto', maxWidth: '700px', opacity: '0.95' }}>
+          <p className="pt-hero-desc">
             Anda berkesempatan menjadi bagian dalam pertumbuhan industri minuman dan makanan dengan konsep kopitiam ala Laoban di Indonesia. Tentunya bersama dengan menu-menu kebanggaan Laoban seperti Nasi-nasi khas Laoban, Kudapan Khas Laoban, Minuman Khas Laoban.
           </p>
           
-          {/* REVISI 1: Tombol "Initiate Partnership" diarahkan ke WA */}
-          <button 
-            className="pt-btn-dark-red" 
-            onClick={() => window.open(waLink, '_blank')}
-            style={{ background: '#750300', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.2)', padding: '14px 35px', borderRadius: '8px', fontFamily: 'Poppins', fontSize: '15px', fontWeight: '600', cursor: 'pointer', textShadow: 'none' }}
-          >
+          <button className="pt-btn-dark-red" onClick={() => window.open(waLink, '_blank')}>
             Initiate Partnership
           </button>
         </div>
@@ -121,6 +130,7 @@ export default function Partnership() {
           <div className="pt-yellow-line"></div>
         </div>
 
+        {/* Di mobile ini bakal berubah jadi 1 kolom */}
         <div className="pt-why-grid">
           <div className="pt-why-card">
             <div className="pt-icon-wrap"><img src={IconBrand} alt="Brand" /></div>
@@ -149,10 +159,11 @@ export default function Partnership() {
       <section className="pt-journey-section fade-in-up">
         <h2 className="pt-title-darkred text-center" style={{marginBottom: '50px'}}>The Journey to Partnership</h2>
         
+        {/* REVISI 2: Di mobile grid ini jadi 2 Kolom 4 Baris */}
         <div className="pt-journey-grid">
           <div className="pt-journey-card">
             <div className="pt-circle-icon"><img src={IconLokasi} alt="Location" /></div>
-            <h4>Location searching by<br/>partner</h4>
+            <h4>Location searching by partner</h4>
             <p>Identify the perfect spot for your new kopitiam.</p>
           </div>
           <div className="pt-journey-card">
@@ -167,7 +178,7 @@ export default function Partnership() {
           </div>
           <div className="pt-journey-card">
             <div className="pt-circle-icon"><img src={IconRenovation} alt="Renovation" /></div>
-            <h4>Renovation and<br/>preparing outlet</h4>
+            <h4>Renovation and preparing outlet</h4>
             <p>Transforming the space into a heritage experience.</p>
           </div>
           <div className="pt-journey-card">
@@ -192,7 +203,7 @@ export default function Partnership() {
           </div>
         </div>
 
-        {/* Info Kontak Cards (REVISI 2: Dibuat clickable) */}
+        {/* Info Kontak Cards (REVISI 3: Di mobile grid ini jadi 1 Kolom vertikal) */}
         <div className="pt-contact-cards fade-in-up">
           <div className="pt-contact-card clickable" onClick={() => window.open(waLink, '_blank')}>
             <div className="pt-contact-icon-bg bg-yellow">
@@ -221,13 +232,12 @@ export default function Partnership() {
       {/* ================= 5. CTA BOTTOM SECTION ================= */}
       <section className="pt-cta-bottom fade-in-up">
         <h2 className="pt-cta-title">Ready to build the legacy?</h2>
-        {/* REVISI 3: Tombol "Contact Our Team" diarahkan ke WA */}
         <button className="pt-btn-white" onClick={() => window.open(waLink, '_blank')}>
           Contact Our Team
         </button>
       </section>
 
-      {/* ================= 6. FOOTER MODERN (REVISI 4: Seragam dengan Home) ================= */}
+      {/* ================= 6. FOOTER MODERN (SAMA PERSIS DENGAN HOME) ================= */}
       <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
@@ -277,7 +287,7 @@ export default function Partnership() {
         
         <div className="foot-bottom">
           <p>© 2026 Laoban by Uncle Osh. All rights reserved.</p>
-          <p>Kebijakan Privasi &nbsp;&nbsp;•&nbsp;&nbsp; Syarat & Ketentuan</p>
+          <p>Kebijakan Privasi   •   Syarat & Ketentuan</p>
         </div>
       </footer>
 

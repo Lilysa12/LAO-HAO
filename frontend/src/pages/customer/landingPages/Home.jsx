@@ -52,7 +52,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// --- DATA CABANG ---
 const branchData = [
   { id: 1, name: 'Laoban Kopitiam Tebet', lat: -6.240, lng: 106.840 },
   { id: 2, name: 'Laoban Kopitiam SCBD', lat: -6.225, lng: 106.808 },
@@ -73,9 +72,8 @@ export default function Home() {
   const navigate = useNavigate();
   const [hoveredGridIndex, setHoveredGridIndex] = useState(null);
 
-  // ========================================================
-  // STATE KHUSUS UNTUK MENU INTERAKTIF (DENGAN DESKRIPSI)
-  // ========================================================
+  // --- STATE MENU MOBILE ---
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMenuCategory, setActiveMenuCategory] = useState('Main Dish');
 
   const menuCategories = [
@@ -87,36 +85,26 @@ export default function Home() {
     { name: 'Ice & Dessert', icon: IconIceDessert },
   ];
 
-  // Deskripsi dikembalikan agar tampil di sebelah frame gambar
   const homeMenuData = [
-    { id: 1, category: 'Main Dish', name: 'Nasi Lemak', desc: 'Nasi dengan rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah kalian. Sambelnya juga mantap.' },
-    { id: 2, category: 'Main Dish', name: 'Mie Hainan', desc: 'Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu coklat yang muantab!' },
-    { id: 3, category: 'Main Dish', name: 'Nasi Mala', desc: 'Nasi putih dengan rempah mala sechuan yang rasanya pedas asin gurih. Pecinta pedas? Wajib cobain!' },
-    { id: 4, category: 'Main Dish', name: 'Mie Jasio', desc: 'Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu merah yang tebal dan juicy!' },
-    { id: 16, category: 'Snack', name: 'Butter Kaya Toast', desc: 'Favorite semua orang karena roti dan selai kayanya homemade. Wajib coba!' },
-    { id: 17, category: 'Snack', name: 'Choco Toast', desc: 'Jelas isinya selai coklat lumer, solusi para kaum suka badmood!' },
-    { id: 25, category: 'Snack', name: 'Kulit Crispy Original', desc: 'Kulit ayam krispi original yang super renyah.' },
-    { id: 23, category: 'Snack', name: 'Pisang Goreng Wijen', desc: 'Pisang goreng renyah bertabur wijen dengan cocolan manis.' },
-    { id: 28, category: 'Dimsum', name: 'Udang Keju', desc: 'Olahan udang goreng dengan isian keju lumer di dalamnya.' },
-    { id: 30, category: 'Dimsum', name: 'Gyoza', desc: 'Pangsit ala Jepang isian daging ayam dan sayuran.' },
-    { id: 39, category: 'Dimsum', name: 'Pao Durian', desc: 'Bakpao kukus super lembut dengan isian selai durian asli.' },
-    { id: 43, category: 'Dimsum', name: 'Siomay Ayam', desc: 'Siomay kukus ayam original klasik.' },
-    { id: 46, category: 'Hot Drink', name: 'Kopi Laoban', desc: 'Kopi hitam otentik rasa Kopitiam.' },
-    { id: 47, category: 'Hot Drink', name: 'Teh Tarik', desc: 'Teh susu perpaduan khas yang ditarik sempurna.' },
-    { id: 50, category: 'Hot Drink', name: 'Kopi Telor Vietnam', desc: 'Kopi dengan buih kocokan telur manis khas Vietnam.' },
-    { id: 49, category: 'Hot Drink', name: 'Kopi Butter', desc: 'Kopi panas dengan potongan mentega gurih.' },
-    { id: 45, category: 'Cold Drink', name: 'Kopi Susu Laoban', desc: 'Es kopi susu gula aren andalan khas Laoban.' },
-    { id: 51, category: 'Cold Drink', name: 'Matcha Biscoff', desc: 'Minuman matcha green tea dingin dengan olesan selai Biscoff.' },
-    { id: 54, category: 'Cold Drink', name: 'Lychee Yakult', desc: 'Perpaduan manis leci dan segarnya probiotik Yakult dingin.' },
-    { id: 56, category: 'Cold Drink', name: 'Kopi Susu Havana', desc: 'Es kopi susu racikan sirup havana Laoban.' },
-    { id: 57, category: 'Ice & Dessert', name: 'Es ABCD', desc: 'Es serut campur sirup manis ala melayu penutup makan.' },
-    { id: 58, category: 'Ice & Dessert', name: 'Kacang Merah Es', desc: 'Es campur spesial dengan topping kacang merah manis.' },
+    { id: 1, category: 'Main Dish', name: 'Nasi Lemak', desc: 'Nasi dengan rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah kalian. Sambelnya juga mantap.', img: 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=300&q=80' },
+    { id: 2, category: 'Main Dish', name: 'Mie Hainan ⭐', desc: 'Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu coklat yang muantab!', img: 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300&q=80' },
+    { id: 3, category: 'Main Dish', name: 'Nasi Mala', desc: 'Nasi putih dengan rempah mala sechuan yang rasanya pedas asin gurih. Pecinta pedas? Wajib cobain!', img: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=300&q=80' },
+    { id: 4, category: 'Main Dish', name: 'Mie Jasio', desc: 'Mie berbumbu putih rahasia khas laoban yang pastinya sedap dicampur ayam jasio bumbu merah yang tebal dan juicy!', img: null },
+    { id: 16, category: 'Snack', name: 'Butter Kaya Toast', desc: 'Favorite semua orang karena roti dan selai kayanya homemade. Wajib coba!', img: null },
+    { id: 17, category: 'Snack', name: 'Choco Toast', desc: 'Jelas isinya selai coklat lumer, solusi para kaum suka badmood!', img: null },
+    { id: 28, category: 'Dimsum', name: 'Udang Keju', desc: 'Olahan udang goreng dengan isian keju lumer di dalamnya.', img: null },
+    { id: 30, category: 'Dimsum', name: 'Gyoza', desc: 'Pangsit ala Jepang isian daging ayam dan sayuran.', img: null },
+    { id: 46, category: 'Hot Drink', name: 'Kopi Laoban', desc: 'Kopi hitam otentik rasa Kopitiam.', img: null },
+    { id: 47, category: 'Hot Drink', name: 'Teh Tarik', desc: 'Teh susu perpaduan khas yang ditarik sempurna.', img: null },
+    { id: 45, category: 'Cold Drink', name: 'Kopi Susu Laoban', desc: 'Es kopi susu gula aren andalan khas Laoban.', img: null },
+    { id: 51, category: 'Cold Drink', name: 'Matcha Biscoff', desc: 'Minuman matcha green tea dingin dengan olesan selai Biscoff.', img: null },
+    { id: 57, category: 'Ice & Dessert', name: 'Es ABCD', desc: 'Es serut campur sirup manis ala melayu penutup makan.', img: null },
   ];
 
   const displayedMenus = homeMenuData.filter(menu => menu.category === activeMenuCategory);
-  // ========================================================
 
   const navigateToTop = (path) => {
+    setIsMobileMenuOpen(false); // Tutup menu pas pindah halaman
     navigate(path);
     window.scrollTo(0, 0);
   };
@@ -187,14 +175,30 @@ export default function Home() {
         <div className="logo-box">
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
         </div>
-        <div className="nav-links">
+
+        {/* --- MENU OVERLAY MOBILE / DESKTOP LINKS --- */}
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }} className="active">Home</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }}>About</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
+          
+          {/* Tombol Pesan Khusus Tampil di Overlay Menu HP */}
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
         </div>
-        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+
+        <div className="nav-actions">
+          {/* Tombol Pesan Desktop */}
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          
+          {/* --- HAMBURGER TOGGLE --- */}
+          <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </div>
+        </div>
       </nav>
 
       {/* ================= 2. HERO SECTION ================= */}
@@ -225,6 +229,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Gambar Hero */}
         <div className="hero-grid">
           <img src={HeroImg1} alt="Menu 1" />
           <img src={HeroImg2} alt="Menu 2" />
@@ -236,7 +241,6 @@ export default function Home() {
       {/* ================= 3. MARQUEE CABANG ================= */}
       <div className="red-marquee-container">
         <div className="red-marquee-track">
-          {/* Loop 1 */}
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
@@ -251,15 +255,6 @@ export default function Home() {
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> SAMARINDA</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> MANADO</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PONTIANAK</div>
-          {/* Loop 2 */}
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BOGOR</div>
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> BEKASI</div>
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> TANGERANG</div>
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> DEPOK</div>
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> SOLO</div>
-          <div className="marquee-item"><span className="yellow-box">&#9632;</span> MALANG</div>
         </div>
       </div>
 
@@ -312,14 +307,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= 5. MENU SECTION (FRAME KOSONG, TAPI ADA DESKRIPSI) ================= */}
+      {/* ================= 5. MENU SECTION ================= */}
       <section className="menu-section fade-in-up">
         <div className="center-title">
           <p className="label-red">OUR MENU</p>
           <h2 className="title-dark">Menu Perguruan Laoban</h2>
         </div>
 
-        {/* TAB ICONS (Bisa di-klik tanpa garis merah) */}
         <div className="menu-tabs">
           {menuCategories.map((cat, idx) => (
             <div 
@@ -333,16 +327,17 @@ export default function Home() {
           ))}
         </div>
 
-        {/* DAFTAR MENU MENGGUNAKAN DATA YANG DIFILTER */}
         <div className="menu-list">
           {displayedMenus.length > 0 ? (
             displayedMenus.map((item) => (
               <div className="menu-card" key={item.id}>
-                {/* Frame Kosong Menunggu Kiriman Backend */}
-                <div className="img-blank"></div>
+                {item.img ? (
+                  <img src={item.img} alt={item.name} className="menu-item-img" />
+                ) : (
+                  <div className="img-blank"></div>
+                )}
                 <div className="menu-info">
                   <h4>{item.name}</h4>
-                  {/* Teks Deskripsi Dikembalikan! */}
                   <p>{item.desc}</p>
                 </div>
               </div>
@@ -361,7 +356,6 @@ export default function Home() {
 
       {/* ================= 6. MAP SECTION ================= */}
       <section className="map-section fade-in-up">
-        
         <h2 className="title-dark center-title">50+ Titik Kenikmatan di Seluruh Nusantara</h2>
         <p className="desc-gray text-center max-w">
           Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk mendekatkan kehangatan Kopitiam autentik ke kota Anda.

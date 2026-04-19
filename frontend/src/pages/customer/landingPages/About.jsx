@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './About.css';
 
@@ -17,9 +17,13 @@ import ImgFounder from '../../../assets/home/image2.png';
 
 export default function About() {
   const navigate = useNavigate();
+  
+  // STATE MENU MOBILE (HAMBURGER) SAMA DENGAN HOME
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Helper untuk pindah halaman dan otomatis scroll ke atas
   const navigateToTop = (path) => {
+    setIsMobileMenuOpen(false); // Tutup menu saat pindah halaman
     navigate(path);
     window.scrollTo(0, 0);
   };
@@ -44,19 +48,35 @@ export default function About() {
   return (
     <div className="ab-container">
       
-      {/* ================= HEADER NAVBAR ================= */}
+      {/* ================= HEADER NAVBAR (PERSIS HOME) ================= */}
       <nav className="navbar fade-in-up">
-        <div className="logo-box" onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" />
+        <div className="logo-box">
+          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
         </div>
-        <div className="nav-links">
+
+        {/* --- MENU OVERLAY MOBILE / DESKTOP LINKS --- */}
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }} className="active">About</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
+          
+          {/* Tombol Pesan Khusus Tampil di Overlay Menu HP */}
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
         </div>
-        <button className="btn-red" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+
+        <div className="nav-actions">
+          {/* Tombol Pesan Desktop */}
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          
+          {/* --- HAMBURGER TOGGLE --- */}
+          <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </div>
+        </div>
       </nav>
 
       {/* ================= MAIN CONTENT ================= */}
@@ -118,14 +138,13 @@ export default function About() {
 
       </main>
 
-      {/* ================= FOOTER MODERN (REVISI) ================= */}
+      {/* ================= FOOTER MODERN (PERSIS HOME MOBILE) ================= */}
       <footer className="footer-modern fade-in-up delay-1">
         <div className="foot-grid">
           <div className="foot-brand">
             <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
             
-            {/* SOCIAL ICONS: Sudah ditambah Facebook dan pakai class unified-socmed biar abu-abu */}
             <div className="socials socials-colored unified-socmed">
                <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
                <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
@@ -148,7 +167,6 @@ export default function About() {
             <h4>Kemitraan</h4>
             <ul>
               <li onClick={() => navigateToTop('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
-              {/* Proposal Bisnis sudah dihapus */}
               <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
             </ul>
           </div>
