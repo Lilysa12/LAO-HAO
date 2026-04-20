@@ -4,9 +4,13 @@ import './MenuList.css';
 // IMPORT SUPABASE
 import { supabase } from '../../../supabase';
 
+// --- IMPORT KOMPONEN LOADING ---
+import Loading from '../../../components/Loading';
+
 // --- IMPORT ASSETS LOKAL ---
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconCheckout from '../../../assets/icons/icons-customer/checkout.png';
+import IconHistory from '../../../assets/icons/icons-customer/history.png';
 
 // =========================================================
 // SVG ICONS COMPONENT (Warna dikontrol otomatis oleh CSS)
@@ -39,14 +43,9 @@ export default function MenuList() {
   const navigate = useNavigate();
   const location = useLocation();
   
-// Tangkap nama dari InputData, kalau kosong kasih default 'Laoban'
   const customerName = location.state?.customerName || 'Laoban';
-
   const [activeCategory, setActiveCategory] = useState('MAIN');
-  
-  // FIX: Tangkap cart dari MenuDetail (jika ada navigasi balik), atau mulai kosong
   const [cart, setCart] = useState(location.state?.cart || []);
-
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +53,6 @@ export default function MenuList() {
     const getMenusFromSupabase = async () => {
       try {
         setLoading(true);
-        // Ambil data dari tabel 'menus'
         const { data, error } = await supabase
           .from('menus')
           .select('*');
@@ -71,11 +69,9 @@ export default function MenuList() {
   }, []);
 
   useEffect(() => {
-    // Sinkronisasi data keranjang dari Menu Detail saat back
     if (location.state?.cart) {
       setCart(location.state.cart);
     }
-    // Sinkronisasi Kategori Aktif
     if (location.state?.category) {
       const mapCat = {
         'Main Dish': 'MAIN', 'Snack': 'SNACK', 'Dimsum': 'DIMSUM',
@@ -85,7 +81,6 @@ export default function MenuList() {
     }
   }, [location.state]);
 
- // Filter data yang datang dari database
   const displayedItems = menus.filter(item =>
     item.category?.toUpperCase().includes(activeCategory)
   );
@@ -110,7 +105,10 @@ export default function MenuList() {
     return total + (priceVal || 0);
   }, 0);
 
-  if (loading) return <div className="loading">Memuat Menu...</div>;
+  // =========================================================
+  // LOGIKA LOADING (MENGGUNAKAN KOMPONEN LOADING KUSTOM)
+  // =========================================================
+  if (loading) return <Loading text="Menyiapkan Menu Perguruan..." />;
 
   return (
     <div className="ml-container">
@@ -129,7 +127,6 @@ export default function MenuList() {
       </div>
 
       <main className="ml-main-layout">
-        
         <aside className="ml-sidebar">
           <div className={`ml-side-tab ${activeCategory === 'MAIN' ? 'active' : ''}`} onClick={() => setActiveCategory('MAIN')}>
             <div className="ml-st-icon"><SvgMain /></div>
@@ -157,12 +154,8 @@ export default function MenuList() {
                   key={`${activeCategory}-${item.id}`}
                   className="ml-card-row animate-slide-up"
                   onClick={() => navigate('/detail', { 
-  state: {
-    item: item,
-    cart: cart,
-    customerName: customerName // <--- Tambahkan ini
-  }
-})}
+                    state: { item, cart, customerName }
+                  })}
                   style={{cursor: 'pointer', animationDelay: `${index * 0.08}s`}}
                 >
                   <div className="ml-card-img img-frame">
@@ -189,12 +182,19 @@ export default function MenuList() {
             )}
           </div>
         </section>
-
       </main>
+
+      <div 
+        className={`ml-history-btn ${cart.length > 0 ? 'with-cart' : ''}`} 
+        onClick={() => navigate('/history')} 
+        title="History Pesanan"
+      >
+        <img src={IconHistory} alt="History" />
+      </div>
 
       {cart.length > 0 && (
         <div className="ml-checkout-wrapper slide-up-animation">
-          <div className="ml-floating-bar efek-klik-kartu" onClick={() => navigate('/checkout', { state: { cart, totalPrice } })}>
+          <div className="ml-floating-bar efek-klik-kartu" onClick={() => navigate('/checkout', { state: { cart, totalPrice, customerName } })}>
             <div className="ml-fb-left">
               <div className="ml-cart-box">
                 <img src={IconCheckout} alt="Cart" className="ml-cart-icon" />
@@ -205,21 +205,7 @@ export default function MenuList() {
                 <p>{formatRupiah(totalPrice)}</p>
               </div>
             </div>
-            <button
-              className="ml-btn-checkout"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate('/checkout', {
-                  state: {
-                    cart,
-                    totalPrice,
-                    customerName: customerName
-                  }
-                });
-              }}
-            >
-              Checkout &gt;
-            </button>
+            <button className="ml-btn-checkout">Checkout &gt;</button>
           </div>
         </div>
       )}

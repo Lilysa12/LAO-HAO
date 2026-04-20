@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase";
 import "./Voucher.css";
+import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
 
 export default function Voucher() {
   const navigate = useNavigate();
@@ -17,13 +18,17 @@ export default function Voucher() {
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
+        setLoading(true);
         const { data, error } = await supabase.from("vouchers").select("*");
         if (error) throw error;
         setVouchers(data || []);
       } catch (err) {
         console.error("Error:", err.message);
       } finally {
-        setLoading(false);
+        // Berikan sedikit delay biar animasi loadingnya kelihatan halus
+        setTimeout(() => {
+          setLoading(false);
+        }, 800);
       }
     };
     fetchVouchers();
@@ -40,7 +45,7 @@ export default function Voucher() {
         reason: `Minimal belanja Rp ${voucher.min_spend.toLocaleString("id-ID")} belum terpenuhi.`,
       };
     }
-    // Cek syarat kategori menu (Contoh: Harus ada Dimsum)
+    // Cek syarat kategori menu
     if (voucher.category_req) {
       const hasCategory = cart.some(
         (item) =>
@@ -59,12 +64,19 @@ export default function Voucher() {
   const handleClaim = (voucher) => {
     const status = checkEligibility(voucher);
     if (!status.eligible) {
-      alert(status.reason); // Tampilkan alasan kenapa ditolak
+      alert(status.reason);
       return;
     }
     // Jika lolos, bawa voucher kembali ke Checkout
     navigate("/checkout", { state: { cart: cart, appliedVoucher: voucher } });
   };
+
+  // =========================================================
+  // TAMPILKAN LOADING JIKA SEDANG FETCH DATA
+  // =========================================================
+  if (loading) {
+    return <Loading text="Mencari promo spesial untukmu..." />;
+  }
 
   return (
     <div className="vo-container">
@@ -123,7 +135,6 @@ export default function Voucher() {
           <button className="vo-btn-tukarkan efek-klik">Tukarkan</button>
         </div>
 
-        {/* LIST VOUCHER DENGAN SPACING LEBIH LEGA */}
         <div className="vo-list">
           {vouchers.map((voucher) => {
             const isEligible = checkEligibility(voucher).eligible;
@@ -135,7 +146,6 @@ export default function Voucher() {
 
             return (
               <div className="vo-card" key={voucher.id}>
-                {/* Gunakan bg_class (sesuai DB) */}
                 <div
                   className={`vo-card-left ${voucher.bg_class} ${!isEligible ? "disabled-bg" : ""}`}
                 >
@@ -148,7 +158,6 @@ export default function Voucher() {
                     <p>{voucher.description}</p>
                   </div>
                   <div className="vo-card-bottom">
-                    {/* Gunakan badge_class (sesuai DB) */}
                     <span className={`vo-badge ${voucher.badge_class}`}>
                       s.d.{" "}
                       {voucher.expiry_date

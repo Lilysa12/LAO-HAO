@@ -14,9 +14,8 @@ import Checkout from './pages/customer/order/Checkout';
 import Voucher from './pages/customer/order/Voucher';
 import Payment from './pages/customer/order/Payment';
 import Status from './pages/customer/order/Status';
-// import History from './pages/customer/order/History'; // <-- INI SAYA MATIKAN DULU KARENA BIKIN ERROR
+import History from './pages/customer/order/History'; // <--- IMPORT HISTORY DITAMBAHKAN DI SINI
 import DownloadApp from './pages/customer/landingPages/DownloadApp';
-
 // --- AUTH PAGE ---
 import Login from './pages/auth/Login';
 
@@ -63,7 +62,7 @@ function App() {
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/payment" element={<Payment />} />   
         <Route path="/status" element={<Status />} />
-        {/* <Route path="/history" element={<History />} /> */} 
+        <Route path="/history" element={<History />} /> {/* <--- RUTE HISTORY DITAMBAHKAN DI SINI */}
         
         <Route path="/admin" element={<ProtectedRoute><OverviewCabang /></ProtectedRoute>} />
         <Route path="/admin/laporan-penjualan-pusat" element={<ProtectedRoute><LaporanPenjualanPusat /></ProtectedRoute>} />

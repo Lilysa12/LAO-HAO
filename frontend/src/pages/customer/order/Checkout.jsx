@@ -9,10 +9,14 @@ import IconWhatsapp from "../../../assets/icons/icons-customer/whatsapp.png";
 import IconTiktok from "../../../assets/icons/icons-customer/tiktok.png";
 import IconFacebook from "../../../assets/icons/icons-customer/facebook.png";
 import IconLink from "../../../assets/icons/icons-customer/link.png";
+import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
 
 export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // STATE UNTUK LOADING
+  const [isLoading, setIsLoading] = useState(false);
 
   // =========================================================
   // LOGIKA GROUPING CART (Meringkas item yang sama)
@@ -21,20 +25,16 @@ export default function Checkout() {
   const groupedCart = initialCart.reduce((acc, item) => {
     const existing = acc.find((i) => i.id === item.id);
     if (existing) {
-      existing.quantity += 1; // Jika item sama, tambah jumlahnya
+      existing.quantity += 1;
     } else {
-      // Pastikan seluruh properti item (id, name, price, image_url, description) ikut masuk
       acc.push({ ...item, quantity: 1 });
     }
     return acc;
   }, []);
 
   const [cart, setCart] = useState(groupedCart);
-
-  // Ambil data voucher yang dilempar dari halaman Voucher (jika ada)
   const appliedVoucher = location.state?.appliedVoucher || null;
 
-  // Helper Pembersih Harga
   const parsePrice = (p) => {
     if (typeof p === "number") return p;
     return parseInt(p?.toString().replace(/[^0-9]/g, ""), 10) || 0;
@@ -54,21 +54,14 @@ export default function Checkout() {
     );
   };
 
-  // =========================================================
-  // FIX: LOGIKA KEMBALI KE MENU DENGAN MEMBAWA PESANAN
-  // =========================================================
   const handleBackToMenu = () => {
-    // Kita harus memecah (flatten) cart kembali agar bisa dibaca oleh MenuList
     const flatCart = [];
     cart.forEach((item) => {
       for (let i = 0; i < item.quantity; i++) {
-        // Hilangkan properti quantity, kembalikan ke format asli
         const { quantity, ...originalItem } = item;
         flatCart.push(originalItem);
       }
     });
-
-    // Pindah ke order-list sambil melempar state cart yang utuh
     navigate("/order-list", { state: { cart: flatCart } });
   };
 
@@ -89,7 +82,6 @@ export default function Checkout() {
       discountAmount = appliedVoucher.amount;
     }
   }
-  // Mencegah diskon lebih besar dari subtotal
   if (discountAmount > subtotal) discountAmount = subtotal;
 
   const totalPayment = subtotal + tax - discountAmount;
@@ -101,6 +93,55 @@ export default function Checkout() {
       minimumFractionDigits: 0,
     }).format(number);
   };
+
+  // =========================================================
+  // LOGIKA SIMPAN KE HISTORY DENGAN LOADING
+  // =========================================================
+  const handleProceedToPayment = () => {
+    if (cart.length === 0) return;
+
+    // 1. Tampilkan Loading
+    setIsLoading(true);
+
+    // Simulasi proses (1.5 detik) agar animasi loading terlihat cantik
+    setTimeout(() => {
+      const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+      // 2. Siapkan data pesanan
+      const newOrder = {
+        id: `#LH-${Math.floor(100000 + Math.random() * 900000)}`,
+        title: cart[0]?.name + (cart.length > 1 ? ' dkk' : ''),
+        date: new Date().toISOString(),
+        totalItems: totalQuantity,
+        totalPrice: totalPayment,
+        status: 'SELESAI',
+        image: cart[0]?.image_url || 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=200&q=80',
+        items: cart
+      };
+
+      // 3. Simpan ke Session Storage
+      const existingHistory = JSON.parse(sessionStorage.getItem('laoban_order_history')) || [];
+      const updatedHistory = [newOrder, ...existingHistory];
+      sessionStorage.setItem('laoban_order_history', JSON.stringify(updatedHistory));
+
+      // 4. Selesaikan loading dan pindah halaman
+      setIsLoading(false);
+      navigate("/payment", {
+        state: {
+          subtotal, 
+          tax, 
+          discountAmount, 
+          totalPayment, 
+          cart,
+        },
+      });
+    }, 1500);
+  };
+
+  // JIKA SEDANG LOADING, TAMPILKAN KOMPONEN LOADING
+  if (isLoading) {
+    return <Loading text="Sedang memproses pesananmu..." />;
+  }
 
   return (
     <div className="co-container">
@@ -115,7 +156,6 @@ export default function Checkout() {
       </header>
 
       <div className="co-top-bar">
-        {/* FIX: Tombol Back membawa state cart */}
         <button className="co-back-btn efek-klik" onClick={handleBackToMenu}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -180,14 +220,12 @@ export default function Checkout() {
           ) : (
             <div className="co-empty-state">
               <p>Keranjang Anda kosong.</p>
-              {/* FIX: Tombol Empty State membawa state cart */}
               <button className="co-btn-add-initial" onClick={handleBackToMenu}>
                 Pilih Menu
               </button>
             </div>
           )}
 
-          {/* FIX: Tombol Tambah Menu Lain membawa state cart */}
           <div
             className="co-add-more-btn efek-klik-kartu"
             onClick={handleBackToMenu}
@@ -206,7 +244,6 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* KIRIM DATA CART KE HALAMAN VOUCHER */}
           <div
             className="co-promo-card efek-klik-kartu"
             onClick={() => navigate("/voucher", { state: { cart, subtotal } })}
@@ -236,7 +273,6 @@ export default function Checkout() {
               <span className="co-sum-value">{formatRupiah(subtotal)}</span>
             </div>
 
-            {/* MUNCUL JIKA ADA DISKON */}
             {appliedVoucher && (
               <div className="co-summary-row text-green-row">
                 <span className="co-sum-label text-green-row">
@@ -257,19 +293,11 @@ export default function Checkout() {
               <span className="co-sum-label-bold">Total Pembayaran</span>
               <span className="co-sum-total">{formatRupiah(totalPayment)}</span>
             </div>
+            
             <button
               className="co-btn-pay efek-klik"
               disabled={cart.length === 0}
-              onClick={() =>
-                navigate("/payment", {
-                  state: {
-                    subtotal, // Mengirim harga asli
-                    tax, // Mengirim nilai pajak (10%)
-                    discountAmount, // Mengirim nominal potongan voucher
-                    totalPayment, // Mengirim harga akhir yang harus dibayar
-                  },
-                })
-              }
+              onClick={handleProceedToPayment}
               style={{ opacity: cart.length === 0 ? 0.5 : 1 }}
             >
               Pilih Pembayaran
