@@ -1,0 +1,60 @@
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Mengambil tinggi layar penuh */
+  width: 100%;
+  background-color: #F8F9FA; /* Warna background abu-abu sangat muda */
+  z-index: 9999;
+}
+
+.loading-spinner {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* Animasi 3 Titik Memantul */
+.loading-spinner div {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #A00500; /* Merah Laoban */
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.loading-spinner .bounce1 {
+  animation-delay: -0.32s;
+  background-color: #A00500; 
+}
+
+.loading-spinner .bounce2 {
+  animation-delay: -0.16s;
+  background-color: #FFC627; /* Kuning Laoban */
+}
+
+.loading-spinner .bounce3 {
+  background-color: #A00500;
+}
+
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* Animasi Teks Berkedip Halus */
+.loading-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #212529;
+  margin: 0;
+  letter-spacing: 0.5px;
+  animation: pulseText 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseText {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}

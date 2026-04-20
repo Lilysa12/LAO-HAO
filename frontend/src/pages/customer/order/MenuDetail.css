@@ -1,7 +1,7 @@
 /* src/pages/customer/MenuDetail.css */
 
 .md-container, .md-container * { box-sizing: border-box; }
-.md-container { width: 100%; max-width: 2000px; margin: 0 auto; background-color: #FFFFFF; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.md-container { width: 100%; max-width: 2000px; margin: 0 auto; background-color: #FFFFFF; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative; } /* Tambah position relative untuk anchor tombol floating */
 
 /* --- HEADER --- */
 .md-header { display: flex; justify-content: flex-start; align-items: center; min-height: 92px; padding: 0 60px; border-bottom: 1px solid #F3F4F6; background: #fff; flex-shrink: 0; }
@@ -99,6 +99,51 @@
 .md-btn-checkout { background: #FFC627; color: #212529; border: none; padding: 14px 28px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; flex-shrink: 0; white-space: nowrap; }
 .md-btn-checkout:hover { background: #e5b223; transform: scale(1.03);}
 
+
+/* =========================================================
+   TOMBOL HISTORY PESANAN (FLOATING)
+========================================================= */
+.md-history-btn {
+  position: fixed;
+  bottom: 40px; 
+  right: 40px; 
+  width: 60px;
+  height: 60px;
+  background-color: #A00500; 
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 25px rgba(160, 5, 0, 0.4); 
+  cursor: pointer;
+  z-index: 85; 
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+.md-history-btn img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); 
+  transition: transform 0.3s ease;
+}
+
+.md-history-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 12px 30px rgba(160, 5, 0, 0.5);
+  background-color: #8a0400; 
+}
+
+.md-history-btn:hover img {
+  transform: rotate(-10deg); 
+}
+
+/* Jika ada item di cart (bar checkout muncul), naikkan posisi tombol history */
+.md-history-btn.with-cart {
+  bottom: 140px; 
+}
+
+
 .efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
 .efek-klik:active { transform: scale(0.96); }
 .efek-klik-kartu { transition: transform 0.15s ease, box-shadow 0.15s ease; }
@@ -172,4 +217,16 @@
   .md-cart-text h4 { font-size: 11px; margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
   .md-cart-text p { font-size: 17px; font-weight: 800; margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
   .md-btn-checkout { padding: 10px 20px; font-size: 14px; border-radius: 10px; flex-shrink: 0; white-space: nowrap;}
+
+  /* Penyesuaian Tombol History di Mobile */
+  .md-history-btn {
+    bottom: 25px; 
+    right: 20px; 
+    width: 55px; 
+    height: 55px;
+  }
+  
+  .md-history-btn.with-cart {
+    bottom: 120px; /* Sesuaikan dengan tinggi bar checkout di mobile */
+  }
 }

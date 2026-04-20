@@ -10,6 +10,7 @@ import IconWhatsapp from "../../../assets/icons/icons-customer/whatsapp.png";
 import IconFacebook from "../../../assets/icons/icons-customer/facebook.png";
 import IconLink from "../../../assets/icons/icons-customer/link.png";
 import IconTiktok from "../../../assets/icons/icons-customer/tiktok.png";
+import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
 
 // SVG Ikon Pin Lokasi (Merah)
 const SvgLocation = () => (
@@ -31,20 +32,36 @@ export default function InputData() {
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [tableNumber, setTableNumber] = useState("1"); // Default meja 1
+  
+  // STATE UNTUK LOADING
+  const [isLoading, setIsLoading] = useState(false);
 
-const handleStartOrder = () => {
-  if (!customerName || !phoneNumber) {
-    alert("Mohon isi nama dan nomor handphone kamu ya, Laoban!");
-    return;
+  const handleStartOrder = () => {
+    if (!customerName || !phoneNumber) {
+      alert("Mohon isi nama dan nomor handphone kamu ya, Laoban!");
+      return;
+    }
+    
+    // 1. Tampilkan Loading
+    setIsLoading(true);
+
+    // 2. Simulasi proses pemindahan data (1.5 detik)
+    setTimeout(() => {
+      // SIMPAN KE MEMORI BROWSER
+      localStorage.setItem('customerName', customerName);
+      localStorage.setItem('phoneNumber', phoneNumber);
+      localStorage.setItem('tableNumber', tableNumber); 
+      
+      // Matikan Loading dan pindah halaman
+      setIsLoading(false);
+      navigate("/order-list"); 
+    }, 1500);
+  };
+
+  // JIKA SEDANG LOADING, TAMPILKAN KOMPONEN LOADING
+  if (isLoading) {
+    return <Loading text="Menyiapkan meja untukmu..." />;
   }
-  
-  // SIMPAN KE MEMORI BROWSER
-  localStorage.setItem('customerName', customerName);
-  localStorage.setItem('phoneNumber', phoneNumber);
-  localStorage.setItem('tableNumber', tableNumber); // SIMPAN MEJA
-  
-  navigate("/order-list"); // Sekarang navigasi biasa saja tanpa state pun aman
-};
 
   return (
     <div className="id-container">
@@ -131,7 +148,7 @@ const handleStartOrder = () => {
               <button
                 type="button"
                 className="id-btn-submit efek-klik"
-                onClick={handleStartOrder} // Pakai fungsi handler yang baru
+                onClick={handleStartOrder} 
               >
                 &gt; Mulai Memesan
               </button>

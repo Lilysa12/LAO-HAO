@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase";
 import "./Payment.css";
 
+// --- IMPORT KOMPONEN LOADING ---
+import Loading from '../../../components/Loading'; 
+
 // --- IMPORT ASSETS ---
 import LogoLaoban from "../../../assets/icons/icons-customer/logoLaoban.png";
 import IconInstagram from "../../../assets/icons/icons-customer/instagram.png";
@@ -20,7 +23,7 @@ export default function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedMethod, setSelectedMethod] = useState("qris");
-  const [isSubmitting, setIsSubmitting] = useState(false); // State biar ga klik double
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   // =========================================================
   // TANGKAP HARGA DINAMIS DARI HALAMAN CHECKOUT
@@ -42,7 +45,7 @@ export default function Payment() {
 
   const handleConfirmPayment = async () => {
     if (isSubmitting) return;
-    setIsSubmitting(true);
+    setIsSubmitting(true); // Mulai proses (Loading muncul)
 
     try {
       const orderId = `LHO-${Math.floor(10000 + Math.random() * 90000)}`;
@@ -50,7 +53,7 @@ export default function Payment() {
       const storedPhone = localStorage.getItem("phoneNumber") || "-";
       const storedTable = localStorage.getItem("tableNumber") || "1";
 
-      // SIMPAN KE SUPABASE
+      // 1. SIMPAN KE SUPABASE
       const { error: supabaseError } = await supabase.from("orders").insert([
         {
           order_id: orderId,
@@ -60,7 +63,7 @@ export default function Payment() {
           items: cart,
           total_payment: totalPayment,
           payment_method: selectedMethod,
-          status: "pending", // Biarkan pending dulu sampai dibayar
+          status: "pending", 
         },
       ]);
 
@@ -81,18 +84,34 @@ export default function Payment() {
       const data = await response.json();
 
       if (data.token) {
+        // Matikan submitting sebelum buka Snap agar modal snap tidak tertutup loading
+        setIsSubmitting(false); 
+
         // 3. MUNCULKAN POPUP MIDTRANS
         window.snap.pay(data.token, {
           onSuccess: function (result) {
-            console.log("Sukses:", result);
-            navigate("/status", { state: { orderId, status: "success" } });
+            // Logika simpan history success
+            const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const newOrder = {
+              id: orderId,
+              title: cart[0]?.name + (cart.length > 1 ? ' dkk' : ''),
+              date: new Date().toISOString(),
+              totalItems: totalQuantity,
+              totalPrice: totalPayment,
+              status: 'SELESAI',
+              image: cart[0]?.image_url || 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=200&q=80',
+              items: cart
+            };
+            const existingHistory = JSON.parse(sessionStorage.getItem('laoban_order_history')) || [];
+            const updatedHistory = [newOrder, ...existingHistory];
+            sessionStorage.setItem('laoban_order_history', JSON.stringify(updatedHistory));
+
+            navigate("/status", { state: { orderId, status: "success", selectedMethod } });
           },
           onPending: function (result) {
-            console.log("Pending:", result);
-            navigate("/status", { state: { orderId, status: "pending" } });
+            navigate("/status", { state: { orderId, status: "pending", selectedMethod } });
           },
           onError: function (result) {
-            console.error("Error:", result);
             alert("Pembayaran Gagal!");
           },
           onClose: function () {
@@ -105,14 +124,17 @@ export default function Payment() {
     } catch (error) {
       console.error("Error Detail:", error);
       alert("Terjadi kesalahan: " + error.message);
-    } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Matikan loading jika error
     }
   };
 
+  // JIKA SEDANG SUBMITTING, TAMPILKAN LOADING
+  if (isSubmitting) {
+    return <Loading text="Menghubungkan ke sistem pembayaran..." />;
+  }
+
   return (
     <div className="pay-container">
-      {/* ================= HEADER (Hanya Desktop) ================= */}
       <header className="pay-header">
         <div
           className="pay-logo-box"
@@ -123,9 +145,7 @@ export default function Payment() {
         </div>
       </header>
 
-      {/* ================= TOP BAR ================= */}
       <div className="pay-top-bar">
-        {/* REVISI IKON BACK SESUAI PERMINTAAN */}
         <button className="pay-back-btn efek-klik" onClick={() => navigate(-1)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -140,24 +160,17 @@ export default function Payment() {
         <h2 className="pay-page-title">Pembayaran</h2>
       </div>
 
-      {/* ================= MAIN CONTENT ================= */}
       <main className="pay-main-layout">
         <div className="pay-content-wrapper">
-          {/* --- SECTION: TUNAI/CASH --- */}
           <div className="pay-section">
             <h4 className="pay-section-label">TUNAI/CASH</h4>
-
             <div
               className={`pay-method-card ${selectedMethod === "tunai" ? "active" : ""}`}
               onClick={() => setSelectedMethod("tunai")}
             >
               <div className="pay-method-left">
                 <div className="pay-icon-box">
-                  <img
-                    src={IconTunai}
-                    alt="Tunai"
-                    className="pay-method-icon"
-                  />
+                  <img src={IconTunai} alt="Tunai" className="pay-method-icon" />
                 </div>
                 <span className="pay-method-name">Bayar di kasir</span>
               </div>
@@ -167,11 +180,8 @@ export default function Payment() {
             </div>
           </div>
 
-          {/* --- SECTION: E-WALLET & QRIS --- */}
           <div className="pay-section">
             <h4 className="pay-section-label">E-WALLET & QRIS</h4>
-
-            {/* Opsi QRIS */}
             <div
               className={`pay-method-card ${selectedMethod === "qris" ? "active" : ""}`}
               onClick={() => setSelectedMethod("qris")}
@@ -187,18 +197,13 @@ export default function Payment() {
               </div>
             </div>
 
-            {/* Opsi GoPay */}
             <div
               className={`pay-method-card ${selectedMethod === "gopay" ? "active" : ""}`}
               onClick={() => setSelectedMethod("gopay")}
             >
               <div className="pay-method-left">
                 <div className="pay-icon-box">
-                  <img
-                    src={IconGopay}
-                    alt="GoPay"
-                    className="pay-method-icon"
-                  />
+                  <img src={IconGopay} alt="GoPay" className="pay-method-icon" />
                 </div>
                 <span className="pay-method-name">GoPay</span>
               </div>
@@ -207,18 +212,13 @@ export default function Payment() {
               </div>
             </div>
 
-            {/* Opsi ShopeePay */}
             <div
               className={`pay-method-card ${selectedMethod === "shopee" ? "active" : ""}`}
               onClick={() => setSelectedMethod("shopee")}
             >
               <div className="pay-method-left">
                 <div className="pay-icon-box">
-                  <img
-                    src={IconShopee}
-                    alt="ShopeePay"
-                    className="pay-method-icon"
-                  />
+                  <img src={IconShopee} alt="ShopeePay" className="pay-method-icon" />
                 </div>
                 <span className="pay-method-name">ShopeePay</span>
               </div>
@@ -228,20 +228,16 @@ export default function Payment() {
             </div>
           </div>
 
-          {/* --- SUMMARY & BUTTON DINAMIS --- */}
           <div className="pay-summary-box">
             <div className="pay-summary-row">
               <span className="pay-sum-label">Subtotal</span>
               <span className="pay-sum-value">{formatRupiah(subtotal)}</span>
             </div>
 
-            {/* TAMPILKAN DISKON JIKA ADA */}
             {discountAmount > 0 && (
               <div className="pay-summary-row" style={{ color: "#d32f2f" }}>
                 <span className="pay-sum-label">Diskon Voucher</span>
-                <span className="pay-sum-value">
-                  -{formatRupiah(discountAmount)}
-                </span>
+                <span className="pay-sum-value">-{formatRupiah(discountAmount)}</span>
               </div>
             )}
 
@@ -252,41 +248,26 @@ export default function Payment() {
 
             <div className="pay-summary-row total-row">
               <span className="pay-sum-label-bold">Total Pembayaran</span>
-              <span className="pay-sum-total">
-                {formatRupiah(totalPayment)}
-              </span>
+              <span className="pay-sum-total">{formatRupiah(totalPayment)}</span>
             </div>
 
             <button
-              className={`pay-btn-submit ${isSubmitting ? "btn-disabled" : "efek-klik"}`}
-              // INI KUNCINYA: Pakai handleConfirmPayment, jangan navigate langsung
+              className={`pay-btn-submit efek-klik`}
               onClick={handleConfirmPayment}
-              disabled={isSubmitting}
             >
-              {isSubmitting ? "Memproses..." : "Konfirmasi Pembayaran"}
+              Konfirmasi Pembayaran
             </button>
           </div>
         </div>
       </main>
 
-      {/* ================= FOOTER ================= */}
       <footer className="pay-footer">
         <div className="pay-socials">
-          <div className="pay-soc-circle">
-            <img src={IconInstagram} alt="Instagram" />
-          </div>
-          <div className="pay-soc-circle">
-            <img src={IconWhatsapp} alt="Whatsapp" />
-          </div>
-          <div className="pay-soc-circle">
-            <img src={IconFacebook} alt="Facebook" />
-          </div>
-          <div className="pay-soc-circle">
-            <img src={IconLink} alt="Link" />
-          </div>
-          <div className="pay-soc-circle">
-            <img src={IconTiktok} alt="Tiktok" />
-          </div>
+          <div className="pay-soc-circle"><img src={IconInstagram} alt="IG" /></div>
+          <div className="pay-soc-circle"><img src={IconWhatsapp} alt="WA" /></div>
+          <div className="pay-soc-circle"><img src={IconFacebook} alt="FB" /></div>
+          <div className="pay-soc-circle"><img src={IconLink} alt="Link" /></div>
+          <div className="pay-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
         </div>
         <div className="pay-copyright">© Copyright Laoban Nusantara.</div>
       </footer>

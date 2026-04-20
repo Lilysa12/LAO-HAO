@@ -53,7 +53,7 @@
 .st-icon-big {
   width: 80px;
   height: 80px;
-  background-color: #356E4E; /* Hijau tua elegan */
+  background-color: #356E4E; 
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -69,6 +69,7 @@
   font-weight: 800;
   line-height: 1.2;
   margin: 0 0 10px 0;
+  white-space: pre-line; /* Agar karakter \n di React terbaca sebagai enter baru */
 }
 
 .st-subtitle {
@@ -176,8 +177,8 @@
   margin: 0 0 35px 0;
 }
 
-/* Tombol Pesan Lagi */
-.st-btn-again {
+/* --- TOMBOL UNDUH STRUK (DESAIN BARU) --- */
+.st-btn-download {
   width: 100%;
   background: #FAFAFA;
   border: 1px solid #E5E7EB;
@@ -185,14 +186,35 @@
   padding: 16px;
   border-radius: 12px;
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transition: all 0.3s ease;
+  margin-bottom: 25px; /* Jarak antara tombol dan link Pesan Lagi */
 }
-.st-btn-again:hover {
+.st-btn-download:hover {
   background: #F3F4F6;
   color: #212529;
+}
+
+/* --- LINK PESAN LAGI (DESAIN BARU) --- */
+.st-link-again {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #A00500; /* Merah Laoban */
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1.5px solid #A00500; /* Underline merah */
+  padding-bottom: 2px;
+  transition: opacity 0.3s ease;
+  display: inline-block;
+}
+.st-link-again:hover {
+  opacity: 0.7;
 }
 
 /* --- FOOTER --- */
@@ -256,10 +278,13 @@
 
   .st-desc { font-size: 13px; margin-bottom: 40px; padding: 0 5px;}
 
-  /* Tombol */
-  .st-btn-again { 
+  /* Tombol & Link Responsive */
+  .st-btn-download { 
     padding: 16px; 
     font-size: 15px; 
     border-radius: 12px; 
+  }
+  .st-link-again {
+    font-size: 14px;
   }
 }
