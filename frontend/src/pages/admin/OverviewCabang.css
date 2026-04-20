@@ -1,3 +1,7 @@
+/* ========================================================
+   FILE: OverviewCabang.css (FIXED LOGO & SPACING)
+======================================================== */
+
 /* Reset & Base */
 * {
   box-sizing: border-box;
@@ -6,8 +10,8 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #f8f9fa;
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
   color: #333;
 }
 
@@ -19,49 +23,26 @@ body {
   overflow: hidden;
 }
 
-/* Sidebar */
+/* --- SIDEBAR REVISI --- */
 .sidebar {
   width: 260px;
   background-color: #aa0000;
   color: white;
   display: flex;
   flex-direction: column;
+  /* Kunci agar Logout tetap di bawah tapi Logo & Menu tetap nempel di atas */
+  justify-content: space-between; 
 }
 
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 24px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.logo-circle {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  background-color: white;
-}
-
-.brand-text h2 {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-.brand-text p {
-  font-size: 10px;
-  opacity: 0.8;
-  letter-spacing: 0.5px;
-}
+/* Kode Logo Bawaan (Bulat) SUDAH DIHAPUS agar tidak bentrok dengan Inline Style */
 
 .sidebar-menu {
-  padding: 20px 16px;
-  flex: 1;
+  /* Hilangkan margin-top besar yang biasanya mendorong menu ke bawah */
+  margin-top: 0; 
+  padding: 0 16px 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .menu-item {
@@ -84,24 +65,24 @@ body {
 .menu-item.active {
   background-color: #ffcc00;
   color: #aa0000;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* Ukuran Ikon SVG di Sidebar */
 .menu-icon-svg {
   width: 20px;
   height: 20px;
   object-fit: contain;
 }
 
+/* Garis pembatas tipis */
 .divider {
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.2);
-  margin: 10px 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin: 12px 16px;
 }
 
 .sidebar-footer {
-  padding: 20px;
+  padding: 24px 16px;
 }
 
 .logout-btn {
@@ -117,6 +98,12 @@ body {
   padding: 12px 16px;
   width: 100%;
   text-align: left;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Area Konten Utama */
@@ -136,12 +123,8 @@ body {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.breadcrumb {
-  font-size: 14px;
-}
-
+.breadcrumb { font-size: 14px; }
 .text-gray { color: #64748b; }
-.text-black { color: #0f172a; }
 .font-bold { font-weight: 600; }
 .text-red { color: #aa0000; }
 
@@ -157,17 +140,6 @@ body {
   align-items: flex-end;
 }
 
-.user-role {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.user-status {
-  font-size: 12px;
-  color: #64748b;
-}
-
 .user-avatar {
   width: 36px;
   height: 36px;
@@ -177,7 +149,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #aa0000;
 }
 
 /* Konten Dashboard */
@@ -198,7 +169,6 @@ body {
   font-size: 24px;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 4px;
 }
 
 .page-subtitle {
@@ -206,11 +176,7 @@ body {
   font-size: 14px;
 }
 
-/* --- STYLE UNTUK DROPDOWN FILTER & PANAH --- */
-.filter-container {
-  position: relative;
-}
-
+/* Filter Dropdown */
 .filter-btn {
   padding: 8px 16px;
   background-color: white;
@@ -224,13 +190,6 @@ body {
   gap: 8px;
 }
 
-.filter-icon-svg {
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
-}
-
 .filter-dropdown {
   position: absolute;
   top: 110%; 
@@ -241,23 +200,18 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   z-index: 100; 
-  overflow: hidden;
   padding: 8px 0;
 }
 
 .filter-option {
   padding: 10px 16px;
   font-size: 14px;
-  color: #1e293b;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
-.filter-option:hover {
-  background-color: #f1f5f9;
-}
+.filter-option:hover { background-color: #f1f5f9; }
 
-/* --- KARTU RINGKASAN & ICON SVG --- */
+/* Summary Cards */
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -268,22 +222,14 @@ body {
 .card {
   background-color: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 16px;
-}
-
-.card-label {
-  font-size: 14px;
-  color: #64748b;
-  font-weight: 500;
 }
 
 .icon-wrapper {
@@ -294,73 +240,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-}
-
-.card-icon-svg {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
 }
 
 .card-value {
   font-size: 24px;
   font-weight: 800;
   color: #0f172a;
-  margin-bottom: 8px;
 }
 
-.card-desc {
-  font-size: 12px;
-  color: #64748b;
-}
-
-/* Area Bawah (Grafik & Tabel) */
+/* Bottom Section */
 .bottom-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 24px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 24px;
-}
-
-.chart-placeholder {
-  position: relative;
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.mock-chart-lines {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 200px;
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-.mock-chart-x-axis {
-  display: flex;
-  justify-content: space-between;
-  padding-left: 40px;
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 10px;
-}
-
-.mock-line {
-  position: absolute;
-  top: 10px;
-  left: 45px;
-  width: calc(100% - 45px);
-  height: 200px;
 }
 
 .comparison-table {
@@ -370,9 +262,8 @@ body {
 
 .comparison-table th {
   text-align: left;
-  font-size: 10px;
+  font-size: 11px;
   color: #94a3b8;
-  font-weight: 600;
   padding-bottom: 16px;
   border-bottom: 1px solid #f1f5f9;
 }
@@ -381,22 +272,6 @@ body {
   padding: 16px 0;
   border-bottom: 1px solid #f1f5f9;
 }
-
-.text-right { text-align: right; }
-
-.cabang-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1e293b;
-  margin-bottom: 4px;
-}
-
-.cabang-trend {
-  font-size: 12px;
-}
-
-.positive { color: #64748b; }
-.negative { color: #ef4444; }
 
 .detail-btn {
   display: block;
@@ -409,9 +284,9 @@ body {
   font-weight: 600;
   cursor: pointer;
   margin-top: 16px;
-  padding-top: 16px;
 }
-/* Trik untuk mengubah icon SVG hitam menjadi putih bersih */
+
+/* SVG Color Fix */
 .icon-white {
   filter: brightness(0) invert(1);
 }

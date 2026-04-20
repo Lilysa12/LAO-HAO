@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './DenahMeja.css';
 
-import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
+// --- IMPORT ASSETS (Logo Standar & Icon) ---
+import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconPos from '../../assets/Icons/icons-admin/pos.svg';
 import iconPesananDapur from '../../assets/Icons/icons-admin/pesanandapur.svg';
@@ -15,12 +16,9 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 const DenahMeja = () => {
   const navigate = useNavigate();
   const [activeArea, setActiveArea] = useState('indoor');
-  
-  // STATE UNTUK DATA ASLI DARI SUPABASE
   const [tables, setTables] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // MENGAMBIL DATA MEJA
   const fetchTables = async () => {
     setIsLoading(true);
     try {
@@ -43,61 +41,79 @@ const DenahMeja = () => {
     navigate('/login');
   };
 
-  // MEMISAHKAN DATA BERDASARKAN AREA
   const tablesIndoor = tables.filter(t => t.area === 'indoor');
   const tablesOutdoor = tables.filter(t => t.area === 'outdoor');
-  
   const currentTables = activeArea === 'indoor' ? tablesIndoor : tablesOutdoor;
 
   return (
     <div className="admin-container">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <img src={logoLaoban} alt="Laoban Logo" className="logo-circle" />
-          <div className="brand-text">
-            <h2>LAOBAN</h2>
-            <p>BY UNCLE OEH</p>
+      {/* --- SIDEBAR DENGAN 8 PILIHAN MENU LENGKAP --- */}
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          {/* LOGO LAOBAN */}
+          <div style={{ 
+            width: '100%', 
+            padding: '35px 20px 20px 20px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            boxSizing: 'border-box'
+          }}>
+            <img 
+              src={logoLaobanSvg} 
+              alt="Logo Laoban" 
+              style={{ width: '100%', maxWidth: '160px', height: auto, display: 'block' }} 
+            />
           </div>
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            {/* 1. Denah Meja */}
+            <Link to="/kasir" className="menu-item active">
+              <img src={iconDashboard} alt="Denah" className="menu-icon-svg" /> Denah Meja
+            </Link>
+
+            {/* 2. Kasir / POS */}
+            <Link to="/kasir/pos" className="menu-item">
+              <img src={iconPos} alt="POS" className="menu-icon-svg icon-white" /> Kasir / POS
+            </Link>
+
+            {/* 3. Pesanan Dapur */}
+            <Link to="/kasir/pesanan" className="menu-item">
+              <img src={iconPesananDapur} alt="Pesanan" className="menu-icon-svg icon-white" /> Pesanan Dapur
+            </Link>
+
+            {/* 4. Manajemen Menu (BARU) */}
+            <Link to="/kasir/manajemen-menu" className="menu-item">
+              <img src={iconStok} alt="Manajemen Menu" className="menu-icon-svg icon-white" /> Manajemen Menu
+            </Link>
+
+            {/* 5. Stok Bahan Baku */}
+            <Link to="/kasir/stok" className="menu-item">
+              <img src={iconStok} alt="Stok" className="menu-icon-svg icon-white" /> Stok Bahan Baku
+            </Link>
+
+            {/* 6. Laporan & Riwayat */}
+            <Link to="/kasir/laporan" className="menu-item">
+              <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" /> Laporan & Riwayat
+            </Link>
+            
+            {/* 7. QR Code Meja */}
+            <Link to="/kasir/qr-meja" className="menu-item">
+              <img src={iconQrMeja} alt="QR" className="menu-icon-svg icon-white" /> QR Code Meja
+            </Link>
+
+            <div className="divider" style={{ margin: '15px 16px' }}></div>
+
+            {/* 8. Kembali ke Pusat */}
+            <Link to="/admin" className="menu-item">
+              <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
+            </Link>
+          </nav>
         </div>
-
-        <nav className="sidebar-menu">
-          <Link to="/kasir" className="menu-item active">
-            <img src={iconDashboard} alt="Denah" className="menu-icon-svg" />
-            Denah Meja
-          </Link>
-          <Link to="/kasir/pos" className="menu-item">
-            <img src={iconPos} alt="POS" className="menu-icon-svg icon-white" />
-            Kasir / POS
-          </Link>
-          <Link to="/kasir/pesanan" className="menu-item">
-            <img src={iconPesananDapur} alt="Pesanan" className="menu-icon-svg icon-white" />
-            Pesanan Dapur
-          </Link>
-          <Link to="/kasir/stok" className="menu-item">
-            <img src={iconStok} alt="Stok" className="menu-icon-svg icon-white" />
-            Stok & Menu
-          </Link>
-          <Link to="/kasir/laporan" className="menu-item">
-            <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" />
-            Laporan & Riwayat
-          </Link>
-          <Link to="/kasir/qr" className="menu-item">
-            <img src={iconQrMeja} alt="QR" className="menu-icon-svg icon-white" />
-            QR Code Meja
-          </Link>
-
-          <div className="divider"></div>
-
-          <Link to="/admin" className="menu-item">
-            <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" />
-            Kembali ke Pusat
-          </Link>
-        </nav>
 
         <div className="sidebar-footer">
           <button className="logout-btn" onClick={handleLogout}>
-            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
-            Logout
+            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
           </button>
         </div>
       </aside>
