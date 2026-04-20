@@ -15,18 +15,24 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
 const DenahMeja = () => {
     const navigate = useNavigate();
-    const location = useLocation(); // Untuk deteksi menu aktif
+    const location = useLocation();
     const [activeArea, setActiveArea] = useState('indoor');
+    
+    // STATE DATA
     const [tables, setTables] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [errorMsg, setErrorMsg] = useState(null); // <-- State baru untuk menangkap error
 
     const fetchTables = async () => {
         setIsLoading(true);
+        setErrorMsg(null); // Reset error setiap kali mulai fetch
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/kasir/tables?_t=${new Date().getTime()}`);
             setTables(response.data);
         } catch (error) {
             console.error("Gagal mengambil data meja:", error);
+            // Menangkap pesan error asli dari server atau network
+            setErrorMsg(error.message + (error.response ? ` (Status: ${error.response.status})` : ''));
             setTables([]);
         } finally {
             setIsLoading(false);
@@ -56,50 +62,33 @@ const DenahMeja = () => {
             {/* --- SIDEBAR KONSISTEN 8 MENU --- */}
             <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                    {/* WADAH LOGO STANDAR 160PX */}
                     <div className="sidebar-logo-container" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
                         <img src={logoLaobanSvg} alt="Logo Laoban" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
                     </div>
                     
                     <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
-                        {/* 1. Denah Meja */}
                         <Link to="/kasir" className={getMenuClass('/kasir')}>
                             <img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja
                         </Link>
-
-                        {/* 2. Kasir / POS */}
                         <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}>
                             <img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS
                         </Link>
-
-                        {/* 3. Pesanan Dapur */}
                         <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}>
                             <img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur
                         </Link>
-
-                        {/* 4. Manajemen Menu */}
                         <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}>
                             <img src={iconStok} alt="Manajemen Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu
                         </Link>
-
-                        {/* 5. Stok Bahan Baku */}
                         <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}>
                             <img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku
                         </Link>
-
-                        {/* 6. Laporan & Riwayat */}
                         <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}>
                             <img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat
                         </Link>
-
-                        {/* 7. QR Code Meja */}
                         <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
                             <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja
                         </Link>
-
                         <div className="divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
-
-                        {/* 8. Kembali ke Pusat */}
                         <Link to="/admin" className="menu-item">
                             <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
                         </Link>
@@ -146,8 +135,14 @@ const DenahMeja = () => {
                             </button>
                         </div>
 
+                        {/* --- RENDER LOGIC DIPERBARUI --- */}
                         {isLoading ? (
                             <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>Memuat data meja...</div>
+                        ) : errorMsg ? (
+                            <div style={{ textAlign: 'center', padding: '30px', margin: '20px 0', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '8px', border: '1px solid #f87171' }}>
+                                <strong>Koneksi ke Backend Gagal:</strong> <br/> {errorMsg} <br/> 
+                                <small style={{ display: 'block', marginTop: '10px' }}>Pastikan terminal "php artisan serve" sedang berjalan.</small>
+                            </div>
                         ) : (
                             <div className="tables-grid">
                                 {currentTables.length > 0 ? (

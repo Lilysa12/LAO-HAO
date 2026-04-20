@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './PesananDapur.css';
 
-// --- IMPORT ASSETS (Logo & Sidebar Icons) ---
+// --- IMPORT ASSETS ---
 import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconPos from '../../assets/Icons/icons-admin/pos.svg';
@@ -12,25 +12,26 @@ import iconStok from '../../assets/Icons/icons-admin/stok.svg';
 import iconLaporan from '../../assets/Icons/icons-admin/laporan.svg';
 import iconQrMeja from '../../assets/Icons/icons-admin/QrMeja.svg';
 import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
-
-// --- IMPORT ASSETS (Page Specific Icons) ---
 import iconCeklis from '../../assets/Icons/icons-admin/ceklis.svg';
 import iconJam from '../../assets/Icons/icons-admin/jam.svg';
 
 const PesananDapur = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Deteksi rute aktif
+  const location = useLocation(); 
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null); 
 
-  // MENGAMBIL DATA DARI SUPABASE
   const fetchOrders = async () => {
     setIsLoading(true);
+    setErrorMsg(null);
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/kasir/orders?_t=${new Date().getTime()}`);
       setOrders(response.data);
     } catch (error) {
       console.error("Gagal mengambil data pesanan:", error);
+      setErrorMsg(error.message + (error.response?.data?.message ? ` - ${error.response.data.message}` : ''));
+      setOrders([]);
     } finally {
       setIsLoading(false);
     }
@@ -48,17 +49,19 @@ const PesananDapur = () => {
     navigate('/login');
   };
 
+  // --- PERBAIKAN: Menampilkan Error Asli di Alert ---
   const handleUpdateStatus = async (id, newStatus) => {
     try {
       await axios.post(`http://127.0.0.1:8000/api/kasir/orders/${id}/status`, { status: newStatus });
       fetchOrders(); 
     } catch (error) {
       console.error("Gagal mengupdate status:", error);
-      alert("Terjadi kesalahan saat mengupdate status pesanan.");
+      // Tampilkan pesan error langsung dari Laravel agar mudah dilacak
+      const pesanError = error.response?.data?.message || error.message;
+      alert(`Gagal: ${pesanError}`);
     }
   };
 
-  // Helper Sidebar Class
   const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
   const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
 
@@ -67,43 +70,22 @@ const PesananDapur = () => {
 
   return (
     <div className="admin-container">
-      {/* --- SIDEBAR STANDAR 8 MENU --- */}
       <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <div className="sidebar-logo-container" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
-            <img 
-              src={logoLaobanSvg} 
-              alt="Logo Laoban" 
-              style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} 
-            />
+            <img src={logoLaobanSvg} alt="Logo Laoban" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
 
           <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
-            <Link to="/kasir" className={getMenuClass('/kasir')}>
-              <img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja
-            </Link>
-            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}>
-              <img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS
-            </Link>
-            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}>
-              <img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur
-            </Link>
-            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}>
-              <img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu
-            </Link>
-            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}>
-              <img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku
-            </Link>
-            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}>
-              <img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat
-            </Link>
-            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
-              <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja
-            </Link>
+            <Link to="/kasir" className={getMenuClass('/kasir')}><img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja</Link>
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}><img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS</Link>
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}><img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur</Link>
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}><img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu</Link>
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}><img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku</Link>
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}><img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat</Link>
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}><img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja</Link>
             <div className="divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
-            <Link to="/admin" className="menu-item">
-              <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
-            </Link>
+            <Link to="/admin" className="menu-item"><img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat</Link>
           </nav>
         </div>
 
@@ -140,6 +122,11 @@ const PesananDapur = () => {
 
             {isLoading && orders.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>Mensinkronkan pesanan...</div>
+            ) : errorMsg ? (
+                <div style={{ textAlign: 'center', padding: '30px', margin: '20px 0', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '8px', border: '1px solid #f87171' }}>
+                    <strong>Koneksi ke Database Bermasalah:</strong> <br/> {errorMsg} <br/> 
+                    <small style={{ display: 'block', marginTop: '10px' }}>Struktur tabel di Supabase mungkin tidak sesuai.</small>
+                </div>
             ) : (
               <div className="orders-grid">
                 <div className="order-column column-processing">
@@ -167,7 +154,7 @@ const PesananDapur = () => {
                           </span>
                         </div>
                         <div className="order-items">
-                          {order.items.map((item, index) => (
+                          {order.items && order.items.map((item, index) => (
                             <div key={index} className="order-item">
                               <span className="item-qty">{item.qty}x</span>
                               <span className="item-name">{item.name}</span>
@@ -184,7 +171,7 @@ const PesananDapur = () => {
                       </div>
                     ))
                   ) : (
-                    <div style={{ padding: '20px', color: '#64748b', textAlign: 'center' }}>Tidak ada pesanan masuk.</div>
+                    <div style={{ padding: '20px', color: '#64748b', textAlign: 'center', backgroundColor: 'white', borderRadius: '8px' }}>Tidak ada pesanan masuk.</div>
                   )}
                 </div>
 
@@ -213,7 +200,7 @@ const PesananDapur = () => {
                           </span>
                         </div>
                         <div className="order-items">
-                          {order.items.map((item, index) => (
+                          {order.items && order.items.map((item, index) => (
                             <div key={index} className="order-item">
                               <span className="item-qty">{item.qty}x</span>
                               <span className="item-name">{item.name}</span>
@@ -230,7 +217,7 @@ const PesananDapur = () => {
                       </div>
                     ))
                   ) : (
-                    <div style={{ padding: '20px', color: '#64748b', textAlign: 'center' }}>Tidak ada pesanan siap saji.</div>
+                    <div style={{ padding: '20px', color: '#64748b', textAlign: 'center', backgroundColor: 'white', borderRadius: '8px' }}>Tidak ada pesanan siap saji.</div>
                   )}
                 </div>
               </div>
