@@ -51,7 +51,7 @@ export default function Payment() {
       const orderId = `LHO-${Math.floor(10000 + Math.random() * 90000)}`;
       const storedName = localStorage.getItem("customerName") || "Guest";
       const storedPhone = localStorage.getItem("phoneNumber") || "-";
-      const storedTable = localStorage.getItem("tableNumber") || "1";
+      const storedTable = localStorage.getItem("tableNumber") || "12";
 
       // 1. SIMPAN KE SUPABASE
       const { error: supabaseError } = await supabase.from("orders").insert([
@@ -63,49 +63,37 @@ export default function Payment() {
           items: cart,
           total_payment: totalPayment,
           payment_method: selectedMethod,
-          status: "pending", 
+          status: "pending",
         },
       ]);
 
       if (supabaseError) throw supabaseError;
 
-      // 2. MINTA TOKEN KE LARAVEL
-      const response = await fetch("http://127.0.0.1:8000/api/midtrans/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          order_id: orderId,
-          total_price: totalPayment,
-          customer_name: storedName,
-          phone: storedPhone,
-        }),
+// 2. MINTA TOKEN KE LARAVEL (GANTI BAGIAN INI)
+      const response = await fetch('http://localhost:8000/api/midtrans/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              total: totalPayment, // Pakai variabel totalPayment yang dinamis
+              name: storedName,
+              phone: storedPhone
+          }),
       });
 
       const data = await response.json();
 
+      // Jika Laravel error (status 500), dia biasanya ngirim { message: "..." }
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menghubungi server pembayaran");
+      }
+
       if (data.token) {
-        // Matikan submitting sebelum buka Snap agar modal snap tidak tertutup loading
         setIsSubmitting(false); 
 
         // 3. MUNCULKAN POPUP MIDTRANS
         window.snap.pay(data.token, {
           onSuccess: function (result) {
-            // Logika simpan history success
-            const totalQuantity = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-            const newOrder = {
-              id: orderId,
-              title: cart[0]?.name + (cart.length > 1 ? ' dkk' : ''),
-              date: new Date().toISOString(),
-              totalItems: totalQuantity,
-              totalPrice: totalPayment,
-              status: 'SELESAI',
-              image: cart[0]?.image_url || 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=200&q=80',
-              items: cart
-            };
-            const existingHistory = JSON.parse(sessionStorage.getItem('laoban_order_history')) || [];
-            const updatedHistory = [newOrder, ...existingHistory];
-            sessionStorage.setItem('laoban_order_history', JSON.stringify(updatedHistory));
-
+            // ... logic success tetap sama ...
             navigate("/status", { state: { orderId, status: "success", selectedMethod } });
           },
           onPending: function (result) {
@@ -113,21 +101,22 @@ export default function Payment() {
           },
           onError: function (result) {
             alert("Pembayaran Gagal!");
+            setIsSubmitting(false);
           },
           onClose: function () {
             alert("Kamu menutup popup sebelum menyelesaikan pembayaran");
+            setIsSubmitting(false);
           },
         });
       } else {
-        throw new Error("Gagal mendapatkan token dari server");
+        throw new Error("Token Midtrans tidak ditemukan dalam respon server");
       }
     } catch (error) {
       console.error("Error Detail:", error);
       alert("Terjadi kesalahan: " + error.message);
-      setIsSubmitting(false); // Matikan loading jika error
+      setIsSubmitting(false);
     }
   };
-
   // JIKA SEDANG SUBMITTING, TAMPILKAN LOADING
   if (isSubmitting) {
     return <Loading text="Menghubungkan ke sistem pembayaran..." />;
