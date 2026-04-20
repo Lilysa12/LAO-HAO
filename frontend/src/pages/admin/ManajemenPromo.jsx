@@ -5,7 +5,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './ManajemenPromo.css';
 
-import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
+// --- IMPORT ASSETS (Logo Standar 160px) ---
+import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconLaporan from '../../assets/Icons/icons-admin/laporan.svg';
 import iconManajemen from '../../assets/Icons/icons-admin/manajemen.svg';
@@ -15,15 +16,11 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg'; 
 
 const ManajemenPromo = () => {
-  // STATE FILTER & TABS
   const [activeTab, setActiveTab] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // STATE DATA TABEL
   const [promoData, setPromoData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // STATE FORMULIR (EDIT/TAMBAH)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -36,7 +33,6 @@ const ManajemenPromo = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // MENGAMBIL DATA DENGAN ANTI-CACHE
   const fetchPromos = () => {
     setIsLoading(true);
     axios.get(`http://127.0.0.1:8000/api/admin/promos?_t=${new Date().getTime()}`)
@@ -55,13 +51,9 @@ const ManajemenPromo = () => {
   }, []);
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // SAAT TOMBOL "+ BUAT PROMO BARU" DIKLIK
   const handleAddClick = () => {
     setIsEditMode(false);
     setEditId(null);
@@ -70,20 +62,16 @@ const ManajemenPromo = () => {
     setIsModalOpen(true);
   };
 
-  // SAAT TOMBOL PENSIL (EDIT) DIKLIK
   const handleEditClick = (promo) => {
     setIsEditMode(true);
     setEditId(promo.id);
-    
     let rawValue = promo.value.replace(/[^0-9]/g, '');
-
     const parseIndonesianDate = (dateStr) => {
       const months = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'Mei': 4, 'Jun': 5, 'Jul': 6, 'Agt': 7, 'Sep': 8, 'Okt': 9, 'Nov': 10, 'Des': 11 };
       const parts = dateStr.split(' ');
       if (parts.length === 3) return new Date(parts[2], months[parts[1]], parts[0]);
       return new Date();
     };
-
     setFormData({
       description: promo.desc,
       code: promo.code,
@@ -94,123 +82,84 @@ const ManajemenPromo = () => {
     setIsModalOpen(true);
   };
 
-  // SUBMIT FORM (CREATE / UPDATE)
   const handleSubmitForm = async (e) => {
     e.preventDefault();
-    if (!promoDate) {
-      alert('Tolong pilih tanggal kedaluwarsa promo!');
-      return;
-    }
-
+    if (!promoDate) { alert('Tolong pilih tanggal kedaluwarsa!'); return; }
     setIsSubmitting(true);
     const formattedDate = promoDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-
     const payload = { ...formData, expired_at: formattedDate };
-
     try {
       if (isEditMode) {
         await axios.post(`http://127.0.0.1:8000/api/admin/promos/${editId}/update`, payload);
-        alert('Berhasil! Data promo telah diperbarui.');
       } else {
         await axios.post('http://127.0.0.1:8000/api/admin/promos', payload);
-        alert('Berhasil! Promo baru telah diterbitkan.');
       }
       setIsModalOpen(false);
       fetchPromos();
-    } catch (error) {
-      console.error('Gagal menyimpan promo:', error);
-      alert('Gagal menyimpan promo. Pastikan Kode Voucher belum pernah digunakan.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    } catch (error) { alert('Gagal menyimpan promo.'); } finally { setIsSubmitting(false); }
   };
 
-  // HAPUS DATA
   const handleDeletePromo = async (id, promoCode) => {
-    const isConfirmed = window.confirm(`Apakah Anda yakin ingin menghapus promo ${promoCode}? Data tidak dapat dikembalikan.`);
-    if (isConfirmed) {
+    if (window.confirm(`Hapus promo ${promoCode}?`)) {
       try {
         await axios.post(`http://127.0.0.1:8000/api/admin/promos/${id}/delete`);
-        alert('Promo berhasil dihapus!');
         fetchPromos(); 
-      } catch (error) {
-        console.error('Detail Error:', error);
-        alert('Gagal menghapus promo.');
-      }
+      } catch (error) { alert('Gagal menghapus promo.'); }
     }
   };
 
-  // UBAH STATUS (AKTIF / NONAKTIF)
   const handleToggleStatus = async (id) => {
     try {
       await axios.post(`http://127.0.0.1:8000/api/admin/promos/${id}/toggle-status`);
-      fetchPromos(); // Refresh otomatis agar label berubah
-    } catch (error) {
-      console.error('Detail Error:', error);
-      alert('Gagal mengubah status promo.');
-    }
+      fetchPromos();
+    } catch (error) { alert('Gagal mengubah status.'); }
   };
 
-  // PROSES FILTERING DATA (SEARCH & TAB)
   const filteredPromos = promoData.filter((promo) => {
-    // 1. Filter by Search Input (Kode Promo atau Deskripsi)
-    const matchesSearch = 
-      promo.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      promo.desc.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // 2. Filter by Tab (Semua, Aktif, Nonaktif)
+    const matchesSearch = promo.code.toLowerCase().includes(searchQuery.toLowerCase()) || promo.desc.toLowerCase().includes(searchQuery.toLowerCase());
     let matchesTab = true;
     if (activeTab === 'Aktif') matchesTab = promo.status === 'AKTIF';
     if (activeTab === 'Nonaktif') matchesTab = promo.status !== 'AKTIF';
-
     return matchesSearch && matchesTab;
   });
 
   return (
     <div className="admin-container">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <img src={logoLaoban} alt="Laoban Logo" className="logo-circle" />
-          <div className="brand-text">
-            <h2>LAOBAN</h2>
-            <p>BY UNCLE OEH</p>
+      {/* --- SIDEBAR KONSISTEN LOGO LAOBAN --- */}
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <div style={{ 
+            width: '100%', padding: '35px 20px 20px 20px', 
+            display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box'
+          }}>
+            <img src={logoLaobanSvg} alt="Logo" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/admin" className="menu-item">
+              <img src={iconDashboard} alt="Dashboard" className="menu-icon-svg icon-white" /> Overview Cabang
+            </Link>
+            <Link to="/admin/laporan-penjualan-pusat" className="menu-item">
+              <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" /> Laporan Penjualan Pusat
+            </Link>
+            <Link to="/admin/manajemen-promo" className="menu-item active">
+              <img src={iconPromosi} alt="Promo" className="menu-icon-svg" /> Manajemen Promo
+            </Link>
+            <Link to="/admin/manajemen-akun-staf" className="menu-item">
+              <img src={iconManajemen} alt="Staf" className="menu-icon-svg icon-white" /> Manajemen Akun Staf
+            </Link>
+            <Link to="/admin/pengaturan" className="menu-item">
+              <img src={iconPengaturan} alt="Pengaturan" className="menu-icon-svg icon-white" /> Pengaturan
+            </Link>
+            <div className="divider" style={{ margin: '15px 16px' }}></div>
+            <Link to="/kasir" className="menu-item">
+              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode
+            </Link>
+          </nav>
         </div>
-
-        <nav className="sidebar-menu">
-          <Link to="/admin" className="menu-item">
-            <img src={iconDashboard} alt="Dashboard" className="menu-icon-svg icon-white" />
-            Overview Cabang
-          </Link>
-          <Link to="/admin/laporan-penjualan-pusat" className="menu-item">
-            <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" />
-            Laporan Penjualan Pusat
-          </Link>
-          <Link to="/admin/manajemen-promo" className="menu-item active">
-            <img src={iconPromosi} alt="Promo" className="menu-icon-svg" />
-            Manajemen Promo
-          </Link>
-          <Link to="/admin/manajemen-akun-staf" className="menu-item">
-            <img src={iconManajemen} alt="Manajemen Staf" className="menu-icon-svg icon-white" />
-            Manajemen Akun Staf
-          </Link>
-          <Link to="/admin/pengaturan" className="menu-item">
-            <img src={iconPengaturan} alt="Pengaturan" className="menu-icon-svg icon-white" />
-            Pengaturan
-          </Link>
-
-          <div className="divider"></div>
-
-          <Link to="/kasir" className="menu-item">
-            <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
-            Kasir / POS Mode
-          </Link>
-        </nav>
-
         <div className="sidebar-footer">
           <button className="logout-btn">
-            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
-            Logout
+            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
           </button>
         </div>
       </aside>
@@ -237,12 +186,15 @@ const ManajemenPromo = () => {
                 <h1 className="page-title">Manajemen Promo & Voucher</h1>
                 <p className="page-subtitle">Buat dan kelola kode promo untuk pelanggan</p>
               </div>
-              <button className="btn-primary" onClick={handleAddClick}>
-                + Buat Promo Baru
-              </button>
+              <button className="btn-primary" onClick={handleAddClick}>+ Buat Promo Baru</button>
             </div>
 
             <div className="card table-container">
+              
+              {/* ==========================================
+                  REVISI FINAL: TOOLBAR PERSIS FIGMA
+                  Search Box terpisah dari Filter Buttons
+              ========================================== */}
               <div className="table-toolbar">
                 <div className="search-wrapper">
                   <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -252,29 +204,30 @@ const ManajemenPromo = () => {
                   <input 
                     type="text" 
                     placeholder="Cari kode promo..." 
-                    className="search-input"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)} // Fungsi Search Aktif
+                    className="search-input" 
+                    value={searchQuery} 
+                    onChange={(e) => setSearchQuery(e.target.value)} 
                   />
                 </div>
                 
-                <div className="tab-filters">
+                <div className="filter-section">
                   <button className={`tab-btn ${activeTab === 'Semua' ? 'active' : ''}`} onClick={() => setActiveTab('Semua')}>Semua</button>
                   <button className={`tab-btn ${activeTab === 'Aktif' ? 'active' : ''}`} onClick={() => setActiveTab('Aktif')}>Aktif</button>
                   <button className={`tab-btn ${activeTab === 'Nonaktif' ? 'active' : ''}`} onClick={() => setActiveTab('Nonaktif')}>Nonaktif</button>
                 </div>
               </div>
+              {/* ========================================== */}
 
               {isLoading ? (
-                <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data promo dari Supabase...</div>
+                <div style={{ padding: '40px', textAlign: 'center' }}>Memuat data promo...</div>
               ) : (
                 <table className="transaction-table promo-table">
                   <thead>
                     <tr>
                       <th>KODE PROMO</th>
-                      <th>JENIS / NILAI</th>
+                      <th>POTONGAN</th>
                       <th>MIN. BELANJA</th>
-                      <th>BERLAKU HINGGA</th>
+                      <th>MASA BERLAKU</th>
                       <th>STATUS</th>
                       <th className="text-right">AKSI</th>
                     </tr>
@@ -285,59 +238,36 @@ const ManajemenPromo = () => {
                         <tr key={promo.id}>
                           <td>
                             <div className="promo-code-cell">
-                              <div className="promo-icon-box">
-                                <img src={iconPromosi} alt="Promo Icon" className="promo-icon-svg" />
-                              </div>
+                              <div className="promo-icon-box"><img src={iconPromosi} alt="Icon" className="promo-icon-svg" /></div>
                               <div>
                                 <div className="font-bold text-red promo-code-text">{promo.code}</div>
                                 <div className="text-gray text-small">{promo.desc}</div>
                               </div>
                             </div>
                           </td>
-                          <td>
-                            <div className="font-bold text-black">{promo.value}</div>
-                            <div className="text-gray text-small">{promo.type}</div>
-                          </td>
+                          <td><div className="font-bold text-black">{promo.value}</div><div className="text-gray text-small">{promo.type}</div></td>
                           <td className="text-gray">{promo.min}</td>
                           <td className="text-gray">{promo.exp}</td>
-                          <td>
-                            <span className={`badge ${
-                              promo.status === 'AKTIF' ? 'badge-success' : 
-                              promo.status === 'NONAKTIF' ? 'badge-danger' : 'badge-neutral'
-                            }`}>
-                              {promo.status}
-                            </span>
-                          </td>
+                          <td><span className={`badge ${promo.status === 'AKTIF' ? 'badge-success' : 'badge-danger'}`}>{promo.status}</span></td>
                           <td>
                             <div className="action-icons-cell">
-                              {/* TOMBOL TOGGLE STATUS (ON/OFF) */}
-                              <button className="action-icon-btn" title={promo.status === 'AKTIF' ? 'Nonaktifkan' : 'Aktifkan'} onClick={() => handleToggleStatus(promo.id)}>
-                                {promo.status === 'AKTIF' ? (
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>
-                                ) : (
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>
-                                )}
+                              <button className="action-icon-btn" onClick={() => handleToggleStatus(promo.id)}>
+                                {promo.status === 'AKTIF' ? 
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" strokeWidth="2"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg> : 
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" strokeWidth="2"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>}
                               </button>
-
-                              {/* TOMBOL EDIT */}
-                              <button className="action-icon-btn" title="Edit" onClick={() => handleEditClick(promo)}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                              <button className="action-icon-btn" onClick={() => handleEditClick(promo)}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                               </button>
-                              
-                              {/* TOMBOL HAPUS */}
-                              <button className="action-icon-btn" title="Hapus Promo" onClick={() => handleDeletePromo(promo.id, promo.code)}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                              <button className="action-icon-btn" onClick={() => handleDeletePromo(promo.id, promo.code)}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                               </button>
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
-                      <tr>
-                        <td colSpan="6" className="text-center text-gray" style={{ padding: '20px' }}>
-                          Tidak ada promo yang ditemukan sesuai pencarian.
-                        </td>
-                      </tr>
+                      <tr><td colSpan="6" className="text-center text-gray" style={{ padding: '30px' }}>Tidak ada promo ditemukan.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -347,72 +277,27 @@ const ManajemenPromo = () => {
         </div>
       </main>
 
+      {/* MODAL EDIT/TAMBAH */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
               <h2>{isEditMode ? 'Edit Promo & Voucher' : 'Buat Promo & Voucher'}</h2>
-              <button className="close-modal-btn" onClick={() => setIsModalOpen(false)}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
+              <button className="close-modal-btn" onClick={() => setIsModalOpen(false)}>×</button>
             </div>
-            
             <form onSubmit={handleSubmitForm}>
               <div className="modal-body">
-                <div className="form-group">
-                  <label>NAMA PROMO</label>
-                  <input type="text" name="description" value={formData.description} onChange={handleInputChange} placeholder="Ex: Diskon Hari Kemerdekaan" className="form-input" required />
-                </div>
-                
-                <div className="form-group">
-                  <label>KODE VOUCHER</label>
-                  <input type="text" name="code" value={formData.code} onChange={handleInputChange} placeholder="Ex: LAOBAN10" className="form-input" required />
-                  <span className="input-hint">Kode voucher hanya boleh berisi huruf besar dan angka tanpa spasi.</span>
-                </div>
-                
+                <div className="form-group"><label>NAMA PROMO</label><input type="text" name="description" value={formData.description} onChange={handleInputChange} placeholder="Ex: Diskon" className="form-input" required /></div>
+                <div className="form-group"><label>KODE VOUCHER</label><input type="text" name="code" value={formData.code} onChange={handleInputChange} placeholder="Ex: LAOBAN10" className="form-input" required /></div>
                 <div className="form-row">
-                  <div className="form-group half-width">
-                    <label>TIPE DISKON</label>
-                    <select name="type" value={formData.type} onChange={handleInputChange} className="form-input select-input" required>
-                      <option value="Persentase (%)">Persentase (%)</option>
-                      <option value="Nominal (Rp)">Nominal (Rp)</option>
-                    </select>
-                  </div>
-                  <div className="form-group half-width">
-                    <label>NILAI DISKON</label>
-                    <input type="number" name="value" value={formData.value} onChange={handleInputChange} placeholder="Ex: 10 atau 50000" className="form-input" required />
-                  </div>
+                  <div className="form-group half-width"><label>TIPE DISKON</label><select name="type" value={formData.type} onChange={handleInputChange} className="form-input select-input" required><option value="Persentase (%)">Persentase (%)</option><option value="Nominal (Rp)">Nominal (Rp)</option></select></div>
+                  <div className="form-group half-width"><label>NILAI DISKON</label><input type="number" name="value" value={formData.value} onChange={handleInputChange} className="form-input" required /></div>
                 </div>
-                
-                <div className="form-group">
-                  <label>BERLAKU HINGGA</label>
-                  <div className="date-input-wrapper">
-                    <DatePicker 
-                      selected={promoDate} 
-                      onChange={(date) => setPromoDate(date)} 
-                      placeholderText="dd/mm/yyyy"
-                      dateFormat="dd/MM/yyyy"
-                      className="form-input full-width-date"
-                      required
-                    />
-                    <svg className="calendar-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                  </div>
-                </div>
+                <div className="form-group"><label>BERLAKU HINGGA</label><DatePicker selected={promoDate} onChange={(date) => setPromoDate(date)} dateFormat="dd/MM/yyyy" className="form-input" required /></div>
               </div>
-
               <div className="modal-footer">
                 <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-                <button type="submit" className="btn-primary" disabled={isSubmitting}>
-                  {isSubmitting ? 'Menyimpan...' : (isEditMode ? 'Simpan Perubahan' : 'Terbitkan Promo')}
-                </button>
+                <button type="submit" className="btn-primary" disabled={isSubmitting}>{isSubmitting ? 'Menyimpan...' : 'Simpan'}</button>
               </div>
             </form>
           </div>

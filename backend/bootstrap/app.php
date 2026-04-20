@@ -17,6 +17,16 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        $middleware->api(append: [
+            \App\Http\Middleware\Cors::class, // Daftarkan middleware Cors kamu di sini
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/*', // Penting agar React tidak diblokir karena urusan token CSRF
+        ]);
+
+        $middleware->statefulApi(); // Tambahkan ini (fitur Laravel 11 untuk API)
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,

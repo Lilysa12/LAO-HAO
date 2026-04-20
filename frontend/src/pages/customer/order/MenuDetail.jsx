@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './MenuDetail.css';
+import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
 
 // --- IMPORT ASSETS LOKAL ---
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconCheckout from '../../../assets/icons/icons-customer/checkout.png';
+import IconHistory from '../../../assets/icons/icons-customer/history.png';
 
 // =========================================================
-// SVG ICONS COMPONENT (KODE BARU - PRESISI & WARNA OTOMATIS)
+// SVG ICONS COMPONENT
 // =========================================================
 const SvgMain = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -36,18 +38,22 @@ const SvgDrink = () => (
 export default function MenuDetail() {
   const navigate = useNavigate();
   const location = useLocation();
+  const customerName = location.state?.customerName || 'Laoban';
 
+  // --- STATE LOADING ---
+  const [isLoading, setIsLoading] = useState(true);
   const [cart, setCart] = useState(location.state?.cart || []);
-  
-  const defaultItem = { 
-    id: 1, category: 'MAIN', name: 'Nasi Lemak', desc: 'Rempah santan dengan ayam ungkep bumbu dikombinasikan dengan kacang teri yang memanjakan lidah.', price: 'Rp 30.000' 
-  };
-  const [currentItem, setCurrentItem] = useState(location.state?.item || defaultItem);
-  const activeCategory = currentItem.category;
+  const [currentItem, setCurrentItem] = useState(location.state?.item || null);
+  const activeCategory = currentItem?.category || 'MAIN';
 
-  // =========================================================
-  // LOGIKA KEMBALI KE MENU LIST DENGAN MEMBAWA CART
-  // =========================================================
+  useEffect(() => {
+    // Simulasi loading sebentar saat masuk halaman
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleCategoryClick = (categoryCode) => {
     const categoryNames = {
       'MAIN': 'Main Dish',
@@ -55,11 +61,11 @@ export default function MenuDetail() {
       'DIMSUM': 'Dimsum',
       'DRINK': 'Hot Drink'
     };
-    navigate('/order-list', { 
-      state: { 
-        category: categoryNames[categoryCode], 
-        cart: cart 
-      } 
+    navigate('/order-list', {
+      state: {
+        category: categoryNames[categoryCode],
+        cart: cart
+      }
     });
   };
 
@@ -67,18 +73,27 @@ export default function MenuDetail() {
     setCart([...cart, currentItem]);
   };
 
-  const parsePrice = (priceStr) => parseInt(priceStr.replace(/[^0-9]/g, ''), 10);
-  const totalItems = cart.length; 
+  const parsePrice = (p) => {
+    if (typeof p === 'number') return p;
+    return parseInt(p?.replace(/[^0-9]/g, ''), 10) || 0;
+  };
+
+  const totalItems = cart.length;
   const totalPrice = cart.reduce((total, item) => total + parsePrice(item.price), 0);
 
   const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
   };
 
+  // JIKA SEDANG LOADING, TAMPILKAN KOMPONEN LOADING
+  if (isLoading) {
+    return <Loading text="Melihat menu pilihan..." />;
+  }
+
   return (
     <div className="md-container">
+      <p style={{ padding: '10px 60px 0', fontSize: '12px' }}>Pesanan atas nama: <strong>{customerName}</strong></p>
       
-      {/* HEADER DIBERSIHKAN: HANYA LOGO */}
       <header className="md-header">
         <div className="md-logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="md-logo" />
@@ -87,14 +102,13 @@ export default function MenuDetail() {
 
       <div className="md-top-bar">
         <div className="md-welcome-text">
-          <p className="md-greeting">Hi, Budi!</p>
+          <p className="md-greeting">Hi, {customerName}!</p>
           <h2 className="md-page-title">Pesan Disini</h2>
         </div>
         <div className="md-table-badge">Meja 12</div>
       </div>
 
       <main className="md-main-layout">
-        
         <aside className="md-sidebar">
           <div className={`md-side-tab ${activeCategory === 'MAIN' ? 'active' : ''}`} onClick={() => handleCategoryClick('MAIN')}>
             <div className="md-st-icon"><SvgMain /></div>
@@ -117,31 +131,44 @@ export default function MenuDetail() {
         <section className="md-content-area">
           <div className="md-closeup-card">
             <div className="md-closeup-img img-frame">
-              Gambar<br/>{currentItem.name}
+              <img
+                src={currentItem.image_url}
+                alt={currentItem.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }}
+              />
             </div>
             <div className="md-details-info">
               <h2 className="md-item-title">{currentItem.name}</h2>
-              <p className="md-item-desc">{currentItem.desc}</p>
+              <p className="md-item-desc">{currentItem.description}</p>
               
-              <textarea 
-                className="md-notes-area" 
+              <textarea
+                className="md-notes-area"
                 placeholder="Tambah catatan (opsional)"
               ></textarea>
 
               <div className="md-action-row">
-                <span className="md-price">{currentItem.price}</span>
+                <span className="md-price">{formatRupiah(currentItem.price)}</span>
                 <button className="md-btn-add efek-klik" onClick={handleAddToCart}>+ Add</button>
               </div>
             </div>
           </div>
         </section>
-      </main> 
+      </main>
+
+      {/* TOMBOL HISTORY PESANAN (FLOATING) */}
+      <div 
+        className={`md-history-btn ${cart.length > 0 ? 'with-cart' : ''}`} 
+        onClick={() => navigate('/history')} 
+        title="History Pesanan"
+      >
+        <img src={IconHistory} alt="History" />
+      </div>
 
       {cart.length > 0 && (
         <div className="md-checkout-wrapper slide-up-animation">
-          <div 
+          <div
             className="md-floating-bar efek-klik-kartu" 
-            onClick={() => navigate('/checkout', { state: { cart, totalPrice } })}
+            onClick={() => navigate('/checkout', { state: { cart, totalPrice, customerName } })}
           >
             <div className="md-fb-left">
               <div className="md-cart-box">
@@ -153,19 +180,12 @@ export default function MenuDetail() {
                 <p>{formatRupiah(totalPrice)}</p>
               </div>
             </div>
-            <button 
-              className="md-btn-checkout" 
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate('/checkout', { state: { cart, totalPrice } });
-              }}
-            >
+            <button className="md-btn-checkout">
               Checkout &gt;
             </button>
           </div>
         </div>
       )}
-
     </div>
   );
 }

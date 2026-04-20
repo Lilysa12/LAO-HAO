@@ -7,7 +7,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import './LaporanPenjualanPusat.css';
 
-import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
+// --- IMPORT ASSETS (SESUAI STANDAR LOGO FIX) ---
+import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconLaporan from '../../assets/Icons/icons-admin/laporan.svg';
 import iconManajemen from '../../assets/Icons/icons-admin/manajemen.svg';
@@ -24,20 +25,13 @@ import iconList from '../../assets/Icons/icons-admin/list.svg';
 
 const LaporanPenjualanPusat = () => {
   const location = useLocation();
-  
-  // STATE TANGGAL
   const [selectedDate, setSelectedDate] = useState(new Date());
-
-  // STATE DATA
-  const [allTransactions, setAllTransactions] = useState([]); // Menyimpan SEMUA data asli dari API
-  const [filteredTransactions, setFilteredTransactions] = useState([]); // Menyimpan data yang sudah difilter tanggal
+  const [allTransactions, setAllTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // STATE KARTU & GRAFIK
   const [summary, setSummary] = useState({ totalPendapatan: 0, pendapatanKasir: 0, pendapatanQr: 0, totalTransaksi: 0 });
   const [chartData, setChartData] = useState([]);
 
-  // 1. AMBIL SEMUA DATA SEKALI SAAT HALAMAN DIBUKA
   useEffect(() => {
     setIsLoading(true);
     axios.get(`http://127.0.0.1:8000/api/admin/transactions?_t=${new Date().getTime()}`)
@@ -51,17 +45,13 @@ const LaporanPenjualanPusat = () => {
       });
   }, []);
 
-  // 2. LOGIKA FILTERING OTOMATIS JIKA TANGGAL / DATA BERUBAH
   useEffect(() => {
     if (allTransactions.length === 0) return;
-
     const monthsMap = { 'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'Mei': 4, 'Jun': 5, 'Jul': 6, 'Agt': 7, 'Sep': 8, 'Okt': 9, 'Nov': 10, 'Des': 11 };
     const dayIndexMap = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 0: 6 };
-
     const targetMonth = selectedDate.getMonth();
     const targetYear = selectedDate.getFullYear();
 
-    // A. Saring Data Berdasarkan Bulan & Tahun Kalender
     const filteredTrx = allTransactions.filter(trx => {
       const parts = trx.time.split(' ');
       if (parts.length >= 3) {
@@ -74,7 +64,6 @@ const LaporanPenjualanPusat = () => {
 
     setFilteredTransactions(filteredTrx);
 
-    // B. Hitung Ulang Kartu Summary
     let tPendapatan = 0, pKasir = 0, pQr = 0, tTransaksi = filteredTrx.length;
     const newChartData = [
       { name: 'Sen', kasir: 0, qr: 0 }, { name: 'Sel', kasir: 0, qr: 0 }, { name: 'Rab', kasir: 0, qr: 0 },
@@ -86,60 +75,36 @@ const LaporanPenjualanPusat = () => {
       if (trx.status === 'BERHASIL') {
         const amount = parseInt(trx.total.replace(/[^0-9]/g, ''), 10) || 0;
         tPendapatan += amount;
-        
-        if (trx.method === 'QRIS') {
-          pQr += amount;
-        } else {
-          pKasir += amount;
-        }
-
-        // Hitung Ulang Grafik
+        if (trx.method === 'QRIS') { pQr += amount; } else { pKasir += amount; }
         const parts = trx.time.split(' '); 
         const day = parts[0].padStart(2, '0'); 
-        const monthStr = monthsMap[parts[1]] + 1; // +1 karena Date JS format bulan 01-12 di string
+        const monthStr = monthsMap[parts[1]] + 1;
         const monthPad = monthStr.toString().padStart(2, '0');
         const year = parts[2].replace(',', '');
-        
         const dateObj = new Date(`${year}-${monthPad}-${day}`);
         if(!isNaN(dateObj)) {
           const jsDay = dateObj.getDay();
           const targetIndex = dayIndexMap[jsDay];
-          if (trx.method === 'QRIS') {
-            newChartData[targetIndex].qr += amount;
-          } else {
-            newChartData[targetIndex].kasir += amount;
-          }
+          if (trx.method === 'QRIS') { newChartData[targetIndex].qr += amount; } 
+          else { newChartData[targetIndex].kasir += amount; }
         }
       }
     });
 
     setSummary({ totalPendapatan: tPendapatan, pendapatanKasir: pKasir, pendapatanQr: pQr, totalTransaksi: tTransaksi });
     setChartData(newChartData);
+  }, [allTransactions, selectedDate]);
 
-  }, [allTransactions, selectedDate]); // Efek ini berjalan otomatis jika `selectedDate` berubah
-
-  // 3. FUNGSI EXPORT KE EXCEL/CSV
   const handleExportCSV = () => {
-    if (filteredTransactions.length === 0) {
-      alert("Tidak ada data untuk diexport pada bulan ini.");
-      return;
-    }
-
-    // Buat Header Tabel
+    if (filteredTransactions.length === 0) { alert("Tidak ada data untuk diexport."); return; }
     let csvContent = "NO. INVOICE,WAKTU,PELANGGAN,METODE,TOTAL,STATUS\n";
-    
-    // Masukkan Data
     filteredTransactions.forEach(row => {
-      // Hilangkan koma pada total agar tidak merusak format CSV
       const cleanTotal = row.total.replace(/,/g, '');
       csvContent += `${row.inv},"${row.time}","${row.user}",${row.method},${cleanTotal},${row.status}\n`;
     });
-
-    // Buat File & Unduh Otomatis
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    
     const monthName = selectedDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     link.setAttribute("href", url);
     link.setAttribute("download", `Laporan_Penjualan_Laoban_${monthName.replace(' ', '_')}.csv`);
@@ -175,45 +140,53 @@ const LaporanPenjualanPusat = () => {
 
   return (
     <div className="admin-container">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <img src={logoLaoban} alt="Laoban Logo" className="logo-circle" />
-          <div className="brand-text">
-            <h2>LAOBAN</h2>
-            <p>BY UNCLE OEH</p>
+      {/* --- SIDEBAR REVISI (KONSISTEN) --- */}
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          {/* LOGO LAOBAN FIXED STANDAR 160PX */}
+          <div style={{ 
+            width: '100%', 
+            padding: '35px 20px 20px 20px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            boxSizing: 'border-box'
+          }}>
+            <img 
+              src={logoLaobanSvg} 
+              alt="Logo Laoban" 
+              style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} 
+            />
           </div>
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/admin" className="menu-item">
+              <img src={iconDashboard} alt="Dashboard" className="menu-icon-svg icon-white" />
+              Overview Cabang
+            </Link>
+            <Link to="/admin/laporan-penjualan-pusat" className="menu-item active">
+              <img src={iconLaporan} alt="Laporan" className="menu-icon-svg" />
+              Laporan Penjualan Pusat
+            </Link>
+            <Link to="/admin/manajemen-promo" className="menu-item">
+              <img src={iconPromosi} alt="Promo" className="menu-icon-svg icon-white" />
+              Manajemen Promo
+            </Link>
+            <Link to="/admin/manajemen-akun-staf" className="menu-item">
+              <img src={iconManajemen} alt="Staf" className="menu-icon-svg icon-white" />
+              Manajemen Akun Staf
+            </Link>
+            <Link to="/admin/pengaturan" className="menu-item">
+              <img src={iconPengaturan} alt="Pengaturan" className="menu-icon-svg icon-white" />
+              Pengaturan
+            </Link>
+            <div className="divider" style={{ margin: '15px 16px' }}></div>
+            <Link to="/kasir" className="menu-item">
+              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
+              Kasir / POS Mode
+            </Link>
+          </nav>
         </div>
-
-        <nav className="sidebar-menu">
-          <Link to="/admin" className="menu-item">
-            <img src={iconDashboard} alt="Dashboard" className="menu-icon-svg icon-white" />
-            Overview Cabang
-          </Link>
-          <Link to="/admin/laporan-penjualan-pusat" className="menu-item active">
-            <img src={iconLaporan} alt="Laporan" className="menu-icon-svg" />
-            Laporan Penjualan Pusat
-          </Link>
-          <Link to="/admin/manajemen-promo" className="menu-item">
-            <img src={iconPromosi} alt="Promo" className="menu-icon-svg icon-white" />
-            Manajemen Promo
-          </Link>
-          <Link to="/admin/manajemen-akun-staf" className="menu-item">
-            <img src={iconManajemen} alt="Manajemen Staf" className="menu-icon-svg icon-white" />
-            Manajemen Akun Staf
-          </Link>
-          <Link to="/admin/pengaturan" className="menu-item">
-            <img src={iconPengaturan} alt="Pengaturan" className="menu-icon-svg icon-white" />
-            Pengaturan
-          </Link>
-
-          <div className="divider"></div>
-
-          <Link to="/kasir" className="menu-item">
-            <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
-            Kasir / POS Mode
-          </Link>
-        </nav>
-
         <div className="sidebar-footer">
           <button className="logout-btn">
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
@@ -239,7 +212,6 @@ const LaporanPenjualanPusat = () => {
 
         <div className="content-wrapper">
           <div className="dashboard-page">
-            
             <div className="dashboard-header">
               <div>
                 <h1 className="page-title">Laporan Penjualan</h1>
@@ -247,16 +219,14 @@ const LaporanPenjualanPusat = () => {
               </div>
               <div className="action-buttons">
                 <div className="date-picker-wrapper">
-                  {/* DATEPICKER UNTUK FILTER BULAN */}
                   <DatePicker
                     selected={selectedDate}
                     onChange={(date) => setSelectedDate(date)}
                     dateFormat="MMMM yyyy"
-                    showMonthYearPicker // Mode pilih bulan/tahun saja
+                    showMonthYearPicker
                     customInput={<CustomDateInput />}
                   />
                 </div>
-                {/* TOMBOL EXPORT DIAKTIFKAN */}
                 <button className="export-btn" onClick={handleExportCSV}>
                   <img src={iconDownload} alt="Export" className="btn-icon-svg icon-white" /> 
                   Export Laporan
@@ -323,9 +293,8 @@ const LaporanPenjualanPusat = () => {
               <div className="table-header-row">
                 <h3 className="section-title">Detail Transaksi ({selectedDate.toLocaleDateString('id-ID', { month: 'long' })})</h3>
               </div>
-              
               {isLoading ? (
-                <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data transaksi dari Supabase...</div>
+                <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data transaksi...</div>
               ) : (
                 <table className="transaction-table">
                   <thead>
@@ -339,7 +308,6 @@ const LaporanPenjualanPusat = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* MENAMPILKAN DATA YANG SUDAH DIFILTER TANGGAL */}
                     {filteredTransactions.length > 0 ? (
                       filteredTransactions.map((row) => (
                         <tr key={row.id}>
@@ -365,7 +333,6 @@ const LaporanPenjualanPusat = () => {
                   </tbody>
                 </table>
               )}
-
             </div>
           </div>
         </div>

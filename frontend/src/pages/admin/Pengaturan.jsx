@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './Pengaturan.css';
 
-import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
+// --- IMPORT ASSETS (LOGO STANDAR 160PX) ---
+import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconLaporan from '../../assets/Icons/icons-admin/laporan.svg';
 import iconManajemen from '../../assets/Icons/icons-admin/manajemen.svg';
@@ -24,7 +25,6 @@ const Pengaturan = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // STATE UNTUK SEMUA DATA PENGATURAN
   const [formData, setFormData] = useState({
     restaurant_name: '',
     phone: '',
@@ -35,7 +35,6 @@ const Pengaturan = () => {
     receipt_footer: ''
   });
 
-  // MENGAMBIL DATA DARI SUPABASE
   const fetchSettings = async () => {
     setIsLoading(true);
     try {
@@ -75,11 +74,9 @@ const Pengaturan = () => {
     });
   };
 
-  // FUNGSI MENYIMPAN DATA (LEBIH AMAN)
   const handleSaveSettings = async () => {
     setIsSubmitting(true);
     try {
-      // Pastikan data angka benar-benar angka murni
       const payload = {
         ...formData,
         tax_percentage: formData.tax_percentage ? parseInt(formData.tax_percentage) : 0,
@@ -91,7 +88,6 @@ const Pengaturan = () => {
       fetchSettings();
     } catch (error) {
       console.error('Gagal menyimpan pengaturan:', error);
-      // Tangkap pesan error detail dari Laravel agar tidak menebak-nebak
       const errorMsg = error.response?.data?.message || error.message || 'Koneksi ke server terputus.';
       alert(`Gagal menyimpan pengaturan! Penyebab: ${errorMsg}`);
     } finally {
@@ -101,44 +97,55 @@ const Pengaturan = () => {
 
   return (
     <div className="admin-container">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <img src={logoLaoban} alt="Laoban Logo" className="logo-circle" />
-          <div className="brand-text">
-            <h2>LAOBAN</h2>
-            <p>BY UNCLE OEH</p>
+      {/* --- SIDEBAR STANDAR LOGO LAOBAN --- */}
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          
+          <div style={{ 
+            width: '100%', 
+            padding: '35px 20px 20px 20px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            boxSizing: 'border-box'
+          }}>
+            <img 
+              src={logoLaobanSvg} 
+              alt="Logo Laoban" 
+              style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} 
+            />
           </div>
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/admin" className="menu-item">
+              <img src={iconDashboard} alt="Dashboard" className="menu-icon-svg icon-white" />
+              Overview Cabang
+            </Link>
+            <Link to="/admin/laporan-penjualan-pusat" className="menu-item">
+              <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" />
+              Laporan Penjualan Pusat
+            </Link>
+            <Link to="/admin/manajemen-promo" className="menu-item">
+              <img src={iconPromosi} alt="Promo" className="menu-icon-svg icon-white" />
+              Manajemen Promo
+            </Link>
+            <Link to="/admin/manajemen-akun-staf" className="menu-item">
+              <img src={iconManajemen} alt="Manajemen Staf" className="menu-icon-svg icon-white" />
+              Manajemen Akun Staf
+            </Link>
+            <Link to="/admin/pengaturan" className="menu-item active">
+              <img src={iconPengaturan} alt="Pengaturan" className="menu-icon-svg" />
+              Pengaturan
+            </Link>
+
+            <div className="divider" style={{ margin: '15px 16px' }}></div>
+
+            <Link to="/kasir" className="menu-item">
+              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
+              Kasir / POS Mode
+            </Link>
+          </nav>
         </div>
-
-        <nav className="sidebar-menu">
-          <Link to="/admin" className="menu-item">
-            <img src={iconDashboard} alt="Dashboard" className="menu-icon-svg icon-white" />
-            Overview Cabang
-          </Link>
-          <Link to="/admin/laporan-penjualan-pusat" className="menu-item">
-            <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" />
-            Laporan Penjualan Pusat
-          </Link>
-          <Link to="/admin/manajemen-promo" className="menu-item">
-            <img src={iconPromosi} alt="Promo" className="menu-icon-svg icon-white" />
-            Manajemen Promo
-          </Link>
-          <Link to="/admin/manajemen-akun-staf" className="menu-item">
-            <img src={iconManajemen} alt="Manajemen Staf" className="menu-icon-svg icon-white" />
-            Manajemen Akun Staf
-          </Link>
-          <Link to="/admin/pengaturan" className="menu-item active">
-            <img src={iconPengaturan} alt="Pengaturan" className="menu-icon-svg" />
-            Pengaturan
-          </Link>
-
-          <div className="divider"></div>
-
-          <Link to="/kasir" className="menu-item">
-            <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
-            Kasir / POS Mode
-          </Link>
-        </nav>
 
         <div className="sidebar-footer">
           <button className="logout-btn">
@@ -199,7 +206,6 @@ const Pengaturan = () => {
               </div>
 
               <div className="settings-content-area">
-                
                 {isLoading ? (
                   <div className="settings-card" style={{ textAlign: 'center', padding: '40px' }}>
                     Memuat data pengaturan dari Supabase...
@@ -256,16 +262,18 @@ const Pengaturan = () => {
                           <h2>Pengaturan Pajak & Struk</h2>
                         </div>
                         <div className="settings-form">
-                          <div className="toggle-setting-box">
+                          {/* PERBAIKAN STRUKTUR TOGGLE SWITCH */}
+                          <div className="toggle-setting-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <div className="toggle-setting-text">
-                              <h3>Aktifkan Pajak Restoran (PB1)</h3>
-                              <p>Otomatis tambahkan pajak ke setiap transaksi</p>
+                              <h3 style={{ fontSize: '14px', marginBottom: '4px' }}>Aktifkan Pajak Restoran (PB1)</h3>
+                              <p style={{ fontSize: '12px', color: '#64748b' }}>Otomatis tambahkan pajak ke setiap transaksi</p>
                             </div>
                             <label className="toggle-switch">
                               <input type="checkbox" name="tax_active" checked={formData.tax_active} onChange={handleToggleChange} className="toggle-input" />
                               <span className="toggle-slider"></span>
                             </label>
                           </div>
+
                           <div className="form-row">
                             <div className="form-group half-width">
                               <label>PERSENTASE PB1 (%)</label>
@@ -296,12 +304,12 @@ const Pengaturan = () => {
 
                 {(activeTab === 'pos' || activeTab === 'notifikasi' || activeTab === 'keamanan') && (
                   <div className="settings-card">
-                    <div className="empty-state-wrapper">
-                      <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <div className="empty-state-wrapper" style={{ textAlign: 'center', padding: '60px 20px' }}>
+                      <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '48px', height: '48px', marginBottom: '16px' }}>
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                       </svg>
-                      <h2 className="empty-state-title">Menu sedang dalam pengembangan</h2>
-                      <p className="empty-state-desc">Fitur ini akan segera hadir pada update berikutnya.</p>
+                      <h2 className="empty-state-title" style={{ fontSize: '18px', color: '#1e293b', marginBottom: '8px' }}>Menu sedang dalam pengembangan</h2>
+                      <p className="empty-state-desc" style={{ fontSize: '14px', color: '#64748b' }}>Fitur ini akan segera hadir pada update berikutnya.</p>
                     </div>
                   </div>
                 )}

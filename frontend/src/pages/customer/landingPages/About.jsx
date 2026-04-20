@@ -1,39 +1,83 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './About.css';
 
-// --- IMPORT ICONS (FIX JALUR: Sesuai persis dengan huruf besar/kecil di folder) ---
-import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; // L besar
-import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; // I besar
-import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; // W besar
-import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; // f kecil (khusus ini)
-import IconLink from '../../../assets/icons/icons-customer/Link.png'; // L besar
-import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; // T besar
+// --- IMPORT ASSETS HEADER & FOOTER ---
+import LogoLaoban from '../../../assets/icons/icons-customer/LogoLaoban.png'; 
+import IconInstagram from '../../../assets/icons/icons-customer/Instagram.png'; 
+import IconWhatsapp from '../../../assets/icons/icons-customer/Whatsapp.png'; 
+import IconFacebook from '../../../assets/icons/icons-customer/facebook.png'; 
+import IconTiktok from '../../../assets/icons/icons-customer/Tiktok.png'; 
+import IconMessage from '../../../assets/icons/Message.png'; 
+import IconCall from '../../../assets/icons/Call.png'; 
 
-// --- IMPORT GAMBAR ABOUT (FIX JALUR: Sesuaikan dengan nama file) ---
+// --- IMPORT GAMBAR ABOUT MAIN CONTENT ---
 import ImgHistory from '../../../assets/home/image1.png'; 
 import ImgFounder from '../../../assets/home/image2.png'; 
 
 export default function About() {
   const navigate = useNavigate();
+  
+  // STATE MENU MOBILE (HAMBURGER) SAMA DENGAN HOME
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Helper untuk pindah halaman dan otomatis scroll ke atas
+  const navigateToTop = (path) => {
+    setIsMobileMenuOpen(false); // Tutup menu saat pindah halaman
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.15 }); 
+
+    const hiddenElements = document.querySelectorAll('.slide-up, .fade-in-up');
+    hiddenElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      hiddenElements.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
 
   return (
     <div className="ab-container">
       
-      {/* ================= HEADER NAVBAR ================= */}
-      <header className="ab-header">
-        <div className="ab-logo-box" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="ab-logo" />
+      {/* ================= HEADER NAVBAR (PERSIS HOME) ================= */}
+      <nav className="navbar fade-in-up">
+        <div className="logo-box">
+          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
         </div>
-        <nav className="ab-nav-links">
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/home'); }}>Home</a>
-          <a href="#" className="active">About</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); navigate('/menu'); }}>Menu</a>
-          <a href="#">Our Partner</a>
-          <a href="#">Partnership</a>
-        </nav>
-        <div style={{ width: '100px' }}></div>
-      </header>
+
+        {/* --- MENU OVERLAY MOBILE / DESKTOP LINKS --- */}
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/home'); }}>Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/about'); }} className="active">About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/menu'); }}>Menu</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
+          
+          {/* Tombol Pesan Khusus Tampil di Overlay Menu HP */}
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
+        </div>
+
+        <div className="nav-actions">
+          {/* Tombol Pesan Desktop */}
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
+          
+          {/* --- HAMBURGER TOGGLE --- */}
+          <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </div>
+        </div>
+      </nav>
 
       {/* ================= MAIN CONTENT ================= */}
       <main className="ab-main-content">
@@ -42,8 +86,7 @@ export default function About() {
         <section className="ab-section ab-history slide-up">
           <div className="ab-text-area">
             <div className="ab-label-wrapper">
-              <span className="ab-line"></span>
-              <span className="ab-label">ABOUT US</span>
+              <span className="ab-label red-text">ABOUT US</span>
             </div>
             <h1 className="ab-title">HISTORY LAOBAN<br/>NUSANTARA</h1>
             
@@ -95,22 +138,57 @@ export default function About() {
 
       </main>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="ab-footer">
-        <div className="ab-socials">
-          <div className="ab-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
-          <div className="ab-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
-          <div className="ab-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
-          <div className="ab-soc-circle"><img src={IconLink} alt="Link" /></div>
-          <div className="ab-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
+      {/* ================= FOOTER MODERN (PERSIS HOME MOBILE) ================= */}
+      <footer className="footer-modern fade-in-up delay-1">
+        <div className="foot-grid">
+          <div className="foot-brand">
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
+            <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
+            
+            <div className="socials socials-colored unified-socmed">
+               <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://www.facebook.com/laoban.nusantara/', '_blank')}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
+            </div>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Navigasi</h4>
+            <ul>
+              <li onClick={() => navigateToTop('/home')} style={{cursor: 'pointer'}}>Home</li>
+              <li onClick={() => navigateToTop('/about')} style={{cursor: 'pointer'}}>Tentang Kami</li>
+              <li onClick={() => navigateToTop('/menu')} style={{cursor: 'pointer'}}>Menu Perguruan</li>
+              <li onClick={() => navigateToTop('/our-partner')} style={{cursor: 'pointer'}}>Daftar Cabang</li>
+            </ul>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Kemitraan</h4>
+            <ul>
+              <li onClick={() => navigateToTop('/partnership')} style={{cursor: 'pointer'}}>Info Franchise</li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>Hubungi Sales</li>
+            </ul>
+          </div>
+          
+          <div className="foot-links">
+            <h4>Hubungi Kami</h4>
+            <ul className="contact-list contact-modern">
+              <li onClick={() => window.location.href = 'mailto:laobankopitiam@gmail.com'} style={{cursor: 'pointer'}}>
+                <img src={IconMessage} alt="Email" className="contact-icon" /> 
+                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
+              </li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>
+                <img src={IconCall} alt="Phone" className="contact-icon" /> 
+                <span className="contact-info contact-bold">+62 822 4450 3221</span>
+              </li>
+            </ul>
+          </div>
         </div>
         
-        <div className="ab-footer-logo-box" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
-          <img src={LogoLaoban} alt="Logo Laoban" className="ab-footer-logo" />
-        </div>
-
-        <div className="ab-copyright">
-          © Copyright Laoban Nusantara.
+        <div className="foot-bottom">
+          <p>© 2026 Laoban by Uncle Osh. All rights reserved.</p>
+          <p>Kebijakan Privasi &nbsp;&nbsp;•&nbsp;&nbsp; Syarat & Ketentuan</p>
         </div>
       </footer>
 
