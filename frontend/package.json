@@ -10,11 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@supabase/supabase-js": "^2.103.3",
-=======
     "@supabase/supabase-js": "^2.104.0",
->>>>>>> 9685d5c81432aa8d549338c6fbfc0b3bba90f116
     "axios": "^1.15.0",
     "leaflet": "^1.9.4",
     "qrcode": "^1.5.4",
