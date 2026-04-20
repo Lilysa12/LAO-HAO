@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './Home.css'; 
@@ -113,7 +113,7 @@ export default function Home() {
   const [kota, setKota] = useState(0);
   const [tahun, setTahun] = useState(0);
   const [pelanggan, setPelanggan] = useState(0);
-  const statsRef = useRef(null); 
+  const statsRef = useRef(null);
 
   useEffect(() => {
     const animateValue = (setFn, start, end, duration) => {
