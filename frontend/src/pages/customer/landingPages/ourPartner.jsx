@@ -107,11 +107,11 @@ export default function OurPartner() {
           <a href="#" onClick={(e) => { e.preventDefault(); }} className="active">Our Partner</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
           
-          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
         </div>
 
         <div className="nav-actions">
-          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
           
           <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             <span className="bar"></span>

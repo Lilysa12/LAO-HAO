@@ -14,7 +14,8 @@ import Checkout from './pages/customer/order/Checkout';
 import Voucher from './pages/customer/order/Voucher';
 import Payment from './pages/customer/order/Payment';
 import Status from './pages/customer/order/Status';
-
+import History from './pages/customer/order/History'; // <--- IMPORT HISTORY DITAMBAHKAN DI SINI
+import DownloadApp from './pages/customer/landingPages/DownloadApp';
 // --- AUTH PAGE ---
 import Login from './pages/auth/Login';
 
@@ -27,7 +28,7 @@ import Pengaturan from './pages/admin/Pengaturan';
 
 // --- KASIR PAGES ---
 import Kasir from './pages/kasir/DenahMeja';
-import Pos from './pages/kasir/Pos'; // <--- IMPORT POS DITAMBAHKAN DI SINI
+import Pos from './pages/kasir/Pos'; 
 import PesananDapur from './pages/kasir/PesananDapur';
 import StokMenu from './pages/kasir/StokMenu';
 import LaporanRiwayat from './pages/kasir/LaporanRiwayat';
@@ -55,6 +56,7 @@ function App() {
         <Route path="/partnership" element={<Partnership />} /> 
         <Route path="/our-partner" element={<OurPartner />} /> 
         <Route path="/login" element={<Login />} />
+        <Route path="/download" element={<DownloadApp />} />
 
         {/* --- CUSTOMER ORDER FLOW --- */}
         <Route path="/order" element={<InputData />} />
@@ -64,6 +66,7 @@ function App() {
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/payment" element={<Payment />} />  
         <Route path="/status" element={<Status />} />
+        <Route path="/history" element={<History />} /> {/* <--- RUTE HISTORY DITAMBAHKAN DI SINI */}
         
         {/* --- AREA ADMIN (PROTECTED) --- */}
         <Route path="/admin" element={<ProtectedRoute><OverviewCabang /></ProtectedRoute>} />
@@ -74,7 +77,7 @@ function App() {
 
         {/* --- AREA KASIR (PROTECTED) --- */}
         <Route path="/kasir" element={<ProtectedRoute><Kasir /></ProtectedRoute>} />
-        <Route path="/kasir/pos" element={<ProtectedRoute><Pos /></ProtectedRoute>} /> {/* <--- RUTE POS DITAMBAHKAN DI SINI */}
+        <Route path="/kasir/pos" element={<ProtectedRoute><Pos /></ProtectedRoute>} /> 
         <Route path="/kasir/pesanan" element={<ProtectedRoute><PesananDapur /></ProtectedRoute>} />
         <Route path="/kasir/stok" element={<ProtectedRoute><StokMenu /></ProtectedRoute>} />
         <Route path="/kasir/laporan" element={<ProtectedRoute><LaporanRiwayat /></ProtectedRoute>} />

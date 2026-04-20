@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './MenuDetail.css';
+import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
 
 // --- IMPORT ASSETS LOKAL ---
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconCheckout from '../../../assets/icons/icons-customer/checkout.png';
+import IconHistory from '../../../assets/icons/icons-customer/history.png';
 
 // =========================================================
-// SVG ICONS COMPONENT (KODE BARU - PRESISI & WARNA OTOMATIS)
+// SVG ICONS COMPONENT
 // =========================================================
 const SvgMain = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -38,15 +40,20 @@ export default function MenuDetail() {
   const location = useLocation();
   const customerName = location.state?.customerName || 'Laoban';
 
+  // --- STATE LOADING ---
+  const [isLoading, setIsLoading] = useState(true);
   const [cart, setCart] = useState(location.state?.cart || []);
-
-  // Ambil item yang dikirim dari MenuList
   const [currentItem, setCurrentItem] = useState(location.state?.item || null);
-  const activeCategory = currentItem.category || 'MAIN';
+  const activeCategory = currentItem?.category || 'MAIN';
 
-  // =========================================================
-  // LOGIKA KEMBALI KE MENU LIST DENGAN MEMBAWA CART
-  // =========================================================
+  useEffect(() => {
+    // Simulasi loading sebentar saat masuk halaman
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleCategoryClick = (categoryCode) => {
     const categoryNames = {
       'MAIN': 'Main Dish',
@@ -67,9 +74,10 @@ export default function MenuDetail() {
   };
 
   const parsePrice = (p) => {
-  if (typeof p === 'number') return p;
-  return parseInt(p?.replace(/[^0-9]/g, ''), 10) || 0;
-};
+    if (typeof p === 'number') return p;
+    return parseInt(p?.replace(/[^0-9]/g, ''), 10) || 0;
+  };
+
   const totalItems = cart.length;
   const totalPrice = cart.reduce((total, item) => total + parsePrice(item.price), 0);
 
@@ -77,11 +85,15 @@ export default function MenuDetail() {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
   };
 
+  // JIKA SEDANG LOADING, TAMPILKAN KOMPONEN LOADING
+  if (isLoading) {
+    return <Loading text="Melihat menu pilihan..." />;
+  }
+
   return (
     <div className="md-container">
-      <p>Pesanan atas nama: <strong>{customerName}</strong></p>
+      <p style={{ padding: '10px 60px 0', fontSize: '12px' }}>Pesanan atas nama: <strong>{customerName}</strong></p>
       
-      {/* HEADER DIBERSIHKAN: HANYA LOGO */}
       <header className="md-header">
         <div className="md-logo-box" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
           <img src={LogoLaoban} alt="Logo Laoban" className="md-logo" />
@@ -90,14 +102,13 @@ export default function MenuDetail() {
 
       <div className="md-top-bar">
         <div className="md-welcome-text">
-          <p className="md-greeting">Hi, Budi!</p>
+          <p className="md-greeting">Hi, {customerName}!</p>
           <h2 className="md-page-title">Pesan Disini</h2>
         </div>
         <div className="md-table-badge">Meja 12</div>
       </div>
 
       <main className="md-main-layout">
-        
         <aside className="md-sidebar">
           <div className={`md-side-tab ${activeCategory === 'MAIN' ? 'active' : ''}`} onClick={() => handleCategoryClick('MAIN')}>
             <div className="md-st-icon"><SvgMain /></div>
@@ -144,11 +155,20 @@ export default function MenuDetail() {
         </section>
       </main>
 
+      {/* TOMBOL HISTORY PESANAN (FLOATING) */}
+      <div 
+        className={`md-history-btn ${cart.length > 0 ? 'with-cart' : ''}`} 
+        onClick={() => navigate('/history')} 
+        title="History Pesanan"
+      >
+        <img src={IconHistory} alt="History" />
+      </div>
+
       {cart.length > 0 && (
         <div className="md-checkout-wrapper slide-up-animation">
           <div
             className="md-floating-bar efek-klik-kartu" 
-            onClick={() => navigate('/checkout', { state: { cart, totalPrice } })}
+            onClick={() => navigate('/checkout', { state: { cart, totalPrice, customerName } })}
           >
             <div className="md-fb-left">
               <div className="md-cart-box">
@@ -160,19 +180,12 @@ export default function MenuDetail() {
                 <p>{formatRupiah(totalPrice)}</p>
               </div>
             </div>
-            <button
-              className="md-btn-checkout"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate('/checkout', { state: { cart, totalPrice } });
-              }}
-            >
+            <button className="md-btn-checkout">
               Checkout &gt;
             </button>
           </div>
         </div>
       )}
-
     </div>
   );
 }

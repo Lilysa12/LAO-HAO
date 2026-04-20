@@ -63,12 +63,12 @@ export default function About() {
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
           
           {/* Tombol Pesan Khusus Tampil di Overlay Menu HP */}
-          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
         </div>
 
         <div className="nav-actions">
           {/* Tombol Pesan Desktop */}
-          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
           
           {/* --- HAMBURGER TOGGLE --- */}
           <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>

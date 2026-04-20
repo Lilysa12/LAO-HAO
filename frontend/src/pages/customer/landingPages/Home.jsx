@@ -71,6 +71,10 @@ const branchData = [
 export default function Home() {
   const navigate = useNavigate();
   const [hoveredGridIndex, setHoveredGridIndex] = useState(null);
+  
+  // --- REF UNTUK ISOLASI ANIMASI HOMEPAGE ---
+  const homeRef = useRef(null);
+  const statsRef = useRef(null); 
 
   // --- STATE MENU MOBILE ---
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -104,7 +108,7 @@ export default function Home() {
   const displayedMenus = homeMenuData.filter(menu => menu.category === activeMenuCategory);
 
   const navigateToTop = (path) => {
-    setIsMobileMenuOpen(false); // Tutup menu pas pindah halaman
+    setIsMobileMenuOpen(false);
     navigate(path);
     window.scrollTo(0, 0);
   };
@@ -113,8 +117,8 @@ export default function Home() {
   const [kota, setKota] = useState(0);
   const [tahun, setTahun] = useState(0);
   const [pelanggan, setPelanggan] = useState(0);
-  const statsRef = useRef(null); 
 
+  // --- OBSERVER STATISTIK ANGKA ---
   useEffect(() => {
     const animateValue = (setFn, start, end, duration) => {
       let startTimestamp = null;
@@ -135,7 +139,7 @@ export default function Home() {
         animateValue(setPelanggan, 0, 1, 2000);  
         observer.disconnect(); 
       }
-    }, { threshold: 0.5 }); 
+    }, { threshold: 0.3 }); // Threshold diturunkan sedikit untuk mobile
 
     if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
@@ -155,23 +159,34 @@ export default function Home() {
 
   const gridImages = [Grid1, Grid2, Grid3, Grid4, Grid5, Grid6, Grid7, Grid8, Grid9];
   
+  // --- OBSERVER ANIMASI FADE-IN-UP (FIXED UNTUK MOBILE) ---
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target); // Supaya lebih ringan, stop observe setelah muncul
+        }
       });
-    }, { threshold: 0.15 }); 
+    }, { 
+      threshold: 0.05, // Super kecil agar di HP yang layarnya sempit tetap ke-trigger
+      rootMargin: "0px 0px -20px 0px" 
+    }); 
 
-    const hiddenElements = document.querySelectorAll('.fade-in-up');
-    hiddenElements.forEach((el) => observer.observe(el));
-    return () => hiddenElements.forEach((el) => observer.unobserve(el));
+    if (homeRef.current) {
+      const hiddenElements = homeRef.current.querySelectorAll('.fade-in-up');
+      hiddenElements.forEach((el) => observer.observe(el));
+    }
+    
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <div className="home-container">
+    <div className="home-container" ref={homeRef}>
       
       {/* ================= 1. NAVBAR ================= */}
-      <nav className="navbar fade-in-up">
+      {/* Hapus class fade-in-up di navbar agar navbar selalu muncul tanpa menunggu scroll */}
+      <nav className="navbar">
         <div className="logo-box">
           <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
         </div>
@@ -184,15 +199,12 @@ export default function Home() {
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/our-partner'); }}>Our Partner</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop('/partnership'); }}>Partnership</a>
           
-          {/* Tombol Pesan Khusus Tampil di Overlay Menu HP */}
-          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
         </div>
 
         <div className="nav-actions">
-          {/* Tombol Pesan Desktop */}
-          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/order')}>Pesan Sekarang</button>
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop('/download')}>Pesan Sekarang</button>
           
-          {/* --- HAMBURGER TOGGLE --- */}
           <div className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             <span className="bar"></span>
             <span className="bar"></span>
@@ -229,7 +241,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Gambar Hero */}
         <div className="hero-grid">
           <img src={HeroImg1} alt="Menu 1" />
           <img src={HeroImg2} alt="Menu 2" />
@@ -239,7 +250,7 @@ export default function Home() {
       </section>
 
       {/* ================= 3. MARQUEE CABANG ================= */}
-      <div className="red-marquee-container">
+      <div className="red-marquee-container fade-in-up">
         <div className="red-marquee-track">
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> PALEMBANG</div>
           <div className="marquee-item"><span className="yellow-box">&#9632;</span> CIREBON</div>
@@ -327,7 +338,7 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="menu-list">
+        <div className="menu-list fade-in-up delay-1">
           {displayedMenus.length > 0 ? (
             displayedMenus.map((item) => (
               <div className="menu-card" key={item.id}>
@@ -361,7 +372,7 @@ export default function Home() {
           Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk mendekatkan kehangatan Kopitiam autentik ke kota Anda.
         </p>
         
-        <div className="home-map-wrapper">
+        <div className="home-map-wrapper fade-in-up delay-1">
           <MapContainer center={[-6.200000, 106.816666]} zoom={6} scrollWheelZoom={true} className="home-map-container">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -398,11 +409,11 @@ export default function Home() {
           {gridImages.map((image, index) => (
             <div 
               key={index}
-              className="ig-item-wrapper"
+              className="ig-item-wrapper fade-in-up"
+              style={{transitionDelay: `${index * 0.05}s`}} /* Efek muncul berurutan */
               onMouseEnter={() => setHoveredGridIndex(index)} 
               onMouseLeave={() => setHoveredGridIndex(null)}    
               onClick={() => window.open(igPostDetails[index].link, '_blank')} 
-              style={{ cursor: 'pointer' }}
             >
               <img src={image} alt={`IG ${index + 1}`} className="ig-img" />
               {index === hoveredGridIndex && (
@@ -434,14 +445,14 @@ export default function Home() {
                 <img src={IconKemitraan} alt="Kemitraan Icon" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                 Pelajari Kemitraan
               </button>
-              <button className="btn-outline-white" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}>Hubungi Tim Sales</button>
+              <button className="btn-outline-white" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221', '_blank')}>Hubungi Tim Sales</button>
             </div>
           </div>
         </div>
       </section>
 
       {/* ================= 8. FOOTER ================= */}
-      <footer className="footer-modern fade-in-up delay-1">
+      <footer className="footer-modern fade-in-up">
         <div className="foot-grid">
           <div className="foot-brand">
             <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{marginBottom: '15px', cursor: 'pointer'}} onClick={() => navigateToTop('/home')} />
@@ -449,7 +460,7 @@ export default function Home() {
             <div className="socials socials-colored unified-socmed">
                <div className="soc-colored" onClick={() => window.open('https://www.instagram.com/laoban.nusantara/', '_blank')}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
                <div className="soc-colored" onClick={() => window.open('https://www.tiktok.com/@laoban.nusantara', '_blank')}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
-               <div className="soc-colored" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+               <div className="soc-colored" onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221', '_blank')}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
                <div className="soc-colored" onClick={() => window.open('https://www.facebook.com/laoban.nusantara/', '_blank')}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
             </div>
           </div>
@@ -468,7 +479,7 @@ export default function Home() {
             <h4>Kemitraan</h4>
             <ul>
               <li onClick={() => navigateToTop('/partnership')}>Info Franchise</li>
-              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')}>Hubungi Sales</li>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221', '_blank')}>Hubungi Sales</li>
             </ul>
           </div>
           
@@ -479,7 +490,7 @@ export default function Home() {
                 <img src={IconMessage} alt="Email" className="contact-icon" /> 
                 <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
               </li>
-              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0', '_blank')} style={{cursor: 'pointer'}}>
+              <li onClick={() => window.open('https://api.whatsapp.com/send/?phone=%2B6282244503221', '_blank')} style={{cursor: 'pointer'}}>
                 <img src={IconCall} alt="Phone" className="contact-icon" /> 
                 <span className="contact-info contact-bold">+62 822 4450 3221</span>
               </li>
