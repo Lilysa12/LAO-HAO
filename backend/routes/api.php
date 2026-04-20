@@ -57,3 +57,29 @@ Route::prefix('kasir')->group(function () {
     Route::post('/inventory/{id}/update', [CashierController::class, 'updateInventory']);
     Route::post('/inventory/{id}/delete', [CashierController::class, 'destroyInventory']);
 });
+
+// --- ROUTE UNTUK FRONTEND ROLE KASIR ---
+Route::prefix('kasir')->group(function () {
+    // Meja (Tables)
+    Route::get('/tables', [CashierController::class, 'getTables']);
+    Route::post('/tables/{id}/status', [CashierController::class, 'updateTableStatus']);
+
+    // Pesanan Dapur (Orders)
+    Route::get('/orders', [CashierController::class, 'getOrders']);
+    Route::post('/orders/{id}/status', [CashierController::class, 'updateOrderStatus']);
+
+    // Riwayat Transaksi (History)
+    Route::get('/history', [CashierController::class, 'getHistory']);
+
+    // Stok & Menu (Inventory)
+    Route::get('/inventory', [CashierController::class, 'getInventory']);
+    Route::post('/inventory', [CashierController::class, 'storeInventory']);
+    Route::post('/inventory/{id}/update', [CashierController::class, 'updateInventory']);
+    Route::post('/inventory/{id}/delete', [CashierController::class, 'destroyInventory']);
+
+    // Manajemen Menu (TAMBAHAN BARU)
+    Route::get('/menus', [CashierController::class, 'getMenus']);
+    Route::post('/menus', [CashierController::class, 'storeMenu']);
+    Route::post('/menus/{id}/update', [CashierController::class, 'updateMenu']);
+    Route::post('/menus/{id}/delete', [CashierController::class, 'destroyMenu']);
+});
