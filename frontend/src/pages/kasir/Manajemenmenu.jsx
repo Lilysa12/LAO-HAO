@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Manajemenmenu.css';
 
 // --- IMPORT ASSETS ---
@@ -14,6 +14,7 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
 const Manajemenmenu = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Deteksi rute aktif
   const [activeCategory, setActiveCategory] = useState('Semua');
 
   const handleLogout = () => {
@@ -21,7 +22,11 @@ const Manajemenmenu = () => {
     navigate('/login');
   };
 
-  // Data dummy sesuai desain gambar
+  // Helper Fungsi Sidebar (Menghindari Pengulangan Kode)
+  const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
+  const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
+
+  // Data dummy
   const menuItems = [
     { id: 1, name: 'Mie Sapi Spesial', price: 'Rp 28.000', category: 'Makanan', status: 'Tersedia', img: '🍜' },
     { id: 2, name: 'Kopi Tarik', price: 'Rp 15.000', category: 'Minuman', status: 'Habis', img: '☕' },
@@ -30,42 +35,51 @@ const Manajemenmenu = () => {
 
   return (
     <div className="admin-container">
-      {/* --- SIDEBAR (8 MENU LENGKAP) --- */}
-      <aside className="sidebar">
-        <div className="sidebar-content">
-          <div className="sidebar-logo-container">
-            <img src={logoLaobanSvg} alt="Logo" className="sidebar-logo-main" />
+      {/* --- SIDEBAR (8 MENU LENGKAP & DINAMIS) --- */}
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          {/* Wadah Logo Konsisten 160px */}
+          <div className="sidebar-logo-container" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
+            <img 
+              src={logoLaobanSvg} 
+              alt="Logo" 
+              style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} 
+            />
           </div>
-          <nav className="sidebar-menu">
-            <Link to="/kasir" className="menu-item">
-              <img src={iconDashboard} alt="Denah" className="menu-icon-svg icon-white" /> Denah Meja
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/kasir" className={getMenuClass('/kasir')}>
+              <img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja
             </Link>
-            <Link to="/kasir/pos" className="menu-item">
-              <img src={iconPos} alt="POS" className="menu-icon-svg icon-white" /> Kasir / POS
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}>
+              <img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS
             </Link>
-            <Link to="/kasir/pesanan" className="menu-item">
-              <img src={iconPesananDapur} alt="Pesanan" className="menu-icon-svg icon-white" /> Pesanan Dapur
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}>
+              <img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur
             </Link>
-            <Link to="/kasir/manajemen-menu" className="menu-item active">
-              <img src={iconStok} alt="Menu" className="menu-icon-svg" /> Manajemen Menu
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}>
+              <img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu
             </Link>
-            <Link to="/kasir/stok" className="menu-item">
-              <img src={iconStok} alt="Stok" className="menu-icon-svg icon-white" /> Stok Bahan Baku
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}>
+              <img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku
             </Link>
-            <Link to="/kasir/laporan" className="menu-item">
-              <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" /> Laporan & Riwayat
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}>
+              <img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat
             </Link>
-            <Link to="/kasir/qr-meja" className="menu-item">
-              <img src={iconQrMeja} alt="QR" className="menu-icon-svg icon-white" /> QR Code Meja
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
+              <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja
             </Link>
-            <div className="divider"></div>
+
+            <div className="divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
+
             <Link to="/admin" className="menu-item">
               <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
             </Link>
           </nav>
         </div>
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>
+
+        <div className="sidebar-footer" style={{ padding: '20px' }}>
+          <button className="logout-btn" onClick={handleLogout} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', color: 'white' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
           </button>
         </div>
@@ -93,7 +107,6 @@ const Manajemenmenu = () => {
             <button className="btn-add-menu">+ Tambah Menu Baru</button>
           </div>
 
-          {/* Filter Kategori */}
           <div className="filter-container">
             {['Semua', 'Makanan', 'Minuman', 'Snack'].map((cat) => (
               <button 
@@ -106,7 +119,6 @@ const Manajemenmenu = () => {
             ))}
           </div>
 
-          {/* Table Menu */}
           <div className="menu-table-container">
             <table className="menu-table">
               <thead>

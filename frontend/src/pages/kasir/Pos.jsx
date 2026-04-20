@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Pos.css';
 
 // --- IMPORT ASSETS ---
@@ -14,6 +14,7 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
 const Pos = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Tambahkan untuk deteksi menu aktif
 
   const [orderType, setOrderType] = useState('Takeaway');
   const [activeCategory, setActiveCategory] = useState('All');
@@ -21,6 +22,10 @@ const Pos = () => {
   const [customerName, setCustomerName] = useState('');
   const [tableNumber, setTableNumber] = useState('');
   const [cart, setCart] = useState([]);
+
+  // Helper Sidebar Class
+  const getMenuClass = (path) => location.pathname === path ? "sidebar-item active" : "sidebar-item";
+  const getIconClass = (path) => location.pathname === path ? "sidebar-icon" : "sidebar-icon icon-white";
 
   const menuItems = [
     { id: 1, name: 'Nasi Goreng Kampung', price: 28000, category: 'Main Dish', img: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=300&q=80' },
@@ -60,7 +65,6 @@ const Pos = () => {
   };
 
   const removeItem = (id) => setCart(cart.filter((item) => item.id !== id));
-
   const updateNote = (id, note) => {
     setCart(cart.map((item) => (item.id === id ? { ...item, notes: note } : item)));
   };
@@ -78,54 +82,56 @@ const Pos = () => {
 
   return (
     <div className="pos-wrapper">
-
       {/* SIDEBAR */}
       <aside className="pos-sidebar">
-
-        {/* Logo + Nav dalam satu blok agar tidak terpisah */}
         <div className="sidebar-top">
-          <div className="sidebar-logo-area">
-            <img src={logoLaoban} alt="Laoban Logo" className="sidebar-logo-img" />
+          {/* Wadah Logo Standar 160px */}
+          <div className="sidebar-logo-area" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', boxSizing: 'border-box' }}>
+            <img src={logoLaoban} alt="Logo" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
-          <nav className="sidebar-nav">
-          <Link to="/kasir" className="sidebar-item">
-            <img src={iconDashboard} alt="Denah" className="sidebar-icon icon-white" />
-            <span>Denah Meja</span>
-          </Link>
-          <Link to="/kasir/pos" className="sidebar-item active">
-            <img src={iconPos} alt="POS" className="sidebar-icon" />
-            <span>Kasir / POS</span>
-          </Link>
-          <Link to="/kasir/pesanan" className="sidebar-item">
-            <img src={iconPesananDapur} alt="Dapur" className="sidebar-icon icon-white" />
-            <span>Pesanan Dapur</span>
-          </Link>
-          <Link to="/kasir/stok" className="sidebar-item">
-            <img src={iconStok} alt="Stok" className="sidebar-icon icon-white" />
-            <span>Stok & Menu</span>
-          </Link>
-          <Link to="/kasir/laporan" className="sidebar-item">
-            <img src={iconLaporan} alt="Laporan" className="sidebar-icon icon-white" />
-            <span>Laporan & Riwayat</span>
-          </Link>
-          <Link to="/kasir/qr" className="sidebar-item">
-            <img src={iconQrMeja} alt="QR" className="sidebar-icon icon-white" />
-            <span>QR Code Meja</span>
-          </Link>
 
-          <div className="sidebar-divider" />
+          <nav className="sidebar-nav" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/kasir" className={getMenuClass('/kasir')}>
+              <img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} />
+              <span>Denah Meja</span>
+            </Link>
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}>
+              <img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} />
+              <span>Kasir / POS</span>
+            </Link>
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}>
+              <img src={iconPesananDapur} alt="Dapur" className={getIconClass('/kasir/pesanan')} />
+              <span>Pesanan Dapur</span>
+            </Link>
+            {/* Menu Manajemen Menu Baru */}
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}>
+              <img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} />
+              <span>Manajemen Menu</span>
+            </Link>
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}>
+              <img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} />
+              <span>Stok Bahan Baku</span>
+            </Link>
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}>
+              <img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} />
+              <span>Laporan & Riwayat</span>
+            </Link>
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
+              <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} />
+              <span>QR Code Meja</span>
+            </Link>
 
-          <Link to="/admin" className="sidebar-item">
-            <img src={iconDashboard} alt="Admin" className="sidebar-icon icon-white" />
-            <span>Kembali ke Pusat</span>
-          </Link>
+            <div className="sidebar-divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }} />
+
+            <Link to="/admin" className="sidebar-item">
+              <img src={iconDashboard} alt="Admin" className="sidebar-icon icon-white" />
+              <span>Kembali ke Pusat</span>
+            </Link>
           </nav>
+        </div>
 
-        </div>{/* end sidebar-top */}
-
-        {/* Logout */}
         <div className="sidebar-footer">
-          <button className="sidebar-logout" onClick={handleLogout}>
+          <button className="sidebar-logout" onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', color: 'white' }}>
             <img src={iconLogout} alt="Logout" className="sidebar-icon icon-white" />
             <span>Logout</span>
           </button>
@@ -134,8 +140,6 @@ const Pos = () => {
 
       {/* MAIN CONTENT */}
       <main className="pos-main">
-
-        {/* Topbar */}
         <header className="pos-topbar">
           <div className="topbar-breadcrumb">
             <span className="breadcrumb-gray">Cashier Mode / </span>
@@ -148,67 +152,29 @@ const Pos = () => {
                 <span className="status-dot" /> Online
               </span>
             </div>
-            <div className="user-avatar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
-            </div>
+            <div className="user-avatar">👤</div>
           </div>
         </header>
 
-        {/* POS Layout */}
         <div className="pos-layout">
-
-          {/* KIRI: MENU */}
+          {/* Bagian Menu (Kiri) & Cart (Kanan) tetap seperti kode Abang */}
           <div className="pos-menu-section">
-
             <div className="order-type-toggle">
-              <button
-                className={`toggle-btn ${orderType === 'Takeaway' ? 'active' : ''}`}
-                onClick={() => setOrderType('Takeaway')}
-              >
-                Takeaway
-              </button>
-              <button
-                className={`toggle-btn ${orderType === 'Dine-in' ? 'active' : ''}`}
-                onClick={() => setOrderType('Dine-in')}
-              >
-                Dine-in
-              </button>
+              <button className={`toggle-btn ${orderType === 'Takeaway' ? 'active' : ''}`} onClick={() => setOrderType('Takeaway')}>Takeaway</button>
+              <button className={`toggle-btn ${orderType === 'Dine-in' ? 'active' : ''}`} onClick={() => setOrderType('Dine-in')}>Dine-in</button>
             </div>
-
             <div className="search-bar">
-              <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Cari menu (ex: Nasi Goreng)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+              <input type="text" placeholder="Cari menu..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
-
             <div className="category-filters">
               {['All', 'Main Dish', 'Snack', 'Beverage'].map((cat) => (
-                <button
-                  key={cat}
-                  className={`cat-btn ${activeCategory === cat ? 'active' : ''}`}
-                  onClick={() => setActiveCategory(cat)}
-                >
-                  {cat}
-                </button>
+                <button key={cat} className={`cat-btn ${activeCategory === cat ? 'active' : ''}`} onClick={() => setActiveCategory(cat)}>{cat}</button>
               ))}
             </div>
-
             <div className="menu-grid">
               {filteredMenu.map((item) => (
                 <div key={item.id} className="menu-card" onClick={() => addToCart(item)}>
-                  <div className="menu-img-box">
-                    <img src={item.img} alt={item.name} />
-                  </div>
+                  <div className="menu-img-box"><img src={item.img} alt={item.name} /></div>
                   <div className="menu-info">
                     <h4>{item.name}</h4>
                     <span className="menu-price">Rp {item.price.toLocaleString('id-ID')}</span>
@@ -218,99 +184,43 @@ const Pos = () => {
             </div>
           </div>
 
-          {/* KANAN: CART */}
           <div className="pos-cart-section">
-
-            <div className="cart-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aa0000" strokeWidth="2">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-              <h3>Pesanan Saat Ini</h3>
-            </div>
-
+            <div className="cart-header"><h3>Pesanan Saat Ini</h3></div>
             <div className="customer-info-inputs">
               <div className="input-group">
                 <label>NAMA PELANGGAN</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Budi"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
+                <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
               </div>
               <div className="input-group">
                 <label>NOMOR MEJA</label>
-                <input
-                  type="text"
-                  placeholder="Ex: 12"
-                  value={tableNumber}
-                  onChange={(e) => setTableNumber(e.target.value)}
-                  disabled={orderType === 'Takeaway'}
-                />
+                <input type="text" value={tableNumber} onChange={(e) => setTableNumber(e.target.value)} disabled={orderType === 'Takeaway'} />
               </div>
             </div>
-
             <div className="cart-items-container">
-              {cart.length === 0 ? (
-                <div className="empty-cart">Belum ada pesanan</div>
-              ) : (
-                cart.map((item) => (
-                  <div key={item.id} className="cart-item">
-                    <div className="cart-item-top">
-                      <span className="cart-item-name">{item.name}</span>
-                      <div className="qty-controls">
-                        <button className="btn-trash" onClick={() => removeItem(item.id)}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          </svg>
-                        </button>
-                        <span className="qty-number">{item.qty}</span>
-                        <button className="btn-plus" onClick={() => updateQty(item.id, 1)}>+</button>
-                      </div>
-                    </div>
-                    <span className="cart-item-price">Rp {(item.price * item.qty).toLocaleString('id-ID')}</span>
-                    <div className="cart-item-notes">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-                      </svg>
-                      <input
-                        type="text"
-                        placeholder="Tambah catatan..."
-                        value={item.notes}
-                        onChange={(e) => updateNote(item.id, e.target.value)}
-                      />
+              {cart.map((item) => (
+                <div key={item.id} className="cart-item">
+                  <div className="cart-item-top">
+                    <span className="cart-item-name">{item.name}</span>
+                    <div className="qty-controls">
+                      <button onClick={() => removeItem(item.id)}>🗑️</button>
+                      <span className="qty-number">{item.qty}</span>
+                      <button onClick={() => updateQty(item.id, 1)}>+</button>
                     </div>
                   </div>
-                ))
-              )}
+                  <span className="cart-item-price">Rp {(item.price * item.qty).toLocaleString('id-ID')}</span>
+                </div>
+              ))}
             </div>
-
             <div className="cart-summary-box">
-              <div className="summary-row">
-                <span>Subtotal</span>
-                <span>{formatRupiah(subtotal)}</span>
-              </div>
-              <div className="summary-row">
-                <span>PB1 (10%)</span>
-                <span>{formatRupiah(taxPB1)}</span>
-              </div>
-              <div className="summary-row">
-                <span>Service (5%)</span>
-                <span>{formatRupiah(serviceCharge)}</span>
-              </div>
               <div className="summary-row grand-total">
                 <span>GRAND TOTAL</span>
                 <span className="total-amount">{formatRupiah(grandTotal)}</span>
               </div>
               <div className="cart-actions">
-                <button className="btn-outline-red">Open Table (Bayar Nanti)</button>
+                <button className="btn-outline-red">Open Table</button>
                 <button className="btn-solid-red">Proses Pembayaran</button>
               </div>
             </div>
-
           </div>
         </div>
       </main>

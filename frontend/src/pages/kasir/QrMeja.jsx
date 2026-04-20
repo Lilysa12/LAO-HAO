@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './QrMeja.css';
 
-// --- IMPORT ASSETS (Pastikan path folder assets sesuai dengan struktur project Abang) ---
+// --- IMPORT ASSETS ---
 import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconPos from '../../assets/Icons/icons-admin/pos.svg';
@@ -14,6 +14,7 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
 const QrMeja = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Deteksi rute aktif
   const [activeTab, setActiveTab] = useState('Semua Meja');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputMeja, setInputMeja] = useState('');
@@ -36,6 +37,10 @@ const QrMeja = () => {
     navigate('/login');
   };
 
+  // Helper Sidebar Class
+  const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
+  const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
+
   const tables = [
     { id: '01', capacity: '2 Orang', status: 'AKTIF' },
     { id: '02', capacity: '2 Orang', status: 'AKTIF' },
@@ -48,40 +53,50 @@ const QrMeja = () => {
   return (
     <div className="admin-container">
       {/* --- SIDEBAR KONSISTEN (8 MENU LENGKAP) --- */}
-      <aside className="sidebar">
-        <div className="sidebar-content">
-          <div className="sidebar-logo-container">
-            <img src={logoLaobanSvg} alt="Logo" className="sidebar-logo-main" />
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          {/* Wadah Logo Konsisten 160px */}
+          <div className="sidebar-logo-container" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
+            <img 
+              src={logoLaobanSvg} 
+              alt="Logo Laoban" 
+              style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} 
+            />
           </div>
-          <nav className="sidebar-menu">
-            <Link to="/kasir" className="menu-item">
-              <img src={iconDashboard} alt="Denah" className="menu-icon-svg icon-white" /> Denah Meja
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/kasir" className={getMenuClass('/kasir')}>
+              <img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja
             </Link>
-            <Link to="/kasir/pos" className="menu-item">
-              <img src={iconPos} alt="POS" className="menu-icon-svg icon-white" /> Kasir / POS
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}>
+              <img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS
             </Link>
-            <Link to="/kasir/pesanan" className="menu-item">
-              <img src={iconPesananDapur} alt="Pesanan" className="menu-icon-svg icon-white" /> Pesanan Dapur
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}>
+              <img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur
             </Link>
-            <Link to="/kasir/stok" className="menu-item">
-              <img src={iconStok} alt="Stok" className="menu-icon-svg icon-white" /> Stok & Menu
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}>
+              <img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu
             </Link>
-            <Link to="/kasir/laporan" className="menu-item">
-              <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" /> Laporan & Riwayat
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}>
+              <img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku
             </Link>
-            <Link to="/kasir/qr-meja" className="menu-item active">
-              <img src={iconQrMeja} alt="QR" className="menu-icon-svg" /> QR Code Meja
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}>
+              <img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat
+            </Link>
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
+              <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja
             </Link>
 
-            <div className="divider"></div>
+            <div className="divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
 
             <Link to="/admin" className="menu-item">
               <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
             </Link>
           </nav>
         </div>
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>
+
+        <div className="sidebar-footer" style={{ padding: '20px' }}>
+          <button className="logout-btn" onClick={handleLogout} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', color: 'white' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
           </button>
         </div>
@@ -89,7 +104,7 @@ const QrMeja = () => {
 
       <main className="main-content">
         <header className="topbar">
-          <div className="breadcrumb">Cashier Mode / <span className="text-black font-bold">Qr</span></div>
+          <div className="breadcrumb">Cashier Mode / <span className="text-black font-bold">Qr Meja</span></div>
           <div className="user-profile">
             <div className="user-info">
                 <span className="user-role">Cashier 01</span>
@@ -139,32 +154,21 @@ const QrMeja = () => {
         </div>
       </main>
 
-      {/* --- MODAL (INNER SCROLL FIX) --- */}
+      {/* --- MODAL --- */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="qr-modal">
-            {/* Tombol Close tetap Fixed di atas */}
-            <button className="close-btn" onClick={() => setIsModalOpen(false)}>
-              &times;
-            </button>
-            
-            {/* Area yang bisa di-scroll */}
+            <button className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</button>
             <div className="modal-scroll-area">
               <div className="modal-body text-center">
-                <p className="modal-desc">
-                  QR Code ini dapat digunakan pelanggan untuk memindai dan memesan langsung dari meja.
-                </p>
-                
+                <p className="modal-desc">QR Code ini dapat digunakan pelanggan untuk memindai dan memesan langsung.</p>
                 <div className="qr-preview-box">
                    <svg viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" strokeWidth="1" width="80">
                      <path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2M7 7h3v3H7V7zm7 0h3v3h-3V7zm0 7h3v3h-3v-3zM7 14h3v3H7v-3z"/>
                    </svg>
                    <span className="preview-label">PREVIEW</span>
                 </div>
-
                 <h2 className="preview-name">{inputMeja || 'NAMA MEJA'}</h2>
-                <p className="scan-hint">SCAN UNTUK MEMESAN</p>
-
                 <div className="input-group-left">
                   <label>NOMOR / NAMA MEJA</label>
                   <input 
@@ -176,14 +180,9 @@ const QrMeja = () => {
                   />
                 </div>
               </div>
-
               <div className="modal-footer-centered">
-                <button className="btn-cancel" onClick={() => setIsModalOpen(false)}>
-                  Batal
-                </button>
-                <button className="btn-generate-pdf">
-                  Generate & Unduh PDF
-                </button>
+                <button className="btn-cancel" onClick={() => setIsModalOpen(false)}>Batal</button>
+                <button className="btn-generate-pdf">Generate & Unduh PDF</button>
               </div>
             </div>
           </div>
