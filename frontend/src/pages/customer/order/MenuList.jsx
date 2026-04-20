@@ -5,12 +5,12 @@ import './MenuList.css';
 import { supabase } from '../../../supabase';
 
 // --- IMPORT KOMPONEN LOADING ---
-import Loading from '../../../components/Loading'; 
+import Loading from '../../../components/Loading';
 
 // --- IMPORT ASSETS LOKAL ---
 import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconCheckout from '../../../assets/icons/icons-customer/checkout.png';
-import IconHistory from '../../../assets/icons/icons-customer/history.png'; 
+import IconHistory from '../../../assets/icons/icons-customer/history.png';
 
 // =========================================================
 // SVG ICONS COMPONENT (Warna dikontrol otomatis oleh CSS)

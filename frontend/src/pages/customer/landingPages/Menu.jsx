@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./Menu.css";
+// IMPORT SUPABASE
+import { supabase } from '../../../supabase';
 
 // --- IMPORT ASSETS HEADER & FOOTER ---
 import LogoLaoban from "../../../assets/icons/icons-customer/LogoLaoban.png";
@@ -30,7 +32,7 @@ export default function Menu() {
   const location = useLocation();
 
   // --- STATE BARU ---
-  const [menuData, setMenuData] = useState([]); // Awalnya kosong
+  const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(
@@ -41,23 +43,26 @@ export default function Menu() {
 
   // --- AMBIL DATA DARI BACKEND ---
   useEffect(() => {
-    const fetchMenus = async () => {
+    const getMenusFromSupabase = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/menus"); // Pastikan route ini ada di Laravel
-        if (!response.ok) throw new Error("Gagal ambil data");
-        const data = await response.json();
-        setMenuData(data);
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('menus')
+          .select('*');
+
+        if (error) throw error;
+        setMenus(data || []);
       } catch (err) {
-        console.error("Error Fetch Menu:", err);
+        console.error("Gagal ambil data Supabase:", err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchMenus();
+    getMenusFromSupabase();
   }, []);
 
-  // Filter tetap jalan otomatis karena pake state menuData
-  const activeProducts = menuData.filter(
+  // Filter tetap jalan otomatis karena pake state menus
+  const activeProducts = menus.filter(
     (product) => product.category === activeCategory,
   );
 

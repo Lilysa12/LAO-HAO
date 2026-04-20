@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./InputData.css";
 
@@ -10,7 +10,7 @@ import IconWhatsapp from "../../../assets/icons/icons-customer/whatsapp.png";
 import IconFacebook from "../../../assets/icons/icons-customer/facebook.png";
 import IconLink from "../../../assets/icons/icons-customer/link.png";
 import IconTiktok from "../../../assets/icons/icons-customer/tiktok.png";
-import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
+import Loading from "../../../components/Loading"; // <--- IMPORT LOADING
 
 // SVG Ikon Pin Lokasi (Merah)
 const SvgLocation = () => (
@@ -31,8 +31,8 @@ export default function InputData() {
   // State untuk menangkap input
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [tableNumber, setTableNumber] = useState("1"); // Default meja 1
-  
+  const [tableNumber, setTableNumber] = useState("12");
+
   // STATE UNTUK LOADING
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,20 +41,20 @@ export default function InputData() {
       alert("Mohon isi nama dan nomor handphone kamu ya, Laoban!");
       return;
     }
-    
+
     // 1. Tampilkan Loading
     setIsLoading(true);
 
     // 2. Simulasi proses pemindahan data (1.5 detik)
     setTimeout(() => {
       // SIMPAN KE MEMORI BROWSER
-      localStorage.setItem('customerName', customerName);
-      localStorage.setItem('phoneNumber', phoneNumber);
-      localStorage.setItem('tableNumber', tableNumber); 
-      
+      localStorage.setItem("customerName", customerName);
+      localStorage.setItem("phoneNumber", phoneNumber);
+      localStorage.setItem("tableNumber", tableNumber);
+
       // Matikan Loading dan pindah halaman
       setIsLoading(false);
-      navigate("/order-list"); 
+      navigate("/order-list");
     }, 1500);
   };
 
@@ -104,19 +104,23 @@ export default function InputData() {
                   <span className="loc-subtitle">Malang</span>
                 </div>
               </div>
-                <div className="id-input-group">
-                  <label>Pilih Nomor Meja</label>
-                  <select
-                    className="id-select-table"
-                    value={tableNumber}
-                    onChange={(e) => setTableNumber(e.target.value)}
-                  >
-                    {[...Array(20)].map((_, i) => (
-                      <option key={i+1} value={i+1}>Meja {i+1}</option>
-                    ))}
-                  </select>
-                </div>
+              <div className="id-input-group">
+                <label>Nomor Meja</label>
+                <input
+                  type="text"
+                  className="id-input-table-readonly" // Tambah class baru di CSS jika perlu
+                  value={`Meja ${tableNumber}`}
+                  readOnly
+                  style={{
+                    backgroundColor: "#f0f0f0",
+                    cursor: "not-allowed",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    color: "#A00500",
+                  }}
+                />
               </div>
+            </div>
 
             {/* Input Fields */}
             <form className="id-form">
@@ -148,7 +152,7 @@ export default function InputData() {
               <button
                 type="button"
                 className="id-btn-submit efek-klik"
-                onClick={handleStartOrder} 
+                onClick={handleStartOrder}
               >
                 &gt; Mulai Memesan
               </button>

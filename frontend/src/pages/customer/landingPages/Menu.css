@@ -230,6 +230,21 @@
 .mn-frame-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
 .efek-klik-kartu:active { transform: scale(0.98); }
 
+/* --- PERBAIKAN GAMBAR BIAR GAK TERLALU ZOOM --- */
+.mn-product-img-backend {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Memenuhi kotak tanpa bikin gambar penyok */
+  object-position: center; /* Fokus ke tengah gambar */
+  display: block;
+  transition: transform 0.5s ease; /* Biar halus pas hover */
+}
+
+/* Efek biar makin kece pas di-hover */
+.mn-frame-item:hover .mn-product-img-backend {
+  transform: scale(1.1); /* Zoom dikit aja buat kesan interaktif */
+}
+
 .mn-backend-image-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, #f0f0f0, #e0e0e0); display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--c-gray); text-align: center; padding: 20px; }
 .mn-backend-image-placeholder p { font-family: var(--font-jakarta); font-weight: 700; margin: 0 0 5px 0; font-size: 16px; color: var(--c-dark); }
 .mn-backend-image-placeholder span { font-size: 12px; }
@@ -411,6 +426,10 @@
   }
   .foot-bottom p { font-size: 12px !important; color: var(--c-gray-light) !important; margin: 0 !important; text-align: center !important; width: 100% !important;}
 }
+
+.mn-product-img-backend {
+    object-fit: cover; /* Tetap cover di HP */
+  }
 
 @media (max-width: 480px) {
   .mn-hero-title { font-size: 28px; }
