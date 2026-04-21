@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Promo;
 use App\Models\Transaction;
 use App\Models\Setting;
+use App\Models\Branch; // <-- Pastikan Model Branch di-import
 
 class AdminController extends Controller
 {
@@ -18,27 +19,20 @@ class AdminController extends Controller
     public function getStaff()
     {
         $staff = User::orderBy('created_at', 'desc')->get()->map(function ($user) {
-            $roleClass = 'role-dapur';
-            if ($user->role === 'SUPER ADMIN') {
-                $roleClass = 'role-superadmin';
-            } elseif ($user->role === 'KASIR') {
-                $roleClass = 'role-kasir';
-            }
-
+            $roleClass = $user->role === 'SUPER ADMIN' ? 'role-superadmin' : ($user->role === 'KASIR' ? 'role-kasir' : 'role-dapur');
             return [
-                'id' => $user->id,
-                'name' => $user->name,
+                'id' => $user->id, 
+                'name' => $user->name, 
                 'email' => $user->email,
-                'initial' => substr($user->name, 0, 1),
+                'initial' => substr($user->name, 0, 1), 
                 'role' => $user->role,
-                'branch' => $user->branch,
-                'roleClass' => $roleClass,
+                'branch' => $user->branch, 
+                'roleClass' => $roleClass, 
                 'status' => $user->status,
                 'lastLogin' => $user->last_login_at ? $user->last_login_at->format('d M Y, H:i') : 'Belum pernah login',
                 'isVerified' => (bool) $user->is_verified
             ];
         });
-        
         return response()->json($staff);
     }
 
@@ -117,14 +111,18 @@ class AdminController extends Controller
     public function getPromos()
     {
         $promos = Promo::orderBy('created_at', 'desc')->get();
-        $formattedPromos = $promos->map(function ($promo) {
+        return response()->json($promos->map(function ($promo) {
             return [
-                'id' => $promo->id, 'code' => $promo->code, 'desc' => $promo->description,
-                'value' => $promo->value, 'type' => $promo->type, 'min' => $promo->min_purchase,
-                'exp' => $promo->expired_at, 'status' => $promo->status,
+                'id' => $promo->id, 
+                'code' => $promo->code, 
+                'desc' => $promo->description,
+                'value' => $promo->value, 
+                'type' => $promo->type, 
+                'min' => $promo->min_purchase,
+                'exp' => $promo->expired_at, 
+                'status' => $promo->status,
             ];
-        });
-        return response()->json($formattedPromos);
+        }));
     }
 
     public function storePromo(Request $request)
@@ -204,27 +202,40 @@ class AdminController extends Controller
             $promo->save();
 
             return response()->json(['message' => 'Status promo berhasil diubah!', 'data' => $promo]);
-        } catch (\Exception $e) { return response()->json(['message' => 'Gagal mengubah status: ' . $e->getMessage()], 500); }
+        } catch (\Exception $e) { 
+            return response()->json(['message' => 'Gagal mengubah status: ' . $e->getMessage()], 500); 
+        }
     }
 
     // ==========================================
-    // TRANSAKSI
+    // TRANSAKSI & OVERVIEW CABANG (FIXED)
     // ==========================================
     public function getTransactions()
     {
         $transactions = Transaction::orderBy('created_at', 'desc')->get();
-        $formattedTransactions = $transactions->map(function ($transaction) {
+        return response()->json($transactions->map(function ($trx) {
             return [
-                'id' => $transaction->id, 'inv' => $transaction->invoice_no, 'time' => $transaction->transaction_time,
-                'user' => $transaction->customer_name, 'method' => $transaction->payment_method,
-                'total' => $transaction->total_amount, 'status' => $transaction->status, 'branch' => $transaction->branch,
+                'id' => $trx->id, 
+                'inv' => $trx->invoice_no, 
+                'time' => $trx->transaction_time,
+                'user' => $trx->customer_name, 
+                'method' => $trx->payment_method,
+                'total' => $trx->total_amount, 
+                'status' => $trx->status, 
+                'branch' => $trx->branch,
             ];
-        });
-        return response()->json($formattedTransactions);
+        }));
+    }
+
+    public function getBranches()
+    {
+        // Menarik data cabang dari Supabase
+        $branches = Branch::all();
+        return response()->json($branches);
     }
 
     // ==========================================
-    // PENGATURAN (SETTINGS) - DIPERKUAT
+    // PENGATURAN (SETTINGS)
     // ==========================================
     public function getSettings()
     {
@@ -272,7 +283,6 @@ class AdminController extends Controller
 
             return response()->json(['message' => 'Pengaturan berhasil disimpan!', 'data' => $setting]);
         } catch (\Exception $e) {
-            // Jika masih error, kita akan melihat pesan detail ini di alert React
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }

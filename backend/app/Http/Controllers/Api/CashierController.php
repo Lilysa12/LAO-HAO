@@ -76,20 +76,15 @@ class CashierController extends Controller
         return response()->json(['message' => 'Status pesanan diperbarui!', 'data' => $order]);
     }
 
-    // ==========================================
-    // CHECKOUT POS (FITUR BARU)
-    // ==========================================
     public function storeOrder(Request $request)
     {
-        // 1. Buat ID Invoice Otomatis
         $orderId = 'LHO-' . rand(10000, 99999);
 
-        // 2. Simpan ke tabel Orders (Dapur)
         $order = Order::create([
             'order_id' => $orderId,
             'customer_name' => $request->customer_name,
             'table_number' => $request->table_number ?? 'Takeaway',
-            'items' => $request->items, // Array otomatis jadi JSON
+            'items' => $request->items, 
             'subtotal' => $request->subtotal,
             'tax' => $request->tax,
             'total_payment' => $request->total_payment,
@@ -97,7 +92,6 @@ class CashierController extends Controller
             'status' => 'diproses',
         ]);
 
-        // 3. Ubah Status Meja (Jika Dine-in)
         if ($request->table_number && $request->table_number !== 'Takeaway') {
             $table = Table::where('table_number', $request->table_number)->first();
             if ($table) {
@@ -106,12 +100,11 @@ class CashierController extends Controller
             }
         }
 
-        // 4. Catat di Riwayat Transaksi (Jika Lunas dibayar)
         if ($request->payment_status === 'LUNAS') {
             Transaction::insert([
                 'invoice_no' => $orderId,
                 'customer_name' => $request->customer_name,
-                'payment_method' => 'CASH', // Default Cash
+                'payment_method' => 'CASH', 
                 'total_amount' => 'Rp ' . number_format($request->total_payment, 0, ',', '.'),
                 'status' => 'BERHASIL',
                 'branch' => 'Pusat (Kasir 01)',
@@ -125,7 +118,7 @@ class CashierController extends Controller
     }
 
     // ==========================================
-    // LAPORAN & RIWAYAT (KASIR)
+    // LAPORAN & RIWAYAT (KASIR) - DIPERBARUI
     // ==========================================
     public function getHistory()
     {
@@ -137,10 +130,16 @@ class CashierController extends Controller
                 $statusKasir = 'BATAL';
             }
             return [
-                'id' => $trx->id, 'inv' => $trx->invoice_no, 'time' => $trx->transaction_time,
-                'customer' => $trx->customer_name, 'method' => $trx->payment_method,
-                'total' => $trx->total_amount, 'status' => $statusKasir,
-                'table' => 'M-General', 'cashier' => 'Cashier 01' 
+                'id' => $trx->id, 
+                'inv' => $trx->invoice_no, 
+                'time' => $trx->transaction_time,
+                'date_iso' => $trx->created_at ? $trx->created_at->format('Y-m-d') : now()->format('Y-m-d'), // KUNCI FILTERING
+                'customer' => $trx->customer_name, 
+                'method' => $trx->payment_method,
+                'total' => $trx->total_amount, 
+                'status' => $statusKasir,
+                'table' => 'M-General', 
+                'cashier' => 'Cashier 01' 
             ];
         });
 
@@ -153,7 +152,6 @@ class CashierController extends Controller
     public function getInventory()
     {
         $items = Inventory::orderBy('created_at', 'desc')->get();
-        if ($items->isEmpty()) { /* ... logika lama disembunyikan agar rapi ... */ }
         $formatted = $items->map(function($item) {
             return [
                 'id' => $item->id, 'nama' => $item->name, 'kategori' => $item->category,
@@ -176,7 +174,6 @@ class CashierController extends Controller
     public function getMenus()
     {
         $menus = Menu::orderBy('id', 'desc')->get();
-
         $formattedMenus = $menus->map(function ($menu) {
             $imgUrl = (!empty($menu->image_url) && $menu->image_url !== 'default.png') 
                       ? $menu->image_url 
@@ -187,7 +184,6 @@ class CashierController extends Controller
                 'img' => $imgUrl, 'isActive' => true
             ];
         });
-
         return response()->json($formattedMenus);
     }
 
