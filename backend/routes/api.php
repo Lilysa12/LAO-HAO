@@ -13,6 +13,9 @@ Route::get('/user', function (Request $request) {
 // --- ROUTE AUTENTIKASI ---
 Route::post('/login', [AdminController::class, 'login']);
 
+// --- ROUTE MIDTRANS ---
+Route::post('/midtrans/token', [MidtransController::class, 'getToken']);
+
 // ==========================================
 // ROUTE UNTUK FRONTEND ROLE ADMIN
 // ==========================================
@@ -30,7 +33,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/promos/{id}/delete', [AdminController::class, 'destroyPromo']); 
     Route::post('/promos/{id}/toggle-status', [AdminController::class, 'togglePromoStatus']); 
     
-    // Transaksi & Cabang (KUNCI PERBAIKAN)
+    // Transaksi & Cabang
     Route::get('/transactions', [AdminController::class, 'getTransactions']);
     Route::get('/branches', [AdminController::class, 'getBranches']); 
 
