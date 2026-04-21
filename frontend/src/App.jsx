@@ -14,8 +14,9 @@ import Checkout from './pages/customer/order/Checkout';
 import Voucher from './pages/customer/order/Voucher';
 import Payment from './pages/customer/order/Payment';
 import Status from './pages/customer/order/Status';
-import History from './pages/customer/order/History'; // <--- IMPORT HISTORY DITAMBAHKAN DI SINI
+import History from './pages/customer/order/History';
 import DownloadApp from './pages/customer/landingPages/DownloadApp';
+
 // --- AUTH PAGE ---
 import Login from './pages/auth/Login';
 
@@ -30,17 +31,17 @@ import Pengaturan from './pages/admin/Pengaturan';
 import Kasir from './pages/kasir/DenahMeja';
 import Pos from './pages/kasir/Pos'; 
 import PesananDapur from './pages/kasir/PesananDapur';
+import Manajemenmenu from './pages/kasir/Manajemenmenu'; // <--- DITAMBAHKAN
 import StokMenu from './pages/kasir/StokMenu';
 import LaporanRiwayat from './pages/kasir/LaporanRiwayat';
+import QrMeja from './pages/kasir/QrMeja'; // <--- DITAMBAHKAN
 
 // --- KOMPONEN PROTECTED ROUTE ---
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
-  
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
   return children;
 };
 
@@ -66,7 +67,7 @@ function App() {
         <Route path="/voucher" element={<Voucher />} />
         <Route path="/payment" element={<Payment />} />  
         <Route path="/status" element={<Status />} />
-        <Route path="/history" element={<History />} /> {/* <--- RUTE HISTORY DITAMBAHKAN DI SINI */}
+        <Route path="/history" element={<History />} /> 
         
         {/* --- AREA ADMIN (PROTECTED) --- */}
         <Route path="/admin" element={<ProtectedRoute><OverviewCabang /></ProtectedRoute>} />
@@ -75,12 +76,14 @@ function App() {
         <Route path="/admin/manajemen-akun-staf" element={<ProtectedRoute><ManajemenAkunStaf /></ProtectedRoute>} />
         <Route path="/admin/pengaturan" element={<ProtectedRoute><Pengaturan /></ProtectedRoute>} />
 
-        {/* --- AREA KASIR (PROTECTED) --- */}
+        {/* --- AREA KASIR (PROTECTED - 8 MENU LENGKAP) --- */}
         <Route path="/kasir" element={<ProtectedRoute><Kasir /></ProtectedRoute>} />
         <Route path="/kasir/pos" element={<ProtectedRoute><Pos /></ProtectedRoute>} /> 
         <Route path="/kasir/pesanan" element={<ProtectedRoute><PesananDapur /></ProtectedRoute>} />
+        <Route path="/kasir/manajemen-menu" element={<ProtectedRoute><Manajemenmenu /></ProtectedRoute>} /> {/* <--- FIX: Manajemen Menu */}
         <Route path="/kasir/stok" element={<ProtectedRoute><StokMenu /></ProtectedRoute>} />
         <Route path="/kasir/laporan" element={<ProtectedRoute><LaporanRiwayat /></ProtectedRoute>} />
+        <Route path="/kasir/qr-meja" element={<ProtectedRoute><QrMeja /></ProtectedRoute>} /> {/* <--- FIX: QR Code Meja */}
       </Routes>
     </BrowserRouter>
   );

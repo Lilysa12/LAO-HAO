@@ -9,10 +9,24 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['order_id', 'table_number', 'customer_name', 'items', 'payment_status', 'status'];
+    // Sesuaikan dengan kolom yang ada di Supabase kamu
+    protected $fillable = [
+        'order_id', 
+        'customer_name', 
+        'phone_number', 
+        'table_number', 
+        'items', 
+        'subtotal', 
+        'discount_amount', 
+        'tax', 
+        'total_payment', 
+        'payment_method', 
+        'status'
+    ];
 
-    // Mengubah JSON di database menjadi Array di Laravel secara otomatis
     protected $casts = [
         'items' => 'array',
     ];
+
+    const UPDATED_AT = null; 
 }

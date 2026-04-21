@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './LaporanRiwayat.css';
 
-import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
+// --- IMPORT ASSETS (Logo & Sidebar Icons) ---
+import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconPos from '../../assets/Icons/icons-admin/pos.svg';
 import iconPesananDapur from '../../assets/Icons/icons-admin/pesanandapur.svg';
@@ -12,6 +13,7 @@ import iconLaporan from '../../assets/Icons/icons-admin/laporan.svg';
 import iconQrMeja from '../../assets/Icons/icons-admin/QrMeja.svg';
 import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
+// --- IMPORT ASSETS (Page Specific Icons) ---
 import iconKalender from '../../assets/Icons/icons-admin/kalender.svg';
 import iconDownload from '../../assets/Icons/icons-admin/download.svg';
 import iconPrinter from '../../assets/Icons/icons-admin/printer.svg'; 
@@ -19,14 +21,14 @@ import iconLaporanKasir from '../../assets/Icons/icons-admin/laporankasir.svg';
 
 const LaporanRiwayat = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Tambahkan ini untuk deteksi menu aktif
 
   // STATE UNTUK DATA & FILTER
   const [allData, setAllData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Default hari ini: YYYY-MM-DD
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); 
   const [isLoading, setIsLoading] = useState(true);
 
-  // STATE UNTUK KARTU RINGKASAN
   const [summary, setSummary] = useState({
     dailyTotal: 0,
     dailyCount: 0,
@@ -34,7 +36,7 @@ const LaporanRiwayat = () => {
     monthName: ''
   });
 
-  // FUNGSI HELPER: Mengubah tanggal dari database "12 Okt 2026, 14:30" menjadi "2026-10-12"
+  // FUNGSI HELPER: Parsing Tanggal
   const parseDateToYYYYMMDD = (timeString) => {
     const months = { 'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'Mei': '05', 'Jun': '06', 'Jul': '07', 'Agt': '08', 'Sep': '09', 'Okt': '10', 'Nov': '11', 'Des': '12' };
     const parts = timeString.split(' '); 
@@ -51,7 +53,7 @@ const LaporanRiwayat = () => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
   };
 
-  // MENGAMBIL DATA DARI SUPABASE
+  // MENGAMBIL DATA
   useEffect(() => {
     setIsLoading(true);
     axios.get(`http://127.0.0.1:8000/api/kasir/history?_t=${new Date().getTime()}`)
@@ -65,7 +67,7 @@ const LaporanRiwayat = () => {
       });
   }, []);
 
-  // EFEK FILTERING: Berjalan setiap kali selectedDate atau allData berubah
+  // EFEK FILTERING
   useEffect(() => {
     if (allData.length === 0) return;
 
@@ -73,13 +75,11 @@ const LaporanRiwayat = () => {
     let dCount = 0;
     let mTotal = 0;
     
-    // Ambil YYYY-MM dari selectedDate untuk filter bulanan
     const selectedYearMonth = selectedDate.substring(0, 7); 
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const monthIndex = parseInt(selectedDate.split('-')[1]) - 1;
     const mName = `${monthNames[monthIndex]} ${selectedDate.split('-')[0]}`;
 
-    // 1. Hitung Kartu Bulanan (Semua data di bulan yang sama)
     allData.forEach(trx => {
       const trxDateStr = parseDateToYYYYMMDD(trx.time);
       if (trxDateStr && (trx.status === 'LUNAS')) {
@@ -90,7 +90,6 @@ const LaporanRiwayat = () => {
       }
     });
 
-    // 2. Saring Data Harian (Tabel dan Kartu Harian)
     const dailyData = allData.filter(trx => {
       const trxDateStr = parseDateToYYYYMMDD(trx.time);
       if (trxDateStr === selectedDate) {
@@ -114,21 +113,17 @@ const LaporanRiwayat = () => {
 
   }, [allData, selectedDate]);
 
-  // FUNGSI UNDUH LAPORAN KE EXCEL/CSV
   const handleDownloadReport = () => {
     if (filteredData.length === 0) {
       alert("Tidak ada transaksi pada tanggal ini untuk diunduh.");
       return;
     }
-
     let csvContent = "NO. INVOICE,WAKTU,KASIR,MEJA,PELANGGAN,METODE,TOTAL,STATUS\n";
-    
     filteredData.forEach(row => {
-      const cleanTotal = row.total.replace(/,/g, ''); // Hapus koma agar format Excel tidak rusak
+      const cleanTotal = row.total.replace(/,/g, '');
       const cleanTime = row.time.replace(/,/g, '');
       csvContent += `${row.inv},${cleanTime},${row.cashier},${row.table},${row.customer},${row.method},${cleanTotal},${row.status}\n`;
     });
-
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -145,55 +140,51 @@ const LaporanRiwayat = () => {
     navigate('/login');
   };
 
+  // Helper Fungsi Sidebar
+  const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
+  const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
+
   return (
     <div className="admin-container">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <img src={logoLaoban} alt="Laoban Logo" className="logo-circle" />
-          <div className="brand-text">
-            <h2>LAOBAN</h2>
-            <p>BY UNCLE OEH</p>
+      {/* --- SIDEBAR STANDAR 8 MENU --- */}
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <div className="sidebar-logo-container" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
+            <img src={logoLaobanSvg} alt="Logo Laoban" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/kasir" className={getMenuClass('/kasir')}>
+              <img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja
+            </Link>
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}>
+              <img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS
+            </Link>
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}>
+              <img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur
+            </Link>
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}>
+              <img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu
+            </Link>
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}>
+              <img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku
+            </Link>
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}>
+              <img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat
+            </Link>
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
+              <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja
+            </Link>
+            <div className="divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
+            <Link to="/admin" className="menu-item">
+              <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
+            </Link>
+          </nav>
         </div>
 
-        <nav className="sidebar-menu">
-          <Link to="/kasir" className="menu-item">
-            <img src={iconDashboard} alt="Denah" className="menu-icon-svg icon-white" />
-            Denah Meja
-          </Link>
-          <Link to="/kasir/pos" className="menu-item">
-            <img src={iconPos} alt="POS" className="menu-icon-svg icon-white" />
-            Kasir / POS
-          </Link>
-          <Link to="/kasir/pesanan" className="menu-item">
-            <img src={iconPesananDapur} alt="Pesanan" className="menu-icon-svg icon-white" />
-            Pesanan Dapur
-          </Link>
-          <Link to="/kasir/stok" className="menu-item">
-            <img src={iconStok} alt="Stok" className="menu-icon-svg icon-white" />
-            Stok & Menu
-          </Link>
-          <Link to="/kasir/laporan" className="menu-item active">
-            <img src={iconLaporan} alt="Laporan" className="menu-icon-svg" />
-            Laporan & Riwayat
-          </Link>
-          <Link to="/kasir/qr" className="menu-item">
-            <img src={iconQrMeja} alt="QR" className="menu-icon-svg icon-white" />
-            QR Code Meja
-          </Link>
-
-          <div className="divider"></div>
-
-          <Link to="/admin" className="menu-item">
-            <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" />
-            Kembali ke Pusat
-          </Link>
-        </nav>
-
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>
-            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
-            Logout
+        <div className="sidebar-footer" style={{ padding: '20px' }}>
+          <button className="logout-btn" onClick={handleLogout} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', color: 'white' }}>
+            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
           </button>
         </div>
       </aside>
@@ -215,14 +206,12 @@ const LaporanRiwayat = () => {
 
         <div className="content-wrapper">
           <div className="dashboard-page">
-            
             <div className="dashboard-header">
               <div>
                 <h1 className="page-title">Laporan & Riwayat</h1>
                 <p className="page-subtitle">Laporan penjualan cabang dan riwayat transaksi POS</p>
               </div>
               <div className="action-buttons">
-                {/* INPUT DATE YANG TERHUBUNG KE STATE */}
                 <div className="date-picker-wrapper">
                   <img src={iconKalender} alt="Kalender" className="calendar-overlay-icon icon-red" />
                   <input 
@@ -232,8 +221,6 @@ const LaporanRiwayat = () => {
                     onChange={(e) => setSelectedDate(e.target.value)} 
                   />
                 </div>
-                
-                {/* TOMBOL UNDUH LAPORAN AKTIF */}
                 <button className="btn-primary flex-btn" onClick={handleDownloadReport}>
                   <img src={iconDownload} alt="Download" className="btn-icon-svg icon-white" />
                   Unduh Laporan
@@ -273,7 +260,7 @@ const LaporanRiwayat = () => {
               </div>
 
               {isLoading ? (
-                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Menarik data dari Supabase...</div>
+                  <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Menarik data dari Supabase...</div>
               ) : (
                 <>
                   <table className="transaction-table history-table">
@@ -303,12 +290,8 @@ const LaporanRiwayat = () => {
                                 <span className="font-bold text-black">{item.customer}</span>
                               </div>
                             </td>
-                            <td>
-                              <span className="badge-metode">{item.method}</span>
-                            </td>
-                            <td>
-                              <span className="font-bold text-black">{item.total}</span>
-                            </td>
+                            <td><span className="badge-metode">{item.method}</span></td>
+                            <td><span className="font-bold text-black">{item.total}</span></td>
                             <td>
                               <span className={`badge ${item.status === 'LUNAS' ? 'badge-lunas' : 'badge-batal'}`}>
                                 {item.status}
@@ -333,14 +316,12 @@ const LaporanRiwayat = () => {
                       )}
                     </tbody>
                   </table>
-                  
                   <div className="table-footer-text">
                     <p>Menampilkan riwayat transaksi harian</p>
                   </div>
                 </>
               )}
             </div>
-
           </div>
         </div>
       </main>

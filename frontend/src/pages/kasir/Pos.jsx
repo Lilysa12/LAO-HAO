@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import './Pos.css';
 
 // --- IMPORT ASSETS ---
@@ -14,38 +15,54 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
 const Pos = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
+  // STATE APLIKASI
+  const [menus, setMenus] = useState([]); // Menampung menu dari Supabase
+  const [isLoading, setIsLoading] = useState(true);
+  
   const [orderType, setOrderType] = useState('Takeaway');
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [tableNumber, setTableNumber] = useState('');
   const [cart, setCart] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const menuItems = [
-    { id: 1, name: 'Nasi Goreng Kampung', price: 28000, category: 'Main Dish', img: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=300&q=80' },
-    { id: 2, name: 'Mie Goreng Spesial', price: 25000, category: 'Main Dish', img: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=300&q=80' },
-    { id: 3, name: 'Kopi Susu Lao-Hao', price: 18000, category: 'Beverage', img: 'https://images.unsplash.com/photo-1557006021-b85faa2bc5e2?auto=format&fit=crop&w=300&q=80' },
-    { id: 4, name: 'Teh Tarik', price: 15000, category: 'Beverage', img: 'https://images.unsplash.com/photo-1499638673689-79a0b5115d87?auto=format&fit=crop&w=300&q=80' },
-    { id: 5, name: 'Roti Bakar Kaya', price: 15000, category: 'Snack', img: 'https://images.unsplash.com/photo-1621236378699-8597faf6a176?auto=format&fit=crop&w=300&q=80' },
-    { id: 6, name: 'Es Teh Manis', price: 8000, category: 'Beverage', img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=300&q=80' },
-  ];
+  // MENGAMBIL DATA MENU DARI SUPABASE
+  const fetchMenus = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/kasir/menus?_t=${new Date().getTime()}`);
+      setMenus(response.data);
+    } catch (error) {
+      console.error("Gagal mengambil menu:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenus();
+  }, []);
+
+  const getMenuClass = (path) => location.pathname === path ? "sidebar-item active" : "sidebar-item";
+  const getIconClass = (path) => location.pathname === path ? "sidebar-icon" : "sidebar-icon icon-white";
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userRole');
     navigate('/login');
   };
 
-  const formatRupiah = (number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+  const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
 
+  // --- LOGIKA KERANJANG BELANJA ---
   const addToCart = (item) => {
     const existing = cart.find((c) => c.id === item.id);
     if (existing) {
       setCart(cart.map((c) => (c.id === item.id ? { ...c, qty: c.qty + 1 } : c)));
     } else {
-      setCart([...cart, { ...item, qty: 1, notes: '' }]);
+      setCart([...cart, { id: item.id, name: item.name, price: item.price, qty: 1 }]);
     }
   };
 
@@ -61,71 +78,79 @@ const Pos = () => {
 
   const removeItem = (id) => setCart(cart.filter((item) => item.id !== id));
 
-  const updateNote = (id, note) => {
-    setCart(cart.map((item) => (item.id === id ? { ...item, notes: note } : item)));
-  };
-
+  // --- KALKULASI UANG ---
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const taxPB1 = subtotal * 0.1;
   const serviceCharge = subtotal * 0.05;
   const grandTotal = subtotal + taxPB1 + serviceCharge;
 
-  const filteredMenu = menuItems.filter((item) => {
+  // FILTER MENU
+  const dynamicCategories = ['All', ...new Set(menus.map(item => item.category))];
+  const filteredMenu = menus.filter((item) => {
     const matchCat = activeCategory === 'All' || item.category === activeCategory;
     const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchCat && matchSearch;
+    return matchCat && matchSearch && item.isActive; // Hanya tampilkan yang aktif
   });
+
+  // --- FUNGSI SUBMIT KE DATABASE (CHECKOUT) ---
+  const handleCheckout = async (paymentStatus) => {
+    if (!customerName.trim()) return alert("Nama pelanggan harus diisi!");
+    if (cart.length === 0) return alert("Keranjang masih kosong!");
+    if (orderType === 'Dine-in' && !tableNumber.trim()) return alert("Untuk Dine-in, Nomor Meja wajib diisi!");
+
+    setIsProcessing(true);
+
+    // Siapkan data pesanan
+    const payload = {
+      customer_name: customerName,
+      table_number: orderType === 'Takeaway' ? 'Takeaway' : tableNumber,
+      items: cart.map(c => ({ name: c.name, qty: c.qty, price: c.price })),
+      subtotal: subtotal,
+      tax: taxPB1 + serviceCharge,
+      total_payment: grandTotal,
+      payment_status: paymentStatus // 'LUNAS' atau 'BELUM BAYAR'
+    };
+
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/api/kasir/orders`, payload);
+      alert(`Sukses! Pesanan ${customerName} berhasil dibuat.`);
+      
+      // Kosongkan keranjang dan form setelah sukses
+      setCart([]);
+      setCustomerName('');
+      setTableNumber('');
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat memproses pesanan.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="pos-wrapper">
-
-      {/* SIDEBAR */}
+      {/* SIDEBAR LENGKAP */}
       <aside className="pos-sidebar">
-
-        {/* Logo + Nav dalam satu blok agar tidak terpisah */}
         <div className="sidebar-top">
-          <div className="sidebar-logo-area">
-            <img src={logoLaoban} alt="Laoban Logo" className="sidebar-logo-img" />
+          <div className="sidebar-logo-area" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', boxSizing: 'border-box' }}>
+            <img src={logoLaoban} alt="Logo" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
-          <nav className="sidebar-nav">
-          <Link to="/kasir" className="sidebar-item">
-            <img src={iconDashboard} alt="Denah" className="sidebar-icon icon-white" />
-            <span>Denah Meja</span>
-          </Link>
-          <Link to="/kasir/pos" className="sidebar-item active">
-            <img src={iconPos} alt="POS" className="sidebar-icon" />
-            <span>Kasir / POS</span>
-          </Link>
-          <Link to="/kasir/pesanan" className="sidebar-item">
-            <img src={iconPesananDapur} alt="Dapur" className="sidebar-icon icon-white" />
-            <span>Pesanan Dapur</span>
-          </Link>
-          <Link to="/kasir/stok" className="sidebar-item">
-            <img src={iconStok} alt="Stok" className="sidebar-icon icon-white" />
-            <span>Stok & Menu</span>
-          </Link>
-          <Link to="/kasir/laporan" className="sidebar-item">
-            <img src={iconLaporan} alt="Laporan" className="sidebar-icon icon-white" />
-            <span>Laporan & Riwayat</span>
-          </Link>
-          <Link to="/kasir/qr" className="sidebar-item">
-            <img src={iconQrMeja} alt="QR" className="sidebar-icon icon-white" />
-            <span>QR Code Meja</span>
-          </Link>
 
-          <div className="sidebar-divider" />
-
-          <Link to="/admin" className="sidebar-item">
-            <img src={iconDashboard} alt="Admin" className="sidebar-icon icon-white" />
-            <span>Kembali ke Pusat</span>
-          </Link>
+          <nav className="sidebar-nav" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/kasir" className={getMenuClass('/kasir')}><img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /><span>Denah Meja</span></Link>
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}><img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /><span>Kasir / POS</span></Link>
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}><img src={iconPesananDapur} alt="Dapur" className={getIconClass('/kasir/pesanan')} /><span>Pesanan Dapur</span></Link>
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}><img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /><span>Manajemen Menu</span></Link>
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}><img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /><span>Stok Bahan Baku</span></Link>
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}><img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /><span>Laporan & Riwayat</span></Link>
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}><img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /><span>QR Code Meja</span></Link>
+            <div className="sidebar-divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }} />
+            <Link to="/admin" className="sidebar-item"><img src={iconDashboard} alt="Admin" className="sidebar-icon icon-white" /><span>Kembali ke Pusat</span></Link>
           </nav>
+        </div>
 
-        </div>{/* end sidebar-top */}
-
-        {/* Logout */}
         <div className="sidebar-footer">
-          <button className="sidebar-logout" onClick={handleLogout}>
+          <button className="sidebar-logout" onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', color: 'white' }}>
             <img src={iconLogout} alt="Logout" className="sidebar-icon icon-white" />
             <span>Logout</span>
           </button>
@@ -134,184 +159,130 @@ const Pos = () => {
 
       {/* MAIN CONTENT */}
       <main className="pos-main">
-
-        {/* Topbar */}
         <header className="pos-topbar">
-          <div className="topbar-breadcrumb">
-            <span className="breadcrumb-gray">Cashier Mode / </span>
-            <span className="breadcrumb-bold">Pos</span>
-          </div>
+          <div className="topbar-breadcrumb"><span className="breadcrumb-gray">Cashier Mode / </span><span className="breadcrumb-bold">Pos</span></div>
           <div className="topbar-user">
             <div className="user-text">
               <span className="user-name">Cashier 01</span>
-              <span className="user-status">
-                <span className="status-dot" /> Online
-              </span>
+              <span className="user-status"><span className="status-dot" /> Online</span>
             </div>
-            <div className="user-avatar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="22" height="22">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
-            </div>
+            <div className="user-avatar">👤</div>
           </div>
         </header>
 
-        {/* POS Layout */}
         <div className="pos-layout">
-
-          {/* KIRI: MENU */}
+          {/* AREA KIRI: MENU */}
           <div className="pos-menu-section">
-
             <div className="order-type-toggle">
-              <button
-                className={`toggle-btn ${orderType === 'Takeaway' ? 'active' : ''}`}
-                onClick={() => setOrderType('Takeaway')}
-              >
-                Takeaway
-              </button>
-              <button
-                className={`toggle-btn ${orderType === 'Dine-in' ? 'active' : ''}`}
-                onClick={() => setOrderType('Dine-in')}
-              >
-                Dine-in
-              </button>
+              <button className={`toggle-btn ${orderType === 'Takeaway' ? 'active' : ''}`} onClick={() => setOrderType('Takeaway')}>Takeaway</button>
+              <button className={`toggle-btn ${orderType === 'Dine-in' ? 'active' : ''}`} onClick={() => setOrderType('Dine-in')}>Dine-in</button>
             </div>
-
             <div className="search-bar">
-              <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Cari menu (ex: Nasi Goreng)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+              <input type="text" placeholder="Cari menu (ex: Nasi Goreng)..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
-
             <div className="category-filters">
-              {['All', 'Main Dish', 'Snack', 'Beverage'].map((cat) => (
-                <button
-                  key={cat}
-                  className={`cat-btn ${activeCategory === cat ? 'active' : ''}`}
-                  onClick={() => setActiveCategory(cat)}
-                >
-                  {cat}
-                </button>
+              {dynamicCategories.map((cat) => (
+                <button key={cat} className={`cat-btn ${activeCategory === cat ? 'active' : ''}`} onClick={() => setActiveCategory(cat)}>{cat}</button>
               ))}
             </div>
-
+            
             <div className="menu-grid">
-              {filteredMenu.map((item) => (
-                <div key={item.id} className="menu-card" onClick={() => addToCart(item)}>
-                  <div className="menu-img-box">
-                    <img src={item.img} alt={item.name} />
+              {isLoading ? (
+                <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>Memuat menu dari Supabase...</p>
+              ) : filteredMenu.length > 0 ? (
+                filteredMenu.map((item) => (
+                  <div key={item.id} className="menu-card" onClick={() => addToCart(item)}>
+                    <div className="menu-img-box"><img src={item.img} alt={item.name} /></div>
+                    <div className="menu-info">
+                      <h4>{item.name}</h4>
+                      <span className="menu-price">{formatRupiah(item.price)}</span>
+                    </div>
                   </div>
-                  <div className="menu-info">
-                    <h4>{item.name}</h4>
-                    <span className="menu-price">Rp {item.price.toLocaleString('id-ID')}</span>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>Menu tidak ditemukan.</p>
+              )}
             </div>
           </div>
 
-          {/* KANAN: CART */}
-          <div className="pos-cart-section">
-
-            <div className="cart-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aa0000" strokeWidth="2">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-              <h3>Pesanan Saat Ini</h3>
+          {/* AREA KANAN: KERANJANG (SESUAI FIGMA) */}
+          <div className="pos-cart-section" style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fdfdfd' }}>
+            <div className="cart-header" style={{ padding: '20px', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#8a1313', fontSize: '16px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                Pesanan Saat Ini
+              </h3>
             </div>
 
-            <div className="customer-info-inputs">
-              <div className="input-group">
-                <label>NAMA PELANGGAN</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Budi"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
+            <div className="customer-info-inputs" style={{ padding: '20px', display: 'flex', gap: '10px' }}>
+              <div className="input-group" style={{ flex: 1 }}>
+                <label style={{ fontSize: '10px', color: '#64748b', fontWeight: 'bold' }}>NAMA PELANGGAN</label>
+                <input type="text" placeholder="Ex: Budi" value={customerName} onChange={(e) => setCustomerName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
               </div>
-              <div className="input-group">
-                <label>NOMOR MEJA</label>
-                <input
-                  type="text"
-                  placeholder="Ex: 12"
-                  value={tableNumber}
-                  onChange={(e) => setTableNumber(e.target.value)}
-                  disabled={orderType === 'Takeaway'}
-                />
+              <div className="input-group" style={{ width: '100px' }}>
+                <label style={{ fontSize: '10px', color: '#64748b', fontWeight: 'bold' }}>NO. MEJA</label>
+                <input type="text" placeholder="Ex: 12" value={tableNumber} onChange={(e) => setTableNumber(e.target.value)} disabled={orderType === 'Takeaway'} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: orderType === 'Takeaway' ? '#f1f5f9' : 'white' }} />
               </div>
             </div>
 
-            <div className="cart-items-container">
+            <div className="cart-items-container" style={{ flex: 1, overflowY: 'auto', padding: '0 20px' }}>
               {cart.length === 0 ? (
-                <div className="empty-cart">Belum ada pesanan</div>
+                <div style={{ textAlign: 'center', color: '#94a3b8', marginTop: '50px' }}>Belum ada pesanan</div>
               ) : (
                 cart.map((item) => (
-                  <div key={item.id} className="cart-item">
-                    <div className="cart-item-top">
-                      <span className="cart-item-name">{item.name}</span>
-                      <div className="qty-controls">
-                        <button className="btn-trash" onClick={() => removeItem(item.id)}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          </svg>
-                        </button>
-                        <span className="qty-number">{item.qty}</span>
-                        <button className="btn-plus" onClick={() => updateQty(item.id, 1)}>+</button>
+                  <div key={item.id} className="cart-item" style={{ marginBottom: '15px', borderBottom: '1px dashed #e2e8f0', paddingBottom: '15px' }}>
+                    <div className="cart-item-top" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="cart-item-name" style={{ fontWeight: '600', fontSize: '14px', color: '#1e293b' }}>{item.name}</span>
+                      <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '2px' }}>
+                        <button onClick={() => removeItem(item.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '2px 8px', color: '#ef4444' }}>-</button>
+                        <span className="qty-number" style={{ fontSize: '14px', fontWeight: 'bold' }}>{item.qty}</span>
+                        <button onClick={() => updateQty(item.id, 1)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '2px 8px', color: '#10b981' }}>+</button>
                       </div>
                     </div>
-                    <span className="cart-item-price">Rp {(item.price * item.qty).toLocaleString('id-ID')}</span>
-                    <div className="cart-item-notes">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-                      </svg>
-                      <input
-                        type="text"
-                        placeholder="Tambah catatan..."
-                        value={item.notes}
-                        onChange={(e) => updateNote(item.id, e.target.value)}
-                      />
-                    </div>
+                    <span className="cart-item-price" style={{ color: '#aa0000', fontSize: '14px', fontWeight: 'bold', display: 'block', marginTop: '4px' }}>
+                      {formatRupiah(item.price * item.qty)}
+                    </span>
                   </div>
                 ))
               )}
             </div>
 
-            <div className="cart-summary-box">
-              <div className="summary-row">
-                <span>Subtotal</span>
-                <span>{formatRupiah(subtotal)}</span>
+            {/* RINGKASAN BIAYA SEPERTI FIGMA */}
+            <div className="cart-summary-box" style={{ padding: '20px', borderTop: '1px solid #e2e8f0', backgroundColor: '#f8f9fc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px', color: '#64748b' }}>
+                <span>Subtotal</span><span>{formatRupiah(subtotal)}</span>
               </div>
-              <div className="summary-row">
-                <span>PB1 (10%)</span>
-                <span>{formatRupiah(taxPB1)}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px', color: '#64748b' }}>
+                <span>PB1 (10%)</span><span>{formatRupiah(taxPB1)}</span>
               </div>
-              <div className="summary-row">
-                <span>Service (5%)</span>
-                <span>{formatRupiah(serviceCharge)}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '13px', color: '#64748b' }}>
+                <span>Service (5%)</span><span>{formatRupiah(serviceCharge)}</span>
               </div>
-              <div className="summary-row grand-total">
+              
+              <div className="summary-row grand-total" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontWeight: '900', fontSize: '18px', color: '#0f172a' }}>
                 <span>GRAND TOTAL</span>
-                <span className="total-amount">{formatRupiah(grandTotal)}</span>
+                <span className="total-amount" style={{ color: '#aa0000' }}>{formatRupiah(grandTotal)}</span>
               </div>
-              <div className="cart-actions">
-                <button className="btn-outline-red">Open Table (Bayar Nanti)</button>
-                <button className="btn-solid-red">Proses Pembayaran</button>
+              
+              <div className="cart-actions" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button 
+                  onClick={() => handleCheckout('BELUM BAYAR')} 
+                  disabled={isProcessing}
+                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: 'white', color: '#64748b', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Open Table (Bayar Nanti)
+                </button>
+                <button 
+                  onClick={() => handleCheckout('LUNAS')} 
+                  disabled={isProcessing}
+                  style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: '#aa0000', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  {isProcessing ? 'Memproses...' : 'Proses Pembayaran'}
+                </button>
               </div>
             </div>
-
           </div>
+
         </div>
       </main>
     </div>

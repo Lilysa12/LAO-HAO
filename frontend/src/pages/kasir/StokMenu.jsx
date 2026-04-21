@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './StokMenu.css';
 
-import logoLaoban from '../../assets/Icons/icons-customer/logoLaoban.png';
+// --- IMPORT ASSETS (Logo & Sidebar Icons) ---
+import logoLaobanSvg from '../../assets/Icons/icons-admin/logo.svg'; 
 import iconDashboard from '../../assets/Icons/icons-admin/dashboard.svg';
 import iconPos from '../../assets/Icons/icons-admin/pos.svg';
 import iconPesananDapur from '../../assets/Icons/icons-admin/pesanandapur.svg';
@@ -11,16 +12,20 @@ import iconStok from '../../assets/Icons/icons-admin/stok.svg';
 import iconLaporan from '../../assets/Icons/icons-admin/laporan.svg';
 import iconQrMeja from '../../assets/Icons/icons-admin/QrMeja.svg';
 import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
+
+// --- IMPORT ASSETS (Page Specific Icons) ---
 import iconTambahBarang from '../../assets/Icons/icons-admin/tambahbarang.svg';
 import iconUpdateStok from '../../assets/Icons/icons-admin/updatestok.svg';
 import iconPerluRestock from '../../assets/Icons/icons-admin/perlurestock.svg';
 
 const StokMenu = () => {
   const navigate = useNavigate();
+  const location = useLocation(); 
   
   // STATE DATA & FILTER
   const [stokData, setStokData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null); // <-- STATE ERROR (BARU)
   const [searchQuery, setSearchQuery] = useState('');
   const [filterKategori, setFilterKategori] = useState('Semua Kategori');
 
@@ -47,11 +52,14 @@ const StokMenu = () => {
   // MENGAMBIL DATA DARI SUPABASE
   const fetchInventory = async () => {
     setIsLoading(true);
+    setErrorMsg(null);
     try {
       const response = await axios.get(`http://127.0.0.1:8000/api/kasir/inventory?_t=${new Date().getTime()}`);
       setStokData(response.data);
     } catch (error) {
       console.error("Gagal mengambil data stok:", error);
+      setErrorMsg(error.message + (error.response?.data?.message ? ` - ${error.response.data.message}` : ''));
+      setStokData([]);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +69,7 @@ const StokMenu = () => {
     fetchInventory();
   }, []);
 
-  // HITUNGAN KARTU RINGKASAN
+  // HITUNGAN RINGKASAN
   const totalItem = stokData.length;
   const perluRestock = stokData.filter(item => item.status === 'STOK MENIPIS').length;
   const nilaiEstimasi = stokData.reduce((total, item) => total + (item.sisa * item.price), 0);
@@ -76,9 +84,10 @@ const StokMenu = () => {
     navigate('/login');
   };
 
-  // ==========================================
-  // HANDLER MODAL 1: TAMBAH & EDIT MASTER
-  // ==========================================
+  const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
+  const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
+
+  // HANDLER MODAL 1: MASTER DATA
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -132,11 +141,8 @@ const StokMenu = () => {
     }
   };
 
-  // ==========================================
-  // HANDLER MODAL 2: QUICK RESTOCK (UPDATE STOK)
-  // ==========================================
+  // HANDLER MODAL 2: RESTOCK CEPAT
   const handleQuickUpdateClick = () => {
-    // Pilih item pertama secara default jika ada data
     setRestockData({
       id: stokData.length > 0 ? stokData[0].id : '',
       qtyToAdd: 0
@@ -149,15 +155,11 @@ const StokMenu = () => {
     if (!restockData.id) return alert('Silakan pilih bahan baku terlebih dahulu.');
     if (restockData.qtyToAdd <= 0) return alert('Jumlah tambahan stok harus lebih dari 0.');
 
-    // 1. Cari data barang saat ini
     const selectedItem = stokData.find(item => item.id === parseInt(restockData.id));
     if (!selectedItem) return;
-
-    // 2. Hitung stok baru (Sisa Lama + Tambahan Baru)
     const newStockTotal = parseInt(selectedItem.sisa) + parseInt(restockData.qtyToAdd);
 
     try {
-      // 3. Tembak API Update khusus untuk kolom 'stock' saja
       await axios.post(`http://127.0.0.1:8000/api/kasir/inventory/${selectedItem.id}/update`, {
         stock: newStockTotal
       });
@@ -169,7 +171,6 @@ const StokMenu = () => {
     }
   };
 
-  // FILTERING TABEL
   const filteredData = stokData.filter(item => {
     const matchSearch = item.nama.toLowerCase().includes(searchQuery.toLowerCase());
     const matchCat = filterKategori === 'Semua Kategori' || item.kategori === filterKategori;
@@ -178,53 +179,29 @@ const StokMenu = () => {
 
   return (
     <div className="admin-container">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <img src={logoLaoban} alt="Laoban Logo" className="logo-circle" />
-          <div className="brand-text">
-            <h2>LAOBAN</h2>
-            <p>BY UNCLE OEH</p>
+      {/* SIDEBAR */}
+      <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <div className="sidebar-logo-container" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
+            <img src={logoLaobanSvg} alt="Logo Laoban" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
+
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/kasir" className={getMenuClass('/kasir')}><img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja</Link>
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}><img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS</Link>
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}><img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur</Link>
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}><img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu</Link>
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}><img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku</Link>
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}><img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat</Link>
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}><img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja</Link>
+            <div className="divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
+            <Link to="/admin" className="menu-item"><img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat</Link>
+          </nav>
         </div>
 
-        <nav className="sidebar-menu">
-          <Link to="/kasir" className="menu-item">
-            <img src={iconDashboard} alt="Denah" className="menu-icon-svg icon-white" />
-            Denah Meja
-          </Link>
-          <Link to="/kasir/pos" className="menu-item">
-            <img src={iconPos} alt="POS" className="menu-icon-svg icon-white" />
-            Kasir / POS
-          </Link>
-          <Link to="/kasir/pesanan" className="menu-item">
-            <img src={iconPesananDapur} alt="Pesanan" className="menu-icon-svg icon-white" />
-            Pesanan Dapur
-          </Link>
-          <Link to="/kasir/stok" className="menu-item active">
-            <img src={iconStok} alt="Stok" className="menu-icon-svg" />
-            Stok & Menu
-          </Link>
-          <Link to="/kasir/laporan" className="menu-item">
-            <img src={iconLaporan} alt="Laporan" className="menu-icon-svg icon-white" />
-            Laporan & Riwayat
-          </Link>
-          <Link to="/kasir/qr" className="menu-item">
-            <img src={iconQrMeja} alt="QR" className="menu-icon-svg icon-white" />
-            QR Code Meja
-          </Link>
-
-          <div className="divider"></div>
-
-          <Link to="/admin" className="menu-item">
-            <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" />
-            Kembali ke Pusat
-          </Link>
-        </nav>
-
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>
-            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
-            Logout
+        <div className="sidebar-footer" style={{ padding: '20px' }}>
+          <button className="logout-btn" onClick={handleLogout} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', color: 'white' }}>
+            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
           </button>
         </div>
       </aside>
@@ -252,15 +229,13 @@ const StokMenu = () => {
                 <p className="page-subtitle">Pantau persediaan bahan baku dan minimal stok</p>
               </div>
               <div className="action-buttons">
-                {/* TOMBOL UPDATE STOK (RESTOCK CEPAT) DIKEMBALIKAN */}
                 <button className="btn-secondary flex-btn" onClick={handleQuickUpdateClick}>
                   <img src={iconUpdateStok} alt="Update" className="btn-icon-svg icon-dark" />
                   Update Stok
                 </button>
-                {/* TOMBOL TAMBAH BAHAN (MASTER BARU) */}
                 <button className="btn-primary flex-btn" onClick={handleAddClick}>
                   <img src={iconTambahBarang} alt="Tambah" className="btn-icon-svg icon-white" />
-                  Tambah Bahan
+                  Tambah Bahan Baru
                 </button>
               </div>
             </div>
@@ -295,7 +270,6 @@ const StokMenu = () => {
                   </svg>
                   <input type="text" placeholder="Cari bahan baku..." className="search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 </div>
-                
                 <div className="filter-dropdown-wrapper">
                   <select className="form-input select-filter" value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)}>
                     <option value="Semua Kategori">Semua Kategori</option>
@@ -306,8 +280,13 @@ const StokMenu = () => {
                 </div>
               </div>
 
-              {isLoading ? (
+              {/* RENDER LOGIC ERROR/LOADING */}
+              {isLoading && stokData.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Menarik data stok dari Supabase...</div>
+              ) : errorMsg ? (
+                <div style={{ textAlign: 'center', padding: '30px', margin: '20px 0', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '8px', border: '1px solid #f87171' }}>
+                    <strong>Koneksi ke Backend Gagal:</strong> <br/> {errorMsg}
+                </div>
               ) : (
                 <table className="transaction-table inventory-table">
                   <thead>
@@ -351,7 +330,7 @@ const StokMenu = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center text-gray" style={{ padding: '30px' }}>Tidak ada data bahan baku.</td>
+                        <td colSpan="6" className="text-center text-gray" style={{ padding: '30px' }}>Tidak ada data bahan baku yang cocok.</td>
                       </tr>
                     )}
                   </tbody>
@@ -362,9 +341,7 @@ const StokMenu = () => {
         </div>
       </main>
 
-      {/* ========================================= */}
-      {/* MODAL 1: TAMBAH / EDIT MASTER BAHAN BAKU  */}
-      {/* ========================================= */}
+      {/* MODAL 1: MASTER DATA */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -372,14 +349,12 @@ const StokMenu = () => {
               <h2>{isEditMode ? 'Edit Master Bahan' : 'Tambah Bahan Baku Baru'}</h2>
               <button className="close-modal-btn" onClick={() => setIsModalOpen(false)}>✕</button>
             </div>
-            
             <form onSubmit={handleSubmitMaster}>
               <div className="modal-body">
                 <div className="form-group">
                   <label>NAMA BAHAN BAKU</label>
                   <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="form-input" required />
                 </div>
-                
                 <div className="form-row">
                   <div className="form-group half-width">
                     <label>KATEGORI</label>
@@ -395,7 +370,6 @@ const StokMenu = () => {
                     <input type="text" name="unit" value={formData.unit} onChange={handleInputChange} placeholder="kg, liter, pcs..." className="form-input" required />
                   </div>
                 </div>
-
                 <div className="form-row">
                   <div className="form-group half-width">
                     <label>SISA STOK SAAT INI</label>
@@ -406,27 +380,21 @@ const StokMenu = () => {
                     <input type="number" name="min_stock" value={formData.min_stock} onChange={handleInputChange} className="form-input" required />
                   </div>
                 </div>
-
                 <div className="form-group">
                   <label>HARGA SATUAN (RP) - Opsional</label>
                   <input type="number" name="price_per_unit" value={formData.price_per_unit} onChange={handleInputChange} className="form-input" placeholder="Untuk estimasi nilai aset..." />
                 </div>
               </div>
-
               <div className="modal-footer">
                 <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
-                <button type="submit" className="btn-primary">
-                  {isEditMode ? 'Simpan Perubahan' : 'Tambah Bahan'}
-                </button>
+                <button type="submit" className="btn-primary">{isEditMode ? 'Simpan Perubahan' : 'Tambah Bahan'}</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* ========================================= */}
-      {/* MODAL 2: QUICK RESTOCK (UPDATE STOK CEPAT) */}
-      {/* ========================================= */}
+      {/* MODAL 2: QUICK RESTOCK */}
       {isRestockModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '450px' }}>
@@ -434,36 +402,20 @@ const StokMenu = () => {
               <h2>Penerimaan Barang (Restock)</h2>
               <button className="close-modal-btn" onClick={() => setIsRestockModalOpen(false)}>✕</button>
             </div>
-            
             <form onSubmit={handleRestockSubmit}>
               <div className="modal-body">
                 <div className="form-group">
                   <label>PILIH BAHAN BAKU</label>
-                  <select 
-                    className="form-input select-input" 
-                    value={restockData.id} 
-                    onChange={(e) => setRestockData({ ...restockData, id: e.target.value })}
-                    required
-                  >
+                  <select className="form-input select-input" value={restockData.id} onChange={(e) => setRestockData({ ...restockData, id: e.target.value })} required>
                     {stokData.map(item => (
-                      <option key={item.id} value={item.id}>
-                        {item.nama} (Sisa: {item.sisa} {item.unit})
-                      </option>
+                      <option key={item.id} value={item.id}>{item.nama} (Sisa: {item.sisa} {item.unit})</option>
                     ))}
                   </select>
                 </div>
-                
                 <div className="form-group">
                   <label>STOK MASUK / TAMBAHAN BARU</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <input 
-                      type="number" 
-                      className="form-input" 
-                      style={{ fontSize: '18px', fontWeight: 'bold' }}
-                      value={restockData.qtyToAdd} 
-                      onChange={(e) => setRestockData({ ...restockData, qtyToAdd: e.target.value })}
-                      required 
-                    />
+                    <input type="number" className="form-input" style={{ fontSize: '18px', fontWeight: 'bold' }} value={restockData.qtyToAdd} onChange={(e) => setRestockData({ ...restockData, qtyToAdd: e.target.value })} required />
                     <span className="text-gray" style={{ whiteSpace: 'nowrap' }}>
                       {stokData.find(i => i.id === parseInt(restockData.id))?.unit || ''}
                     </span>
@@ -473,19 +425,16 @@ const StokMenu = () => {
                   </span>
                 </div>
               </div>
-
               <div className="modal-footer">
                 <button type="button" className="btn-secondary" onClick={() => setIsRestockModalOpen(false)}>Batal</button>
                 <button type="submit" className="btn-primary flex-btn">
-                  <img src={iconUpdateStok} alt="Update" className="btn-icon-svg icon-white" />
-                  Restock Sekarang
+                  <img src={iconUpdateStok} alt="Update" className="btn-icon-svg icon-white" /> Restock Sekarang
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 };
