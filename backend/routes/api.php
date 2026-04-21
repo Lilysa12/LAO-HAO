@@ -4,9 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CashierController;
-use App\Http\Controllers\API\MidtransController;
-
-Route::post('/midtrans/token', [MidtransController::class, 'getToken']);
+use App\Http\Controllers\MidtransController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
