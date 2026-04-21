@@ -4,13 +4,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CashierController;
-use App\Http\Controllers\API\MidtransController;
-
-Route::post('/midtrans/token', [MidtransController::class, 'getToken']);
+use App\Http\Controllers\MidtransController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::post('/midtrans/token', [MidtransController::class, 'getToken']);
 
 // --- ROUTE AUTENTIKASI (BARU) ---
 Route::post('/login', [AdminController::class, 'login']);
@@ -56,4 +56,27 @@ Route::prefix('kasir')->group(function () {
     Route::post('/inventory', [CashierController::class, 'storeInventory']);
     Route::post('/inventory/{id}/update', [CashierController::class, 'updateInventory']);
     Route::post('/inventory/{id}/delete', [CashierController::class, 'destroyInventory']);
+});
+
+Route::get('/menus', function () {
+    try {
+        // Cek koneksi DB dulu
+        \DB::connection()->getPdo();
+        
+        $data = \App\Models\Menu::all();
+        return response()->json($data);
+    } catch (\Exception $e) {
+        // Balikin pesan error aslinya ke browser
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+});
+
+Route::get('/home-menus', function () {
+    // Hanya ambil 4 menu pertama untuk dipajang di Home
+    return App\Models\Menu::limit(4)->get(); 
 });
