@@ -13,6 +13,11 @@ import iconPengaturan from '../../assets/Icons/icons-admin/pengaturan.svg';
 import iconKasir from '../../assets/Icons/icons-admin/kasir.svg';
 import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 
+// --- IMPORT IKON CARD BARU ---
+import iconTotal from '../../assets/Icons/icons-admin/total.svg';
+import iconCabang from '../../assets/Icons/icons-admin/cabang.svg';
+import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg';
+
 const OverviewCabang = () => {
   const location = useLocation();
   
@@ -120,8 +125,12 @@ const OverviewCabang = () => {
             <Link to="/kasir" className="menu-item"><img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode</Link>
           </nav>
         </div>
+        
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
         <div className="sidebar-footer">
-          <button className="logout-btn"><img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout</button>
+          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
+            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
+          </Link>
         </div>
       </aside>
 
@@ -143,7 +152,6 @@ const OverviewCabang = () => {
                 <h1 className="page-title">Overview Cabang</h1>
                 <p className="page-subtitle">Laporan performa dan pendapatan seluruh cabang Lao-Hao</p>
               </div>
-              {/* DROPDOWN FILTER FIGMA */}
               <div className="filter-wrapper">
                 <select className="filter-dropdown-figma" value={selectedFilter} onChange={(e) => setSelectedFilter(e.target.value)} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', color: '#334155', fontWeight: 'bold' }}>
                   {dropdownOptions.map(opt => <option key={opt} value={opt}>Filter: {opt}</option>)}
@@ -153,31 +161,42 @@ const OverviewCabang = () => {
 
             {isLoading ? ( <div style={{ textAlign: 'center', padding: '40px' }}>Memuat data cabang...</div> ) : (
               <>
-                {/* SUMMARY CARDS FIGMA STYLE */}
+                {/* SUMMARY CARDS FIGMA STYLE DENGAN IKON ASLI */}
                 <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '20px' }}>
+                  
+                  {/* CARD 1: TOTAL PENDAPATAN */}
                   <div className="card" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
                     <span style={{ fontSize: '14px', color: '#64748b', fontWeight: '600' }}>Total Pendapatan (Bulan Ini)</span>
-                    <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#fef2f2', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aa0000', fontWeight: 'bold' }}>$</div>
+                    <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#fee2e2', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={iconTotal} alt="Total" style={{ width: '16px', height: '16px' }} />
+                    </div>
                     <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '15px 0 5px 0' }}>{formatRupiah(summary.totalPendapatan)}</h2>
                     <span style={{ fontSize: '13px', color: '#64748b' }}>Dari {summary.totalCabang} Cabang Aktif</span>
                   </div>
                   
+                  {/* CARD 2: TOTAL CABANG */}
                   <div className="card" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
                     <span style={{ fontSize: '14px', color: '#64748b', fontWeight: '600' }}>Total Cabang</span>
-                    <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#fef2f2', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aa0000', fontSize: '18px' }}>🏢</div>
+                    <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#e2e8f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={iconCabang} alt="Cabang" style={{ width: '16px', height: '16px' }} />
+                    </div>
                     <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '15px 0 5px 0' }}>{summary.totalCabang}</h2>
                     <span style={{ fontSize: '13px', color: '#64748b' }}>Beroperasi Penuh</span>
                   </div>
 
+                  {/* CARD 3: PROMO AKTIF */}
                   <div className="card" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
                     <span style={{ fontSize: '14px', color: '#64748b', fontWeight: '600' }}>Promo Aktif</span>
-                    <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#fef2f2', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aa0000', fontSize: '18px' }}>🏷️</div>
+                    <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#fef3c7', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={iconPromosi} alt="Promo" style={{ width: '16px', height: '16px' }} />
+                    </div>
                     <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '15px 0 5px 0' }}>{summary.promoAktif}</h2>
                     <span style={{ fontSize: '13px', color: '#64748b' }}>Berlaku untuk semua cabang</span>
                   </div>
+
                 </div>
 
-                {/* BOTTOM SECTION FIGMA STYLE */}
+                {/* BOTTOM SECTION */}
                 <div className="bottom-section" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
                   <div className="card chart-container" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                     <h3 style={{ fontSize: '16px', marginBottom: '20px', color: '#1e293b' }}>Grafik Pendapatan Gabungan</h3>

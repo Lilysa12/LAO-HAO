@@ -64,7 +64,7 @@ const QrMeja = () => {
     return false;
   });
 
-  // FUNGSI MENCETAK QR CODE KE PDF (TANPA NPM INSTALL)
+  // FUNGSI MENCETAK QR CODE KE PDF
   const handlePrintQR = (tableName) => {
     const tableIdClean = tableName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     const urlOrder = `https://laohao.com/order/t/${tableIdClean}`;
@@ -142,7 +142,7 @@ const QrMeja = () => {
 
       <main className="main-content">
         <header className="topbar">
-          <div className="breadcrumb">Cashier Mode / <span className="text-black font-bold">Qr Meja</span></div>
+          <div className="breadcrumb"><span className="text-gray">Cashier Mode / </span><span className="text-black font-bold">Qr Meja</span></div>
           <div className="user-profile">
             <div className="user-info">
                 <span className="user-role">Cashier 01</span>
@@ -158,8 +158,10 @@ const QrMeja = () => {
               <h1 className="page-title">QR Code Meja</h1>
               <p className="page-subtitle">Kelola meja dan cetak QR Code untuk self-ordering</p>
             </div>
-            <button className="btn-generate-main" onClick={() => setIsModalOpen(true)} style={{ backgroundColor: '#aa0000', color: 'white', padding: '10px 20px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
-              + Generate QR Baru
+            
+            {/* FIX: TOMBOL GENERATE DENGAN ICON + BESAR */}
+            <button className="btn-generate-main" onClick={() => setIsModalOpen(true)}>
+              <span className="plus-icon-large">+</span> Generate QR Baru
             </button>
           </div>
 
@@ -169,7 +171,6 @@ const QrMeja = () => {
                  key={tab}
                  className={`filter-tab ${activeTab === tab ? 'active' : ''}`} 
                  onClick={() => setActiveTab(tab)}
-                 style={{ padding: '8px 16px', borderRadius: '20px', border: 'none', cursor: 'pointer', fontWeight: 'bold', backgroundColor: activeTab === tab ? '#1e293b' : '#f1f5f9', color: activeTab === tab ? 'white' : '#64748b' }}
                >
                  {tab}
                </button>
@@ -179,7 +180,7 @@ const QrMeja = () => {
           {isLoading ? (
              <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Menarik data meja dari database...</div>
           ) : (
-            <div className="qr-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
+            <div className="qr-grid">
               {filteredTables.map((table) => {
                 const isNonaktif = table.status === 'pending' || table.status === 'lunas';
                 return (
@@ -192,14 +193,12 @@ const QrMeja = () => {
                     </div>
                     
                     <div className="qr-frame-box" style={{ margin: '0 auto 20px auto', width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', cursor: isNonaktif ? 'not-allowed' : 'pointer' }} onClick={() => !isNonaktif && handlePrintQR(table.table_number)}>
-                      {/* Mengambil gambar QR sungguhan dari API */}
                       <img 
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://laohao.com/order/t/${table.table_number.toLowerCase().replace(/[^a-z0-9]/g, '')}`} 
                         alt="QR" 
                         style={{ width: '100%', height: '100%', borderRadius: '8px' }} 
                       />
                       
-                      {/* Tampilan Hover Icon Print (Hanya jika aktif) */}
                       {!isNonaktif && (
                         <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.opacity = 1} onMouseLeave={(e) => e.currentTarget.style.opacity = 0}>
                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
@@ -221,9 +220,9 @@ const QrMeja = () => {
 
       {/* --- MODAL GENERATE QR BARU --- */}
       {isModalOpen && (
-        <div className="modal-overlay" style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+        <div className="modal-overlay">
           <div className="qr-modal" style={{ backgroundColor: 'white', padding: '30px', borderRadius: '16px', width: '400px', textAlign: 'center' }}>
-            <button style={{ float: 'right', border: 'none', background: 'none', fontSize: '20px', cursor: 'pointer' }} onClick={() => setIsModalOpen(false)}>&times;</button>
+            <button className="close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
             <h2 style={{ marginBottom: '10px', marginTop: 0 }}>Generate QR Custom</h2>
             <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>QR Code ini dapat dicetak untuk meja tambahan atau event khusus.</p>
             
@@ -231,7 +230,7 @@ const QrMeja = () => {
               <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#64748b', display: 'block', marginBottom: '5px' }}>NOMOR / NAMA MEJA CUSTOM</label>
               <input 
                 type="text" 
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '16px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '16px', boxSizing: 'border-box', outline: 'none' }}
                 placeholder="EX: VIP-2 OUTDOOR" 
                 value={inputMeja}
                 onChange={(e) => setInputMeja(e.target.value.toUpperCase())}
@@ -239,7 +238,7 @@ const QrMeja = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setIsModalOpen(false)}>Batal</button>
+              <button style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', cursor: 'pointer', fontWeight: 'bold', color: '#64748b' }} onClick={() => setIsModalOpen(false)}>Batal</button>
               <button style={{ flex: 2, padding: '12px', borderRadius: '8px', border: 'none', background: '#aa0000', color: 'white', cursor: 'pointer', fontWeight: 'bold' }} onClick={handleGenerateNewQR}>Generate & Unduh PDF</button>
             </div>
           </div>

@@ -18,20 +18,22 @@ const DenahMeja = () => {
     const location = useLocation();
     const [activeArea, setActiveArea] = useState('indoor');
     
+    // STATE MODAL (UI Only)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    
     // STATE DATA
     const [tables, setTables] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [errorMsg, setErrorMsg] = useState(null); // <-- State baru untuk menangkap error
+    const [errorMsg, setErrorMsg] = useState(null);
 
     const fetchTables = async () => {
         setIsLoading(true);
-        setErrorMsg(null); // Reset error setiap kali mulai fetch
+        setErrorMsg(null);
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/kasir/tables?_t=${new Date().getTime()}`);
             setTables(response.data);
         } catch (error) {
             console.error("Gagal mengambil data meja:", error);
-            // Menangkap pesan error asli dari server atau network
             setErrorMsg(error.message + (error.response ? ` (Status: ${error.response.status})` : ''));
             setTables([]);
         } finally {
@@ -53,13 +55,12 @@ const DenahMeja = () => {
     const tablesOutdoor = tables.filter(t => t.area === 'outdoor');
     const currentTables = activeArea === 'indoor' ? tablesIndoor : tablesOutdoor;
 
-    // Helper untuk class active & icon white
     const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
     const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
 
     return (
         <div className="admin-container">
-            {/* --- SIDEBAR KONSISTEN 8 MENU --- */}
+            {/* --- SIDEBAR --- */}
             <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <div className="sidebar-logo-container" style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
@@ -102,6 +103,7 @@ const DenahMeja = () => {
                 </div>
             </aside>
 
+            {/* --- MAIN CONTENT --- */}
             <main className="main-content">
                 <header className="topbar">
                     <div className="breadcrumb">
@@ -119,13 +121,19 @@ const DenahMeja = () => {
 
                 <div className="content-wrapper">
                     <div className="dashboard-page">
-                        <div className="dashboard-header">
+                        
+                        {/* HEADER: Judul & Tombol */}
+                        <div className="denah-header-row">
                             <div>
                                 <h1 className="page-title">Denah Meja</h1>
                                 <p className="page-subtitle">Manajemen ketersediaan meja cabang</p>
                             </div>
+                            <button className="btn-tambah-meja" onClick={() => setIsModalOpen(true)}>
+                                + Tambah Meja Baru
+                            </button>
                         </div>
 
+                        {/* TABS */}
                         <div className="area-tabs">
                             <button className={`tab-btn ${activeArea === 'indoor' ? 'active' : ''}`} onClick={() => setActiveArea('indoor')}>
                                 Area Indoor
@@ -135,13 +143,12 @@ const DenahMeja = () => {
                             </button>
                         </div>
 
-                        {/* --- RENDER LOGIC DIPERBARUI --- */}
+                        {/* GRID KARTU MEJA */}
                         {isLoading ? (
                             <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>Memuat data meja...</div>
                         ) : errorMsg ? (
                             <div style={{ textAlign: 'center', padding: '30px', margin: '20px 0', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '8px', border: '1px solid #f87171' }}>
-                                <strong>Koneksi ke Backend Gagal:</strong> <br/> {errorMsg} <br/> 
-                                <small style={{ display: 'block', marginTop: '10px' }}>Pastikan terminal "php artisan serve" sedang berjalan.</small>
+                                <strong>Koneksi ke Backend Gagal:</strong> <br/> {errorMsg}
                             </div>
                         ) : (
                             <div className="tables-grid">
@@ -154,14 +161,28 @@ const DenahMeja = () => {
                                                     {table.status === 'lunas' && 'Dine-in (Lunas)'}
                                                     {table.status === 'pending' && 'Open Table'}
                                                 </span>
-                                                <div className="table-capacity">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                                        <circle cx="9" cy="7" r="4"></circle>
-                                                    </svg>
-                                                    {table.capacity}
+                                                
+                                                <div className="card-right-actions">
+                                                    <div className="table-capacity">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                            <circle cx="9" cy="7" r="4"></circle>
+                                                        </svg>
+                                                        {table.capacity}
+                                                    </div>
+                                                    
+                                                    {/* IKON HOVER EDIT & HAPUS */}
+                                                    <div className="action-buttons-group">
+                                                        <button className="action-circle-btn" title="Edit Meja">
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                                        </button>
+                                                        <button className="action-circle-btn text-red" title="Hapus Meja">
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                             <h1 className="table-number">{table.table_number}</h1>
                                         </div>
                                     ))
@@ -173,6 +194,46 @@ const DenahMeja = () => {
                     </div>
                 </div>
             </main>
+
+            {/* --- MODAL TAMBAH / EDIT MEJA --- */}
+            {isModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-content-sm">
+                        <div className="modal-header">
+                            <h2>Tambah / Edit Meja</h2>
+                            <button className="close-modal-btn" onClick={() => setIsModalOpen(false)}>✕</button>
+                        </div>
+                        
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <label>NOMOR / NAMA MEJA</label>
+                                <input type="text" className="form-input" placeholder="Ex: 01 atau OUT-1" />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>AREA</label>
+                                <select className="form-input select-input">
+                                    <option value="indoor">Indoor</option>
+                                    <option value="outdoor">Outdoor</option>
+                                </select>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>KAPASITAS (JUMLAH ORANG)</label>
+                                <input type="number" className="form-input" placeholder="Ex: 4" />
+                            </div>
+                        </div>
+                        
+                        <div className="modal-footer">
+                            <button className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
+                            <button className="btn-solid-red" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Simpan Meja
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

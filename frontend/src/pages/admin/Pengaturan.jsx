@@ -147,11 +147,12 @@ const Pengaturan = () => {
           </nav>
         </div>
 
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
         <div className="sidebar-footer">
-          <button className="logout-btn">
+          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
             Logout
-          </button>
+          </Link>
         </div>
       </aside>
 
@@ -262,7 +263,6 @@ const Pengaturan = () => {
                           <h2>Pengaturan Pajak & Struk</h2>
                         </div>
                         <div className="settings-form">
-                          {/* PERBAIKAN STRUKTUR TOGGLE SWITCH */}
                           <div className="toggle-setting-box" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <div className="toggle-setting-text">
                               <h3 style={{ fontSize: '14px', marginBottom: '4px' }}>Aktifkan Pajak Restoran (PB1)</h3>

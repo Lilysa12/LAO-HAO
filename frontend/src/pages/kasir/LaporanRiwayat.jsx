@@ -130,26 +130,15 @@ const LaporanRiwayat = () => {
     document.body.removeChild(link);
   };
 
-  // --- FUNGSI BARU: CETAK STRUK KE PDF ---
   const handlePrintReceipt = (item) => {
-    // Membuka jendela baru
     const printWindow = window.open('', '_blank', 'width=400,height=600');
-    
-    // Desain Struk ala Thermal Printer
     const receiptHtml = `
       <!DOCTYPE html>
       <html>
         <head>
           <title>Struk ${item.inv}</title>
           <style>
-            body { 
-              font-family: 'Courier New', Courier, monospace; 
-              font-size: 14px; 
-              padding: 20px; 
-              max-width: 300px; 
-              margin: 0 auto; 
-              color: #000; 
-            }
+            body { font-family: 'Courier New', Courier, monospace; font-size: 14px; padding: 20px; max-width: 300px; margin: 0 auto; color: #000; }
             .text-center { text-align: center; }
             .font-bold { font-weight: bold; }
             .divider { border-top: 1px dashed #000; margin: 12px 0; }
@@ -161,42 +150,24 @@ const LaporanRiwayat = () => {
           <div class="brand">LAO-HAO</div>
           <div class="text-center">By Uncle Oeh</div>
           <div class="text-center" style="font-size: 12px; margin-bottom: 10px;">Cabang Pusat</div>
-          
           <div class="divider"></div>
-          
           <div class="flex-between"><span>No. Invoice:</span><span>${item.inv}</span></div>
           <div class="flex-between"><span>Waktu:</span><span>${item.time}</span></div>
           <div class="flex-between"><span>Kasir:</span><span>${item.cashier}</span></div>
-          
           <div class="divider"></div>
-          
           <div class="flex-between"><span>Pelanggan:</span><span>${item.customer}</span></div>
           <div class="flex-between"><span>Meja:</span><span>${item.table}</span></div>
-          
           <div class="divider"></div>
-          
-          <div class="flex-between font-bold" style="font-size: 16px;">
-            <span>TOTAL</span><span>${item.total}</span>
-          </div>
+          <div class="flex-between font-bold" style="font-size: 16px;"><span>TOTAL</span><span>${item.total}</span></div>
           <div class="flex-between"><span>Metode Bayar:</span><span>${item.method}</span></div>
           <div class="flex-between"><span>Status:</span><span>${item.status}</span></div>
-          
           <div class="divider"></div>
-          
           <div class="text-center" style="margin-top: 20px;">Terima Kasih</div>
           <div class="text-center" style="font-size: 12px;">Selamat Menikmati Hidangan Kami</div>
-          
-          <script>
-            // Otomatis memicu dialog Print/Save as PDF saat jendela terbuka
-            window.onload = function() { 
-              window.print(); 
-              // Opsional: window.close(); jika ingin jendelanya langsung menutup setelah diprint
-            }
-          </script>
+          <script>window.onload = function() { window.print(); }</script>
         </body>
       </html>
     `;
-    
     printWindow.document.open();
     printWindow.document.write(receiptHtml);
     printWindow.document.close();
@@ -238,6 +209,7 @@ const LaporanRiwayat = () => {
         </div>
       </aside>
 
+      {/* MAIN CONTENT */}
       <main className="main-content">
         <header className="topbar">
           <div className="breadcrumb"><span className="text-gray">Cashier Mode / </span><span className="text-black font-bold">History</span></div>
@@ -253,30 +225,20 @@ const LaporanRiwayat = () => {
         <div className="content-wrapper">
           <div className="dashboard-page">
             
-            {/* HEADER & FILTER FIGMA STYLE */}
-            <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
-              <div>
+            {/* HEADER & FILTER FIX: ANTI MABOK BERAS */}
+            <div className="history-header">
+              <div className="header-titles">
                 <h1 className="page-title">Laporan & Riwayat</h1>
                 <p className="page-subtitle">Laporan penjualan cabang dan riwayat transaksi POS</p>
               </div>
               
-              <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '8px', backgroundColor: 'white', padding: '6px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <div className="header-actions">
+                <div className="filter-pills-container">
                   {['Hari Ini', 'Minggu Ini', 'Bulan Ini', '3 Bulan Terakhir', 'Custom Date'].map(tab => (
                     <button 
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      style={{
-                        padding: '8px 12px',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: activeTab === tab ? 'bold' : '500',
-                        color: activeTab === tab ? '#aa0000' : '#64748b',
-                        backgroundColor: activeTab === tab ? '#ffcc00' : 'transparent',
-                        transition: '0.2s'
-                      }}
+                      className={`filter-pill ${activeTab === tab ? 'active' : ''}`}
                     >
                       {tab}
                     </button>
@@ -285,38 +247,40 @@ const LaporanRiwayat = () => {
 
                 {activeTab === 'Custom Date' && (
                   <div className="date-picker-wrapper">
-                    <img src={iconKalender} alt="Kalender" className="calendar-overlay-icon icon-red" />
+                    <img src={iconKalender} alt="Kalender" className="calendar-overlay-icon" />
                     <input type="date" className="date-input-active" value={customDate} onChange={(e) => setCustomDate(e.target.value)} />
                   </div>
                 )}
                 
-                <button className="btn-primary flex-btn" onClick={handleDownloadReport} style={{ backgroundColor: '#aa0000', padding: '10px 16px', borderRadius: '8px' }}>
-                  <img src={iconDownload} alt="Download" className="btn-icon-svg icon-white" /> Unduh Laporan
+                <button className="btn-unduh-laporan" onClick={handleDownloadReport}>
+                  <img src={iconDownload} alt="Download" className="btn-icon-svg" /> Unduh Laporan
                 </button>
               </div>
             </div>
 
-            {/* SUMMARY CARDS */}
+            {/* SUMMARY CARDS FIGMA STYLE (LEBIH KALEM) */}
             <div className="summary-cards-row">
               <div className="card stat-card">
-                <span className="stat-label">Total Pendapatan ({activeTab})</span>
+                <span className="stat-label">Total Pendapatan Harian</span>
                 <h2 className="stat-value text-red">{formatRupiah(summary.dailyTotal)}</h2>
-                <span className="stat-desc text-green">Total dari filter terpilih</span>
+                <span className="stat-desc text-green">+15% dari hari kemarin</span>
               </div>
               <div className="card stat-card">
                 <span className="stat-label">Total Transaksi</span>
-                <h2 className="stat-value">{summary.dailyCount}</h2>
-                <span className="stat-desc">Transaksi Lunas ({activeTab})</span>
+                <h2 className="stat-value text-black">{summary.dailyCount}</h2>
+                <span className="stat-desc">Shift 1 (Budi Santoso)</span>
               </div>
               <div className="card stat-card">
                 <span className="stat-label">Total Pendapatan Bulanan</span>
-                <h2 className="stat-value">{formatRupiah(summary.monthlyTotal)}</h2>
+                <h2 className="stat-value text-black">{formatRupiah(summary.monthlyTotal)}</h2>
                 <span className="stat-desc">Bulan {summary.monthName}</span>
               </div>
             </div>
 
             <h2 className="section-heading">Riwayat Transaksi</h2>
+            
             <div className="card table-container">
+              {/* CUSTOM TABLE HEADER */}
               <div className="table-header-custom">
                 <div className="header-left">
                   <img src={iconLaporanKasir} alt="Doc" className="doc-icon icon-yellow" />
@@ -329,10 +293,10 @@ const LaporanRiwayat = () => {
               </div>
 
               {isLoading ? (
-                  <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Menarik data dari Supabase...</div>
+                  <div className="loading-state">Menarik data dari Supabase...</div>
               ) : (
                 <>
-                  <table className="transaction-table history-table">
+                  <table className="history-table">
                     <thead>
                       <tr>
                         <th>NO. INVOICE & WAKTU</th>
@@ -356,13 +320,13 @@ const LaporanRiwayat = () => {
                             <td>
                               <div className="flex-align-center gap-8">
                                 <span className="badge-meja">{item.table}</span>
-                                <span className="font-bold text-black">{item.customer}</span>
+                                <span className="font-medium text-black">{item.customer}</span>
                               </div>
                             </td>
                             <td><span className="badge-metode">{item.method}</span></td>
                             <td><span className="font-bold text-black">{item.total}</span></td>
                             <td>
-                              <span className={`badge ${item.status === 'LUNAS' ? 'badge-lunas' : 'badge-batal'}`}>
+                              <span className={`status-badge ${item.status === 'LUNAS' ? 'badge-lunas' : 'badge-batal'}`}>
                                 {item.status}
                               </span>
                             </td>
@@ -385,6 +349,11 @@ const LaporanRiwayat = () => {
                       )}
                     </tbody>
                   </table>
+                  
+                  {/* FOOTER TEXT FIGMA STYLE */}
+                  <div className="table-footer-text">
+                    Menampilkan {filteredData.length} transaksi terakhir
+                  </div>
                 </>
               )}
             </div>
