@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "./Home.css";
+
 // IMPORT SUPABASE
 import { supabase } from "../../../supabase";
 
@@ -49,23 +50,27 @@ import IconKemitraan from "../../../assets/icons/kemitraan.png";
 // --- FIX ICON LEAFLET ---
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
+
+// KOTA UNTUK MARQUEE (Ditulis manual untuk loop animasi)
+const marqueeCities = [
+  "PALEMBANG", "CIREBON", "BOGOR", "BEKASI", "TANGERANG", "DEPOK", 
+  "SOLO", "MALANG", "LOMBOK", "PEKANBARU", "BALIKPAPAN", "SAMARINDA", 
+  "MANADO", "PONTIANAK"
+];
 
 export default function Home() {
   const navigate = useNavigate();
   const [hoveredGridIndex, setHoveredGridIndex] = useState(null);
 
-  // --- REF UNTUK ISOLASI ANIMASI HOMEPAGE ---
+  // --- REF UNTUK ISOLASI KOMPONEN ---
   const homeRef = useRef(null);
   const statsRef = useRef(null);
 
-  // --- STATE MENU  DAN CABANG MOBILE ---
+  // --- STATE MENU & CABANG ---
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMenuCategory, setActiveMenuCategory] = useState("Main Dish");
 
@@ -82,12 +87,11 @@ export default function Home() {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- AMBIL DATA DARI BACKEND ---
+  // --- FETCH DATA BACKEND ---
   useEffect(() => {
     const fetchSemuaData = async () => {
       try {
         setLoading(true);
-        // Ambil dua-duanya sekaligus
         const [resMenu, resCabang] = await Promise.all([
           supabase.from("menus").select("*"),
           supabase.from("branches").select("*"),
@@ -108,7 +112,6 @@ export default function Home() {
     fetchSemuaData();
   }, []);
 
-  // Filter dulu berdasarkan kategori, baru ambil 4 item pertama
   const displayedMenus = homeMenus
     .filter((menu) => menu.category === activeMenuCategory)
     .slice(0, 4);
@@ -124,7 +127,7 @@ export default function Home() {
   const [tahun, setTahun] = useState(0);
   const [pelanggan, setPelanggan] = useState(0);
 
-  // --- OBSERVER STATISTIK ANGKA ---
+  // --- ANIMASI ANGKA STATISTIK ---
   useEffect(() => {
     const animateValue = (setFn, start, end, duration) => {
       let startTimestamp = null;
@@ -147,120 +150,60 @@ export default function Home() {
           observer.disconnect();
         }
       },
-      { threshold: 0.3 },
-    ); // Threshold diturunkan sedikit untuk mobile
+      { threshold: 0.3 }
+    );
 
     if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const igPostDetails = [
-    {
-      likes: "83,2RB",
-      foodName: "Pandan Malacca Kopi - Es",
-      desc: "Es kopi kreamer santan gurih & manis berpadu pandan s...",
-      date: "19 Januari",
-      link: "https://www.instagram.com/p/DAxK-KTS5PZ/",
-    },
-    {
-      likes: "75,1RB",
-      foodName: "Kopi Tarik Laoban - Es/Panas",
-      desc: "Kopi tarik khas laoban yang pekat...",
-      date: "18 Januari",
-      link: "https://www.instagram.com/p/DAun-KRS6PZ/",
-    },
-    {
-      likes: "62,8RB",
-      foodName: "Es Teh Tarik Laoban",
-      desc: "Teh tarik khas laoban yang ditarik...",
-      date: "17 Januari",
-      link: "https://www.instagram.com/p/DAsn-KQS7PZ/",
-    },
-    {
-      likes: "55,5RB",
-      foodName: "Kopitiam Vibes",
-      desc: "Menikmati sore di Laoban Nusantara...",
-      date: "16 Januari",
-      link: "https://www.instagram.com/p/DAqn-KPS8PZ/",
-    },
-    {
-      likes: "91,0RB",
-      foodName: "Mie Khas Laoban",
-      desc: "Tekstur mie yang kenyal dengan bumbu...",
-      date: "15 Januari",
-      link: "https://www.instagram.com/p/DAon-KNS9PZ/",
-    },
-    {
-      likes: "48,2RB",
-      foodName: "Menu Perguruan",
-      desc: "Pilihan menu utama yang muantab...",
-      date: "14 Januari",
-      link: "https://www.instagram.com/p/DAmn-KMS0PZ/",
-    },
-    {
-      likes: "77,9RB",
-      foodName: "Suasana Kafe",
-      desc: "Interior klasik modern yang bikin betah...",
-      date: "13 Januari",
-      link: "https://www.instagram.com/p/DAkn-KLS1PZ/",
-    },
-    {
-      likes: "88,1RB",
-      foodName: "Pecinta Pedas?",
-      desc: "Nasi Mala yang pedas asin gurih...",
-      date: "12 Januari",
-      link: "https://www.instagram.com/p/DAin-KKS2PZ/",
-    },
-    {
-      likes: "95,4RB",
-      foodName: "Nasi Hainan Uncle Osh",
-      desc: "Nasi berbumbu putih rahasia...",
-      date: "11 Januari",
-      link: "https://www.instagram.com/p/DAgn-KJS3PZ/",
-    },
-  ];
-
-  const gridImages = [
-    Grid1,
-    Grid2,
-    Grid3,
-    Grid4,
-    Grid5,
-    Grid6,
-    Grid7,
-    Grid8,
-    Grid9,
-  ];
-
-  // --- OBSERVER ANIMASI FADE-IN-UP (FIXED UNTUK MOBILE) ---
+  // --- LOGIKA ANIMASI SCROLL (.fade-in-up) ---
   useEffect(() => {
+    // Jangan jalankan animasi sebelum data Supabase selesai dimuat
+    if (loading) return;
+
     const observer = new IntersectionObserver(
       (entries, obs) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
-            obs.unobserve(entry.target); // Supaya lebih ringan, stop observe setelah muncul
+            obs.unobserve(entry.target); // Lepas pantauan setelah muncul
           }
         });
       },
       {
-        threshold: 0.05, // Super kecil agar di HP yang layarnya sempit tetap ke-trigger
-        rootMargin: "0px 0px -20px 0px",
-      },
+        threshold: 0.05, // Cukup masuk layar 5% langsung trigger
+        rootMargin: "0px 0px -50px 0px", 
+      }
     );
 
+    // Cari elemen HANYA di dalam homeRef (tidak merusak page lain)
     if (homeRef.current) {
       const hiddenElements = homeRef.current.querySelectorAll(".fade-in-up");
       hiddenElements.forEach((el) => observer.observe(el));
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [loading]); // Bergantung pada status loading
+
+  const igPostDetails = [
+    { likes: "83,2RB", foodName: "Pandan Malacca Kopi - Es", desc: "Es kopi kreamer santan gurih & manis berpadu pandan s...", date: "19 Januari", link: "https://www.instagram.com/p/DAxK-KTS5PZ/" },
+    { likes: "75,1RB", foodName: "Kopi Tarik Laoban - Es/Panas", desc: "Kopi tarik khas laoban yang pekat...", date: "18 Januari", link: "https://www.instagram.com/p/DAun-KRS6PZ/" },
+    { likes: "62,8RB", foodName: "Es Teh Tarik Laoban", desc: "Teh tarik khas laoban yang ditarik...", date: "17 Januari", link: "https://www.instagram.com/p/DAsn-KQS7PZ/" },
+    { likes: "55,5RB", foodName: "Kopitiam Vibes", desc: "Menikmati sore di Laoban Nusantara...", date: "16 Januari", link: "https://www.instagram.com/p/DAqn-KPS8PZ/" },
+    { likes: "91,0RB", foodName: "Mie Khas Laoban", desc: "Tekstur mie yang kenyal dengan bumbu...", date: "15 Januari", link: "https://www.instagram.com/p/DAon-KNS9PZ/" },
+    { likes: "48,2RB", foodName: "Menu Perguruan", desc: "Pilihan menu utama yang muantab...", date: "14 Januari", link: "https://www.instagram.com/p/DAmn-KMS0PZ/" },
+    { likes: "77,9RB", foodName: "Suasana Kafe", desc: "Interior klasik modern yang bikin betah...", date: "13 Januari", link: "https://www.instagram.com/p/DAkn-KLS1PZ/" },
+    { likes: "88,1RB", foodName: "Pecinta Pedas?", desc: "Nasi Mala yang pedas asin gurih...", date: "12 Januari", link: "https://www.instagram.com/p/DAin-KKS2PZ/" },
+    { likes: "95,4RB", foodName: "Nasi Hainan Uncle Osh", desc: "Nasi berbumbu putih rahasia...", date: "11 Januari", link: "https://www.instagram.com/p/DAgn-KJS3PZ/" },
+  ];
+
+  const gridImages = [Grid1, Grid2, Grid3, Grid4, Grid5, Grid6, Grid7, Grid8, Grid9];
 
   return (
     <div className="home-container" ref={homeRef}>
+      
       {/* ================= 1. NAVBAR ================= */}
-      {/* Hapus class fade-in-up di navbar agar navbar selalu muncul tanpa menunggu scroll */}
       <nav className="navbar">
         <div className="logo-box">
           <img
@@ -272,75 +215,24 @@ export default function Home() {
           />
         </div>
 
-        {/* --- MENU OVERLAY MOBILE / DESKTOP LINKS --- */}
         <div className={`nav-links ${isMobileMenuOpen ? "mobile-active" : ""}`}>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigateToTop("/home");
-            }}
-            className="active"
-          >
-            Home
-          </a>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigateToTop("/about");
-            }}
-          >
-            About
-          </a>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigateToTop("/menu");
-            }}
-          >
-            Menu
-          </a>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigateToTop("/our-partner");
-            }}
-          >
-            Our Partner
-          </a>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigateToTop("/partnership");
-            }}
-          >
-            Partnership
-          </a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/home"); }} className="active">Home</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/about"); }}>About</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/menu"); }}>Menu</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/our-partner"); }}>Our Partner</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/partnership"); }}>Partnership</a>
 
-          <button
-            className="btn-red mobile-only-btn"
-            onClick={() => navigateToTop("/download")}
-          >
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop("/download")}>
             Pesan Sekarang
           </button>
         </div>
 
         <div className="nav-actions">
-          <button
-            className="btn-red desktop-only-btn"
-            onClick={() => navigateToTop("/download")}
-          >
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop("/download")}>
             Pesan Sekarang
           </button>
 
-          <div
-            className={`hamburger ${isMobileMenuOpen ? "open" : ""}`}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
+          <div className={`hamburger ${isMobileMenuOpen ? "open" : ""}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             <span className="bar"></span>
             <span className="bar"></span>
             <span className="bar"></span>
@@ -351,9 +243,7 @@ export default function Home() {
       {/* ================= 2. HERO SECTION ================= */}
       <section className="hero fade-in-up delay-1">
         <div className="hero-text">
-          <div className="hero-subtitle-left">
-            老板 Nusantara · By Uncle Osh
-          </div>
+          <div className="hero-subtitle-left">老板 Nusantara · By Uncle Osh</div>
           <h1 className="hero-title">
             LAOBAN <br />
             <span className="text-red">NUSANTARA</span>
@@ -373,15 +263,8 @@ export default function Home() {
           </p>
 
           <div className="hero-action">
-            <button className="btn-red" onClick={() => navigateToTop("/menu")}>
-              Lihat Menu Pilihan
-            </button>
-            <button
-              className="btn-outline"
-              onClick={() => navigateToTop("/partnership")}
-            >
-              Gabung Kemitraan
-            </button>
+            <button className="btn-red" onClick={() => navigateToTop("/menu")}>Lihat Menu Pilihan</button>
+            <button className="btn-outline" onClick={() => navigateToTop("/partnership")}>Gabung Kemitraan</button>
           </div>
         </div>
 
@@ -396,55 +279,23 @@ export default function Home() {
       {/* ================= 3. MARQUEE CABANG ================= */}
       <div className="red-marquee-container fade-in-up">
         <div className="red-marquee-track">
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> PALEMBANG
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> CIREBON
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> BOGOR
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> BEKASI
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> TANGERANG
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> DEPOK
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> SOLO
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> MALANG
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> LOMBOK
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> PEKANBARU
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> BALIKPAPAN
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> SAMARINDA
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> MANADO
-          </div>
-          <div className="marquee-item">
-            <span className="yellow-box">&#9632;</span> PONTIANAK
-          </div>
+          {marqueeCities.map((city, idx) => (
+            <div className="marquee-item" key={`orig-${idx}`}>
+              <span className="yellow-box">&#9632;</span> {city}
+            </div>
+          ))}
+          {marqueeCities.map((city, idx) => (
+            <div className="marquee-item" key={`dup-${idx}`}>
+              <span className="yellow-box">&#9632;</span> {city}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* ================= STATS ================= */}
       <section className="stats fade-in-up" ref={statsRef}>
         <div className="stat-box">
-          <h2>{branches.length}+</h2> {/* Pakai state branches juga di sini */}
+          <h2>{branches.length > 0 ? branches.length : cabang}+</h2>
           <h3>CABANG AKTIF</h3>
           <p>Di seluruh Indonesia</p>
         </div>
@@ -489,14 +340,7 @@ export default function Home() {
             autentik adalah kunci yang membawa kami terus berekspansi hingga
             memiliki lebih dari 50 cabang di seluruh Indonesia.
           </p>
-          <a
-            href="#"
-            className="link-red"
-            onClick={(e) => {
-              e.preventDefault();
-              navigateToTop("/about");
-            }}
-          >
+          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); navigateToTop("/about"); }}>
             Baca Selengkapnya &rarr;
           </a>
         </div>
@@ -526,53 +370,32 @@ export default function Home() {
 
         <div className="menu-list fade-in-up delay-1">
           {loading ? (
-            <p
-              style={{
-                gridColumn: "1 / -1",
-                textAlign: "center",
-                padding: "20px",
-              }}
-            >
+            <p style={{ gridColumn: "1 / -1", textAlign: "center", padding: "20px" }}>
               Lagi nyiapin menu favoritmu...
             </p>
           ) : displayedMenus.length > 0 ? (
             displayedMenus.map((item) => (
               <div className="menu-card" key={item.id}>
-                {/* Supaya bisa baca image_url (DB) atau img (Lokal) */}
                 {item.image_url || item.img ? (
-                  <img
-                    src={item.image_url || item.img}
-                    alt={item.name}
-                    className="menu-item-img"
-                  />
+                  <img src={item.image_url || item.img} alt={item.name} className="menu-item-img" />
                 ) : (
                   <div className="img-blank"></div>
                 )}
                 <div className="menu-info">
                   <h4>{item.name}</h4>
-                  {/* Supaya bisa baca description (DB) atau desc (Lokal) */}
                   <p>{item.description || item.desc}</p>
                 </div>
               </div>
             ))
           ) : (
-            <p
-              style={{
-                gridColumn: "1 / -1",
-                textAlign: "center",
-                color: "#888",
-              }}
-            >
+            <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "#888" }}>
               Belum ada menu di kategori ini.
             </p>
           )}
         </div>
 
         <div className="center-btn">
-          <button
-            className="btn-outline-red"
-            onClick={() => navigateToTop("/menu")}
-          >
+          <button className="btn-outline-red" onClick={() => navigateToTop("/menu")}>
             Lihat Seluruh Menu
           </button>
         </div>
@@ -580,35 +403,24 @@ export default function Home() {
 
       {/* ================= 6. MAP SECTION ================= */}
       <section className="map-section fade-in-up">
-        <h2 className="title-dark center-title">
-          50+ Titik Kenikmatan di Seluruh Nusantara
-        </h2>
+        <h2 className="title-dark center-title">50+ Titik Kenikmatan di Seluruh Nusantara</h2>
         <p className="desc-gray text-center max-w">
           Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk
           mendekatkan kehangatan Kopitiam autentik ke kota Anda.
         </p>
 
         <div className="home-map-wrapper fade-in-up delay-1">
-          <MapContainer
-            center={[-2.5, 118.0]} // Center ke Indonesia
-            zoom={5}
-            scrollWheelZoom={false}
-            className="home-map-container"
-          >
+          <MapContainer center={[-2.5, 118.0]} zoom={5} scrollWheelZoom={false} className="home-map-container">
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-
-            {/* Mapping data dari Supabase */}
             {branches.map((branch) => (
               <Marker key={branch.id} position={[branch.lat, branch.lng]}>
                 <Popup>
                   <div style={{ textAlign: "center" }}>
                     <strong style={{ color: "#A00500" }}>{branch.name}</strong>
-                    <p style={{ margin: "5px 0", fontSize: "12px" }}>
-                      {branch.city}
-                    </p>
+                    <p style={{ margin: "5px 0", fontSize: "12px" }}>{branch.city}</p>
                   </div>
                 </Popup>
               </Marker>
@@ -616,17 +428,13 @@ export default function Home() {
           </MapContainer>
 
           <div className="popup">
-            <h2>{branches.length}</h2>{" "}
-            {/* Angka otomatis sesuai jumlah data di DB */}
+            <h2>{branches.length}</h2>
             <p>CABANG AKTIF</p>
           </div>
         </div>
 
         <div className="center-btn">
-          <button
-            className="btn-outline-red"
-            onClick={() => navigateToTop("/our-partner")}
-          >
+          <button className="btn-outline-red" onClick={() => navigateToTop("/our-partner")}>
             Lihat Detail Cabang
           </button>
         </div>
@@ -636,12 +444,7 @@ export default function Home() {
       <section className="ig-section fade-in-up">
         <div className="ig-header-container">
           <p className="label-red text-center">FOLLOW US ON INSTAGRAM!</p>
-          <h2
-            className="title-dark text-center"
-            style={{ marginBottom: "50px" }}
-          >
-            @LAOBAN.NUSANTARA
-          </h2>
+          <h2 className="title-dark text-center" style={{ marginBottom: "50px" }}>@LAOBAN.NUSANTARA</h2>
         </div>
 
         <div className="ig-grid">
@@ -649,9 +452,7 @@ export default function Home() {
             <div
               key={index}
               className="ig-item-wrapper fade-in-up"
-              style={{
-                transitionDelay: `${index * 0.05}s`,
-              }} /* Efek muncul berurutan */
+              style={{ transitionDelay: `${index * 0.05}s` }}
               onMouseEnter={() => setHoveredGridIndex(index)}
               onMouseLeave={() => setHoveredGridIndex(null)}
               onClick={() => window.open(igPostDetails[index].link, "_blank")}
@@ -660,20 +461,12 @@ export default function Home() {
               {index === hoveredGridIndex && (
                 <div className="ig-overlay-card">
                   <div className="ig-card-header">
-                    <span className="ig-card-likes">
-                      ❤️ {igPostDetails[index].likes} suka
-                    </span>
-                    <span className="ig-card-date">
-                      {igPostDetails[index].date}
-                    </span>
+                    <span className="ig-card-likes">❤️ {igPostDetails[index].likes} suka</span>
+                    <span className="ig-card-date">{igPostDetails[index].date}</span>
                   </div>
                   <div className="ig-card-body">
-                    <h4 className="ig-card-food-name">
-                      {igPostDetails[index].foodName}
-                    </h4>
-                    <p className="ig-card-food-desc">
-                      {igPostDetails[index].desc}
-                    </p>
+                    <h4 className="ig-card-food-name">{igPostDetails[index].foodName}</h4>
+                    <p className="ig-card-food-desc">{igPostDetails[index].desc}</p>
                   </div>
                 </div>
               )}
@@ -687,11 +480,7 @@ export default function Home() {
         <div className="cta-card">
           <div className="watermark">☕</div>
           <div className="cta-content">
-            <h2>
-              Jadilah Bagian dari Kesuksesan
-              <br />
-              Laoban
-            </h2>
+            <h2>Jadilah Bagian dari Kesuksesan<br />Laoban</h2>
             <p>
               Sudah 50+ cabang membuktikan kualitas dan profitabilitas bisnis
               Laoban Nusantara. Kini giliran Anda membuka peluang sukses dan
@@ -703,25 +492,12 @@ export default function Home() {
                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
                 onClick={() => navigateToTop("/partnership")}
               >
-                <img
-                  src={IconKemitraan}
-                  alt="Kemitraan Icon"
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    objectFit: "contain",
-                  }}
-                />
+                <img src={IconKemitraan} alt="Kemitraan Icon" style={{ width: "20px", height: "20px", objectFit: "contain" }} />
                 Pelajari Kemitraan
               </button>
               <button
                 className="btn-outline-white"
-                onClick={() =>
-                  window.open(
-                    "https://api.whatsapp.com/send/?phone=%2B6282244503221",
-                    "_blank",
-                  )
-                }
+                onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")}
               >
                 Hubungi Tim Sales
               </button>
@@ -734,60 +510,19 @@ export default function Home() {
       <footer className="footer-modern fade-in-up">
         <div className="foot-grid">
           <div className="foot-brand">
-            <img
-              src={LogoLaoban}
-              alt="Logo Laoban"
-              className="logo-img"
-              style={{ marginBottom: "15px", cursor: "pointer" }}
-              onClick={() => navigateToTop("/home")}
-            />
-            <p>
-              Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan
-              bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.
-            </p>
+            <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{ marginBottom: "15px", cursor: "pointer" }} onClick={() => navigateToTop("/home")} />
+            <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
             <div className="socials socials-colored unified-socmed">
-              <div
-                className="soc-colored"
-                onClick={() =>
-                  window.open(
-                    "https://www.instagram.com/laoban.nusantara/",
-                    "_blank",
-                  )
-                }
-              >
+              <div className="soc-colored" onClick={() => window.open("https://www.instagram.com/laoban.nusantara/", "_blank")}>
                 <img src={IconInstagram} alt="Instagram" className="soc-img" />
               </div>
-              <div
-                className="soc-colored"
-                onClick={() =>
-                  window.open(
-                    "https://www.tiktok.com/@laoban.nusantara",
-                    "_blank",
-                  )
-                }
-              >
+              <div className="soc-colored" onClick={() => window.open("https://www.tiktok.com/@laoban.nusantara", "_blank")}>
                 <img src={IconTiktok} alt="Tiktok" className="soc-img" />
               </div>
-              <div
-                className="soc-colored"
-                onClick={() =>
-                  window.open(
-                    "https://api.whatsapp.com/send/?phone=%2B6282244503221",
-                    "_blank",
-                  )
-                }
-              >
+              <div className="soc-colored" onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")}>
                 <img src={IconWhatsapp} alt="Whatsapp" className="soc-img" />
               </div>
-              <div
-                className="soc-colored"
-                onClick={() =>
-                  window.open(
-                    "https://www.facebook.com/laoban.nusantara/",
-                    "_blank",
-                  )
-                }
-              >
+              <div className="soc-colored" onClick={() => window.open("https://www.facebook.com/laoban.nusantara/", "_blank")}>
                 <img src={IconFacebook} alt="Facebook" className="soc-img" />
               </div>
             </div>
@@ -799,58 +534,28 @@ export default function Home() {
               <li onClick={() => navigateToTop("/home")}>Home</li>
               <li onClick={() => navigateToTop("/about")}>Tentang Kami</li>
               <li onClick={() => navigateToTop("/menu")}>Menu Perguruan</li>
-              <li onClick={() => navigateToTop("/our-partner")}>
-                Daftar Cabang
-              </li>
+              <li onClick={() => navigateToTop("/our-partner")}>Daftar Cabang</li>
             </ul>
           </div>
 
           <div className="foot-links">
             <h4>Kemitraan</h4>
             <ul>
-              <li onClick={() => navigateToTop("/partnership")}>
-                Info Franchise
-              </li>
-              <li
-                onClick={() =>
-                  window.open(
-                    "https://api.whatsapp.com/send/?phone=%2B6282244503221",
-                    "_blank",
-                  )
-                }
-              >
-                Hubungi Sales
-              </li>
+              <li onClick={() => navigateToTop("/partnership")}>Info Franchise</li>
+              <li onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")}>Hubungi Sales</li>
             </ul>
           </div>
 
           <div className="foot-links">
             <h4>Hubungi Kami</h4>
             <ul className="contact-list contact-modern">
-              <li
-                onClick={() =>
-                  (window.location.href = "mailto:laobankopitiam@gmail.com")
-                }
-                style={{ cursor: "pointer" }}
-              >
+              <li onClick={() => (window.location.href = "mailto:laobankopitiam@gmail.com")} style={{ cursor: "pointer" }}>
                 <img src={IconMessage} alt="Email" className="contact-icon" />
-                <span className="contact-info contact-link">
-                  laobankopitiam@gmail.com
-                </span>
+                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
               </li>
-              <li
-                onClick={() =>
-                  window.open(
-                    "https://api.whatsapp.com/send/?phone=%2B6282244503221",
-                    "_blank",
-                  )
-                }
-                style={{ cursor: "pointer" }}
-              >
+              <li onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")} style={{ cursor: "pointer" }}>
                 <img src={IconCall} alt="Phone" className="contact-icon" />
-                <span className="contact-info contact-bold">
-                  +62 822 4450 3221
-                </span>
+                <span className="contact-info contact-bold">+62 822 4450 3221</span>
               </li>
             </ul>
           </div>
