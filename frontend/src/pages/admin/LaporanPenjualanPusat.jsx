@@ -187,11 +187,13 @@ const LaporanPenjualanPusat = () => {
             </Link>
           </nav>
         </div>
+        
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
         <div className="sidebar-footer">
-          <button className="logout-btn">
+          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
             Logout
-          </button>
+          </Link>
         </div>
       </aside>
 

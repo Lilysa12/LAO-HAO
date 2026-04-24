@@ -1,6 +1,9 @@
 /* ========================================================
-   FILE: QrMeja.css (FINAL REVISI - INNER SCROLL)
+   FILE: QrMeja.css (FINAL REVISI - INNER SCROLL + FIX ICON +)
 ======================================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #333; overflow-x: hidden; }
 
 /* --- Dasar Layout --- */
 .admin-container {
@@ -17,6 +20,17 @@
   background-color: #f8fafc;
   overflow-y: auto;
 }
+
+.text-gray { color: #64748b; }
+.text-black { color: #1e293b; }
+.font-bold { font-weight: 700; }
+
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background-color: white; border-bottom: 1px solid #e2e8f0; height: 70px; }
+.user-profile { display: flex; align-items: center; gap: 12px; }
+.user-info { display: flex; flex-direction: column; align-items: flex-end; }
+.user-role { font-size: 14px; font-weight: 600; color: #1e293b; }
+.user-status { font-size: 12px; color: #10b981; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #aa0000; color: white; display: flex; align-items: center; justify-content: center; border: 2px solid #aa0000; }
 
 /* --- Sidebar (Konsisten 8 Menu) --- */
 .sidebar {
@@ -72,17 +86,34 @@
 /* --- Content Wrapper --- */
 .content-wrapper { padding: 32px; }
 .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.page-title { font-size: 24px; font-weight: 800; color: #1e293b; }
-.page-subtitle { color: #64748b; font-size: 14px; }
+.page-title { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+.page-subtitle { color: #64748b; font-size: 14px; margin-top: 0; }
 
+/* FIX: TOMBOL GENERATE & ICON + */
 .btn-generate-main {
   background-color: #aa0000;
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 10px 24px;
   border-radius: 8px;
   font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
+  display: flex;       
+  align-items: center; 
+  gap: 8px;            
+  transition: 0.2s;
+}
+
+.btn-generate-main:hover {
+  background-color: #8a1313;
+}
+
+.plus-icon-large {
+  font-size: 24px;     
+  font-weight: 900;
+  line-height: 0;      
+  margin-bottom: 2px;  
 }
 
 /* --- Filter Tab --- */
@@ -105,6 +136,7 @@
   font-size: 13px;
   cursor: pointer;
   border-radius: 8px;
+  transition: 0.2s;
 }
 
 .filter-tab.active { background-color: #1e293b; color: white; }
@@ -132,38 +164,21 @@
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
-  align-items: center; /* Jaga modal tetap di tengah */
-  z-index: 9999;
-  overflow: hidden; /* Belakang tidak boleh scroll */
+  align-items: center; 
+  z-index: 1000;
+  overflow: hidden; 
 }
 
 .qr-modal {
   background: white;
   width: 90%;
   max-width: 440px;
-  max-height: 85vh; /* Batasi tinggi modal agar tidak keluar layar */
+  max-height: 85vh; 
   border-radius: 24px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-}
-
-/* Area Scrollbar di dalam Kotak Putih */
-.modal-scroll-area {
-  padding: 32px;
-  overflow-y: auto; /* Munculkan bar scroll di sini */
-  flex: 1;
-}
-
-/* Custom Scrollbar biar tipis & bersih */
-.modal-scroll-area::-webkit-scrollbar {
-  width: 6px;
-}
-.modal-scroll-area::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
 }
 
 .close-btn {
@@ -172,46 +187,9 @@
   z-index: 10;
   background: #f1f5f9; border: none;
   width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
-  font-size: 24px; color: #64748b; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #64748b; display: flex; align-items: center; justify-content: center;
   transition: 0.2s;
+  font-weight: bold;
 }
 
 .close-btn:hover { background: #e2e8f0; color: #aa0000; transform: rotate(90deg); }
-
-.modal-desc { font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; }
-
-.qr-preview-box {
-  width: 180px; height: 180px; background: #fafafa; border: 1px solid #f1f5f9;
-  border-radius: 16px; margin: 0 auto 15px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-
-.preview-label { font-size: 10px; color: #cbd5e1; font-weight: 800; margin-top: 8px; letter-spacing: 1px; }
-.preview-name { font-size: 26px; font-weight: 900; color: #1e293b; text-align: center; margin-top: 10px; }
-.scan-hint { font-size: 11px; color: #94a3b8; font-weight: 700; text-align: center; margin-bottom: 24px; }
-
-.input-group-left { text-align: left; width: 100%; }
-.input-group-left label { display: block; font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 8px; }
-
-.modal-input {
-  width: 100%; padding: 14px; border-radius: 10px; border: 1.5px solid #e2e8f0;
-  outline: none; font-size: 14px; transition: 0.2s;
-}
-
-.modal-input:focus { border-color: #aa0000; }
-
-.modal-footer-centered {
-  display: flex; justify-content: center; align-items: center;
-  gap: 20px; margin-top: 32px; width: 100%;
-}
-
-.btn-cancel {
-  padding: 12px 30px; background: white; border: 1.5px solid #e2e8f0;
-  color: #64748b; border-radius: 12px; font-weight: 700; cursor: pointer;
-}
-
-.btn-generate-pdf {
-  padding: 12px 24px; background: #d38383; color: white; border: none;
-  border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
-}
-
-.btn-generate-pdf:hover { background: #c27272; transform: translateY(-2px); }

@@ -31,10 +31,10 @@ import Pengaturan from './pages/admin/Pengaturan';
 import Kasir from './pages/kasir/DenahMeja';
 import Pos from './pages/kasir/Pos'; 
 import PesananDapur from './pages/kasir/PesananDapur';
-import Manajemenmenu from './pages/kasir/Manajemenmenu'; // <--- DITAMBAHKAN
+import Manajemenmenu from './pages/kasir/Manajemenmenu'; 
 import StokMenu from './pages/kasir/StokMenu';
 import LaporanRiwayat from './pages/kasir/LaporanRiwayat';
-import QrMeja from './pages/kasir/QrMeja'; // <--- DITAMBAHKAN
+import QrMeja from './pages/kasir/QrMeja'; 
 
 // --- KOMPONEN PROTECTED ROUTE ---
 const ProtectedRoute = ({ children }) => {
@@ -43,6 +43,13 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
   return children;
+};
+
+// --- KOMPONEN LOGOUT (DITAMBAHKAN) ---
+const LogoutHandler = () => {
+  localStorage.removeItem('isAuthenticated');
+  localStorage.removeItem('userRole');
+  return <Navigate to="/login" replace />;
 };
 
 function App() {
@@ -58,6 +65,9 @@ function App() {
         <Route path="/our-partner" element={<OurPartner />} /> 
         <Route path="/login" element={<Login />} />
         <Route path="/download" element={<DownloadApp />} />
+        
+        {/* --- ROUTE LOGOUT (DITAMBAHKAN) --- */}
+        <Route path="/logout" element={<LogoutHandler />} />
 
         {/* --- CUSTOMER ORDER FLOW --- */}
         <Route path="/order" element={<InputData />} />
@@ -80,10 +90,10 @@ function App() {
         <Route path="/kasir" element={<ProtectedRoute><Kasir /></ProtectedRoute>} />
         <Route path="/kasir/pos" element={<ProtectedRoute><Pos /></ProtectedRoute>} /> 
         <Route path="/kasir/pesanan" element={<ProtectedRoute><PesananDapur /></ProtectedRoute>} />
-        <Route path="/kasir/manajemen-menu" element={<ProtectedRoute><Manajemenmenu /></ProtectedRoute>} /> {/* <--- FIX: Manajemen Menu */}
+        <Route path="/kasir/manajemen-menu" element={<ProtectedRoute><Manajemenmenu /></ProtectedRoute>} /> 
         <Route path="/kasir/stok" element={<ProtectedRoute><StokMenu /></ProtectedRoute>} />
         <Route path="/kasir/laporan" element={<ProtectedRoute><LaporanRiwayat /></ProtectedRoute>} />
-        <Route path="/kasir/qr-meja" element={<ProtectedRoute><QrMeja /></ProtectedRoute>} /> {/* <--- FIX: QR Code Meja */}
+        <Route path="/kasir/qr-meja" element={<ProtectedRoute><QrMeja /></ProtectedRoute>} /> 
       </Routes>
     </BrowserRouter>
   );
