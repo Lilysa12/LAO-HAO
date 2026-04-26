@@ -158,33 +158,38 @@ export default function Home() {
   }, []);
 
   // --- LOGIKA ANIMASI SCROLL (.fade-in-up) ---
+  // =========================================================
+  // ANIMASI SCROLL MURNI (ANTI-BUG / ANTI-TABRAKAN)
+  // =========================================================
   useEffect(() => {
-    // Jangan jalankan animasi sebelum data Supabase selesai dimuat
-    if (loading) return;
+    const handleScrollAnimations = () => {
+      // Cari semua elemen animasi di halaman ini
+      const elements = document.querySelectorAll('.fade-in-up');
+      const windowHeight = window.innerHeight;
 
-    const observer = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            obs.unobserve(entry.target); // Lepas pantauan setelah muncul
-          }
-        });
-      },
-      {
-        threshold: 0.05, // Cukup masuk layar 5% langsung trigger
-        rootMargin: "0px 0px -50px 0px", 
-      }
-    );
+      elements.forEach((el) => {
+        const elementTop = el.getBoundingClientRect().top;
+        // Jika elemen sudah masuk ke dalam layar (dikurangi 50px)
+        if (elementTop < windowHeight - 50) {
+          el.classList.add('is-visible');
+        }
+      });
+    };
 
-    // Cari elemen HANYA di dalam homeRef (tidak merusak page lain)
-    if (homeRef.current) {
-      const hiddenElements = homeRef.current.querySelectorAll(".fade-in-up");
-      hiddenElements.forEach((el) => observer.observe(el));
-    }
+    // 1. Beri jeda sebentar nunggu data Supabase beres, lalu cek layar
+    const initialCheck = setTimeout(() => {
+      handleScrollAnimations();
+    }, 300);
 
-    return () => observer.disconnect();
-  }, [loading]); // Bergantung pada status loading
+    // 2. Pantau pergerakan scroll browser
+    window.addEventListener('scroll', handleScrollAnimations);
+
+    // 3. Bersihkan saat pindah halaman (penting biar ga bentrok sama DownloadApp)
+    return () => {
+      clearTimeout(initialCheck);
+      window.removeEventListener('scroll', handleScrollAnimations);
+    };
+  }, [loading]); // Bergantung pada loading state (jika ada) // Bergantung pada status loading
 
   const igPostDetails = [
     { likes: "83,2RB", foodName: "Pandan Malacca Kopi - Es", desc: "Es kopi kreamer santan gurih & manis berpadu pandan s...", date: "19 Januari", link: "https://www.instagram.com/p/DAxK-KTS5PZ/" },
