@@ -19,6 +19,7 @@ import IconQris from "../../../assets/icons/icons-customer/qris.png";
 import IconGopay from "../../../assets/icons/icons-customer/gopay.png";
 import IconShopee from "../../../assets/icons/icons-customer/shopee.png";
 
+
 export default function Payment() {
   const navigate = useNavigate();
   const location = useLocation();

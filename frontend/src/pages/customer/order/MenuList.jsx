@@ -252,6 +252,7 @@ export default function MenuList() {
               </div>
             </div>
 
+
             {/* Footer Modal (Sticky Checkout Bar) */}
             <div className="ml-modal-footer">
               <div className="ml-modal-footer-left">

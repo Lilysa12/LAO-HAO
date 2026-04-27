@@ -33,6 +33,7 @@
 
 .co-right-column { flex: 4; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px;}
 
+
 .co-promo-card { display: flex; align-items: center; gap: 15px; padding: 20px; border-radius: 16px; border: 1px solid #DEE2E6; background: #fff; cursor: pointer;}
 .co-promo-card.yellow-tint { background: linear-gradient(90deg, rgba(255, 198, 39, 0.1) 0%, rgba(255, 255, 255, 0) 100%); border-color: rgba(255, 198, 39, 0.4);}
 .co-promo-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: 800;}

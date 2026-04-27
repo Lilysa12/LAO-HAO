@@ -25,6 +25,7 @@ const SvgLocation = () => (
   </svg>
 );
 
+
 export default function InputData() {
   const navigate = useNavigate();
 

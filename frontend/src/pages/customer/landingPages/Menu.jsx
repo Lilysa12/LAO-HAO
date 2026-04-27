@@ -303,6 +303,7 @@ export default function Menu() {
                     <span>Laoban Nusantara</span>
                   </div>
                 )}
+                
 
                 {prod.id === hoveredMenuItemIndex && (
                   <div className="mn-item-overlay">

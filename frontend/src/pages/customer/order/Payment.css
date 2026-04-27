@@ -241,6 +241,7 @@
     box-sizing: border-box;
   }
   
+  
   .pay-summary-row { margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
   .pay-sum-label, .pay-sum-value { font-size: 13px; color: #6C757D;}
   
