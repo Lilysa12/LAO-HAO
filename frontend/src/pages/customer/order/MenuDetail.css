@@ -1,7 +1,10 @@
 /* src/pages/customer/MenuDetail.css */
 
 .md-container, .md-container * { box-sizing: border-box; }
-.md-container { width: 100%; max-width: 2000px; margin: 0 auto; background-color: #FFFFFF; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative; } /* Tambah position relative untuk anchor tombol floating */
+.md-container { width: 100%; max-width: 2000px; margin: 0 auto; background-color: #FFFFFF; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative; } 
+
+/* Kunci Layar saat modal terbuka */
+.md-container.modal-open { overflow: hidden; }
 
 /* --- HEADER --- */
 .md-header { display: flex; justify-content: flex-start; align-items: center; min-height: 92px; padding: 0 60px; border-bottom: 1px solid #F3F4F6; background: #fff; flex-shrink: 0; }
@@ -20,45 +23,10 @@
 .md-side-tab:hover { color: #212529; }
 .md-side-tab.active { color: #A00500; }
 
-/* =========================================================
-   KUNCI PRESISI 100%: SVG ICONS
-========================================================= */
-.md-st-icon { 
-  width: 56px; 
-  height: 56px; 
-  min-width: 56px; 
-  min-height: 56px;
-  border-radius: 50%; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  background: #FFFFFF; 
-  border: 1px solid #E5E7EB; 
-  transition: all 0.3s ease;
-  color: #A0AEC0; 
-  flex-shrink: 0;
-}
-
-.md-st-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-  transition: all 0.3s ease;
-  display: block; 
-}
-
-.md-side-tab.active .md-st-icon { 
-  background: rgba(160, 5, 0, 0.05); 
-  border-color: #A00500; 
-  box-shadow: 0 4px 10px rgba(160,5,0,0.1); 
-  color: #A00500; 
-}
-
-.md-side-tab.active .md-st-icon svg {
-  transform: scale(1.1); 
-}
-/* ========================================================= */
-
+.md-st-icon { width: 56px; height: 56px; min-width: 56px; min-height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: #FFFFFF; border: 1px solid #E5E7EB; transition: all 0.3s ease; color: #A0AEC0; flex-shrink: 0;}
+.md-st-icon svg { width: 24px; height: 24px; fill: currentColor; transition: all 0.3s ease; display: block; }
+.md-side-tab.active .md-st-icon { background: rgba(160, 5, 0, 0.05); border-color: #A00500; box-shadow: 0 4px 10px rgba(160,5,0,0.1); color: #A00500; }
+.md-side-tab.active .md-st-icon svg { transform: scale(1.1); }
 .md-st-text { font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* --- CONTENT AREA (SCROLLABLE) --- */
@@ -70,8 +38,7 @@
 
 .md-closeup-card { display: flex; gap: 40px; align-items: stretch; background: #fff; border-radius: 20px; }
 .md-closeup-img { width: 45%; max-width: 450px; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); flex-shrink: 0;}
-
-.img-frame { background-color: #F8F9FA; border: 2px dashed #DEE2E6; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #A0AEC0; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; text-align: center; padding: 10px; transition: 0.3s; box-shadow: none; }
+.img-frame { background-color: #F8F9FA; border: 2px dashed #DEE2E6; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #A0AEC0; transition: 0.3s; box-shadow: none; }
 .img-frame:hover { background-color: #F3F4F6; border-color: #A00500; color: #A00500; }
 
 .md-details-info { flex: 1; display: flex; flex-direction: column; padding: 10px 0;}
@@ -80,12 +47,19 @@
 .md-notes-area { width: 100%; background: #F8F9FA; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; font-family: 'Inter', sans-serif; font-size: 14px; min-height: 140px; resize: vertical; margin-bottom: auto; outline: none; transition: 0.3s; color: #212529;}
 .md-notes-area::placeholder { color: #A0AEC0; }
 .md-notes-area:focus { border-color: #A00500; box-shadow: 0 0 0 3px rgba(160,5,0,0.08); background: #fff;}
+
 .md-action-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F3F4F6; padding-top: 25px; margin-top: 30px;}
 .md-price { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: #A00500; }
 .md-btn-add { background: rgba(160, 5, 0, 0.08); color: #A00500; border: none; padding: 12px 30px; border-radius: 25px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;}
 .md-btn-add:hover { background: rgba(160, 5, 0, 0.15); transform: translateY(-2px); }
 
-/* --- CHECKOUT BAR ANTI NABRAK --- */
+/* --- QTY CONTROL (- 1 +) --- */
+.md-qty-control-wrapper { display: flex; align-items: center; gap: 15px; background-color: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 30px; padding: 5px 15px; height: 42px; }
+.md-qty-btn { background: transparent; border: none; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; cursor: pointer; color: #212529; }
+.md-qty-btn.plus { color: #A00500; }
+.md-qty-number { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; color: #212529; min-width: 12px; text-align: center; }
+
+/* --- CHECKOUT BAR UTAMA (MERAH & KUNING) --- */
 .md-checkout-wrapper { flex-shrink: 0; width: 100%; padding: 15px 60px 25px 60px; display: flex; justify-content: center; background-color: #FFFFFF; border-top: 1px solid #F3F4F6; z-index: 90; }
 .md-floating-bar { position: relative; width: 100%; background-color: #A00500; padding: 15px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 25px; box-shadow: 0 10px 30px rgba(160,5,0,0.15); z-index: 10; transition: 0.3s ease; cursor: pointer;}
 .md-floating-bar:hover { box-shadow: 0 15px 40px rgba(160,5,0,0.25); transform: translateY(-2px);}
@@ -99,50 +73,10 @@
 .md-btn-checkout { background: #FFC627; color: #212529; border: none; padding: 14px 28px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; flex-shrink: 0; white-space: nowrap; }
 .md-btn-checkout:hover { background: #e5b223; transform: scale(1.03);}
 
-
-/* =========================================================
-   TOMBOL HISTORY PESANAN (FLOATING)
-========================================================= */
-.md-history-btn {
-  position: fixed;
-  bottom: 40px; 
-  right: 40px; 
-  width: 60px;
-  height: 60px;
-  background-color: #A00500; 
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 8px 25px rgba(160, 5, 0, 0.4); 
-  cursor: pointer;
-  z-index: 85; 
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-}
-
-.md-history-btn img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  filter: brightness(0) invert(1); 
-  transition: transform 0.3s ease;
-}
-
-.md-history-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 12px 30px rgba(160, 5, 0, 0.5);
-  background-color: #8a0400; 
-}
-
-.md-history-btn:hover img {
-  transform: rotate(-10deg); 
-}
-
-/* Jika ada item di cart (bar checkout muncul), naikkan posisi tombol history */
-.md-history-btn.with-cart {
-  bottom: 140px; 
-}
-
+/* --- TOMBOL HISTORY PESANAN --- */
+.md-history-btn { position: fixed; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #A00500; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 25px rgba(160, 5, 0, 0.4); cursor: pointer; z-index: 85; transition: 0.3s; }
+.md-history-btn img { width: 28px; height: 28px; object-fit: contain; filter: brightness(0) invert(1); transition: 0.3s ease; }
+.md-history-btn.with-cart { bottom: 140px; }
 
 .efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
 .efek-klik:active { transform: scale(0.96); }
@@ -153,13 +87,87 @@
 .slide-up-animation { animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 @keyframes popUp { from { opacity: 0; transform: translateY(100px); } to { opacity: 1; transform: translateY(0); } }
 
+/* =========================================================
+   MODAL BOTTOM SHEET KERANJANG (PERSIS GAMBAR 0eadfb)
+========================================================= */
+.md-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Mutlak nempel ke bawah */
+  z-index: 999999999;
+}
+
+.md-modal-bottom-sheet {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
+}
+
+.md-modal-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 20px 25px; border-bottom: 1px solid #F3F4F6; 
+}
+.md-modal-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; margin: 0; color: #1A1A1A; }
+.md-close-btn { background: transparent; border: none; font-size: 22px; color: #6C757D; cursor: pointer; }
+
+.md-modal-body { padding: 20px 25px; overflow-y: auto; flex: 1; }
+
+/* Item List Modal */
+.md-preview-list { display: flex; flex-direction: column; gap: 20px; }
+.md-preview-item-card { display: flex; gap: 15px; border-bottom: 1px solid #F3F4F6; padding-bottom: 20px; }
+.md-preview-img-box { width: 65px; height: 65px; flex-shrink: 0; border-radius: 12px; overflow: hidden; background: #F8F9FA; }
+.md-preview-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+.md-preview-details-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.md-preview-item-name { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; color: #1A1A1A; margin-bottom: 4px; }
+
+.md-preview-note-wrapper { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.md-preview-note-wrapper input { border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 13px; color: #1A1A1A; width: 100%; }
+.md-preview-note-wrapper input::placeholder { color: #A0AEC0; }
+
+.md-preview-price-qty { display: flex; justify-content: space-between; align-items: center; }
+.md-preview-price { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #A00500; }
+
+.md-qty-control-wrapper-small { display: flex; align-items: center; gap: 10px; border: 1px solid #EAEAEA; border-radius: 8px; padding: 2px 8px; }
+.md-qty-btn-small { background: transparent; border: none; font-size: 16px; font-weight: 600; cursor: pointer; color: #212529; }
+.md-qty-btn-small.plus { color: #A00500; }
+.md-qty-number-small { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; min-width: 12px; text-align: center; }
+
+/* Footer Modal (Putih, Harga Merah, Tombol Merah) */
+.md-modal-footer { 
+  padding: 15px 25px; background: #fff; border-top: 1px solid #EAEAEA; 
+  display: flex; justify-content: space-between; align-items: center; 
+}
+.md-modal-footer-left { display: flex; align-items: center; gap: 15px; }
+.md-modal-cart-icon-wrapper { 
+  width: 45px; height: 45px; background: #FFF9E6; /* Light yellow background */
+  border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; 
+}
+.md-modal-cart-badge { 
+  position: absolute; top: 0; right: 0; background: #FFC627; color: #1A1A1A; 
+  font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; 
+  display: flex; justify-content: center; align-items: center; 
+}
+.md-modal-total-text .text-red { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: #A00500; }
+.md-btn-checkout-real { 
+  background: #A00500; color: #FFFFFF; border: none; padding: 14px 30px; 
+  border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; 
+}
+
+.slide-up-bottom-sheet { animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
 /* --- RESPONSIVE MOBILE --- */
 @media (max-width: 768px) {
-  .md-container { height: 100vh; }
-  
-  /* FOOTER HILANG TOTAL DI MOBILE */
   .md-header { display: none !important; }
-
   .md-top-bar { padding: 25px 20px 15px 20px; border-bottom: none; align-items: center; }
   .md-welcome-text { display: flex; flex-direction: column; gap: 4px; }
   .md-greeting { font-size: 12px; margin: 0; color: #6C757D;}
@@ -167,23 +175,11 @@
   .md-table-badge { padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: none; }
 
   .md-main-layout { padding: 0 20px; flex-direction: column; gap: 0; }
-  
-  /* Sidebar Mobile - Presisi Rata */
-  .md-sidebar {
-    flex-direction: row; width: 100%; position: relative; top: 0; overflow-x: auto; 
-    justify-content: space-between; gap: 15px; padding: 15px 10px; 
-    margin-bottom: 20px; border-bottom: 1px solid #F3F4F6;
-  }
+  .md-sidebar { flex-direction: row; width: 100%; position: relative; top: 0; overflow-x: auto; justify-content: space-between; gap: 15px; padding: 15px 10px; margin-bottom: 20px; border-bottom: 1px solid #F3F4F6; }
   .md-sidebar::-webkit-scrollbar { display: none; }
   .md-side-tab { flex: 1; gap: 8px; min-width: unset;}
-  
-  /* Lingkaran Ikon Mobile */
-  .md-st-icon { 
-    width: 50px; height: 50px; min-width: 50px; min-height: 50px; 
-    background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 50%; 
-  }
+  .md-st-icon { width: 50px; height: 50px; min-width: 50px; min-height: 50px; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 50%; }
   .md-st-icon svg { width: 22px; height: 22px; }
-
   .md-side-tab.active .md-st-icon { background: rgba(160, 5, 0, 0.05); border-color: #A00500; color: #A00500; }
   .md-st-text { font-size: 11px; font-weight: 600; color: #A0AEC0;}
   .md-side-tab.active .md-st-text { color: #A00500; }
@@ -200,14 +196,7 @@
   .md-btn-add { padding: 8px 24px; font-size: 13px; border-radius: 10px; background: #FDE8E8; color: #A00500; font-weight: 700; }
 
   /* Floating Checkout Bar Mobile */
-  .md-checkout-wrapper {
-    position: fixed; 
-    bottom: 0;
-    left: 0;
-    padding: 15px 20px 25px 20px; 
-    background: linear-gradient(to top, #fff 80%, rgba(255,255,255,0)); 
-    border-top: none;
-  }
+  .md-checkout-wrapper { position: fixed; bottom: 0; left: 0; padding: 15px 20px 25px 20px; background: linear-gradient(to top, #fff 80%, rgba(255,255,255,0)); border-top: none; }
   .md-floating-bar { padding: 12px 15px 12px 20px; border-radius: 16px; gap: 15px; box-shadow: 0 8px 25px rgba(160, 5, 0, 0.3); }
   .md-fb-left { gap: 15px; flex: 1; min-width: 0;}
   .md-cart-box { width: 40px; height: 40px; border-radius: 10px; border: none; background: transparent; padding: 0; flex-shrink: 0;}
@@ -218,15 +207,11 @@
   .md-cart-text p { font-size: 17px; font-weight: 800; margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
   .md-btn-checkout { padding: 10px 20px; font-size: 14px; border-radius: 10px; flex-shrink: 0; white-space: nowrap;}
 
-  /* Penyesuaian Tombol History di Mobile */
-  .md-history-btn {
-    bottom: 25px; 
-    right: 20px; 
-    width: 55px; 
-    height: 55px;
-  }
+  .md-history-btn { bottom: 25px; right: 20px; width: 55px; height: 55px; }
+  .md-history-btn.with-cart { bottom: 120px; }
   
-  .md-history-btn.with-cart {
-    bottom: 120px; /* Sesuaikan dengan tinggi bar checkout di mobile */
-  }
+  .md-modal-bottom-sheet { border-radius: 28px 28px 0 0; }
+  .md-modal-header { padding: 20px; }
+  .md-modal-body { padding: 15px 20px; }
+  .md-modal-footer { padding: 15px 20px 20px 20px; }
 }

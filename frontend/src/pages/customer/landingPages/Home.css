@@ -29,7 +29,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow-x: hidden; /* Ditaruh HANYA di container, BUKAN di body global */
+  overflow-x: hidden; 
   font-family: var(--font-inter);
 }
 
@@ -45,6 +45,14 @@
 .home-container .center-title { text-align: center; }
 .home-container .text-center { text-align: center; }
 .home-container .max-w { max-width: 700px; margin: 0 auto; width: 100%; }
+
+/* REVISI: PAKSA TEKS MERAH "OUR MENU" & "FOLLOW IG" JADI RATA TENGAH */
+.home-container .center-title .label-red,
+.home-container .ig-header-container .label-red {
+  text-align: center !important;
+  display: block;
+  width: 100%;
+}
 
 /* --- BUTTONS --- */
 .home-container .btn-red { background: var(--c-red); color: #fff; border: none; padding: 12px 28px; border-radius: 30px; font-family: var(--font-poppins); font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s;}

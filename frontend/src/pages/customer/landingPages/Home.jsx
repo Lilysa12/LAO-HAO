@@ -55,7 +55,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-// KOTA UNTUK MARQUEE (Ditulis manual untuk loop animasi)
+// KOTA UNTUK MARQUEE
 const marqueeCities = [
   "PALEMBANG", "CIREBON", "BOGOR", "BEKASI", "TANGERANG", "DEPOK", 
   "SOLO", "MALANG", "LOMBOK", "PEKANBARU", "BALIKPAPAN", "SAMARINDA", 
@@ -66,11 +66,9 @@ export default function Home() {
   const navigate = useNavigate();
   const [hoveredGridIndex, setHoveredGridIndex] = useState(null);
 
-  // --- REF UNTUK ISOLASI KOMPONEN ---
   const homeRef = useRef(null);
   const statsRef = useRef(null);
 
-  // --- STATE MENU & CABANG ---
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMenuCategory, setActiveMenuCategory] = useState("Main Dish");
 
@@ -87,7 +85,6 @@ export default function Home() {
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- FETCH DATA BACKEND ---
   useEffect(() => {
     const fetchSemuaData = async () => {
       try {
@@ -127,7 +124,6 @@ export default function Home() {
   const [tahun, setTahun] = useState(0);
   const [pelanggan, setPelanggan] = useState(0);
 
-  // --- ANIMASI ANGKA STATISTIK ---
   useEffect(() => {
     const animateValue = (setFn, start, end, duration) => {
       let startTimestamp = null;
@@ -157,39 +153,30 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  // --- LOGIKA ANIMASI SCROLL (.fade-in-up) ---
-  // =========================================================
-  // ANIMASI SCROLL MURNI (ANTI-BUG / ANTI-TABRAKAN)
-  // =========================================================
   useEffect(() => {
     const handleScrollAnimations = () => {
-      // Cari semua elemen animasi di halaman ini
       const elements = document.querySelectorAll('.fade-in-up');
       const windowHeight = window.innerHeight;
 
       elements.forEach((el) => {
         const elementTop = el.getBoundingClientRect().top;
-        // Jika elemen sudah masuk ke dalam layar (dikurangi 50px)
         if (elementTop < windowHeight - 50) {
           el.classList.add('is-visible');
         }
       });
     };
 
-    // 1. Beri jeda sebentar nunggu data Supabase beres, lalu cek layar
     const initialCheck = setTimeout(() => {
       handleScrollAnimations();
     }, 300);
 
-    // 2. Pantau pergerakan scroll browser
     window.addEventListener('scroll', handleScrollAnimations);
 
-    // 3. Bersihkan saat pindah halaman (penting biar ga bentrok sama DownloadApp)
     return () => {
       clearTimeout(initialCheck);
       window.removeEventListener('scroll', handleScrollAnimations);
     };
-  }, [loading]); // Bergantung pada loading state (jika ada) // Bergantung pada status loading
+  }, [loading]);
 
   const igPostDetails = [
     { likes: "83,2RB", foodName: "Pandan Malacca Kopi - Es", desc: "Es kopi kreamer santan gurih & manis berpadu pandan s...", date: "19 Januari", link: "https://www.instagram.com/p/DAxK-KTS5PZ/" },
@@ -211,13 +198,7 @@ export default function Home() {
       {/* ================= 1. NAVBAR ================= */}
       <nav className="navbar">
         <div className="logo-box">
-          <img
-            src={LogoLaoban}
-            alt="Logo Laoban"
-            className="logo-img"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigateToTop("/home")}
-          />
+          <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{ cursor: "pointer" }} onClick={() => navigateToTop("/home")} />
         </div>
 
         <div className={`nav-links ${isMobileMenuOpen ? "mobile-active" : ""}`}>
@@ -226,21 +207,13 @@ export default function Home() {
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/menu"); }}>Menu</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/our-partner"); }}>Our Partner</a>
           <a href="#" onClick={(e) => { e.preventDefault(); navigateToTop("/partnership"); }}>Partnership</a>
-
-          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop("/download")}>
-            Pesan Sekarang
-          </button>
+          <button className="btn-red mobile-only-btn" onClick={() => navigateToTop("/download")}>Pesan Sekarang</button>
         </div>
 
         <div className="nav-actions">
-          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop("/download")}>
-            Pesan Sekarang
-          </button>
-
+          <button className="btn-red desktop-only-btn" onClick={() => navigateToTop("/download")}>Pesan Sekarang</button>
           <div className={`hamburger ${isMobileMenuOpen ? "open" : ""}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            <span className="bar"></span>
-            <span className="bar"></span>
-            <span className="bar"></span>
+            <span className="bar"></span><span className="bar"></span><span className="bar"></span>
           </div>
         </div>
       </nav>
@@ -249,24 +222,14 @@ export default function Home() {
       <section className="hero fade-in-up delay-1">
         <div className="hero-text">
           <div className="hero-subtitle-left">老板 Nusantara · By Uncle Osh</div>
-          <h1 className="hero-title">
-            LAOBAN <br />
-            <span className="text-red">NUSANTARA</span>
-          </h1>
-
+          <h1 className="hero-title">LAOBAN <br /><span className="text-red">NUSANTARA</span></h1>
           <div className="badges">
             <span className="badge badge-yellow">🏆 50+ Cabang</span>
             <span className="badge badge-yellow">📍 34 Kota Indonesia</span>
             <span className="badge badge-green">✅ Halal Certified</span>
             <span className="badge badge-red-light">1 Juta+ Pelanggan</span>
           </div>
-
-          <p className="hero-desc">
-            Nikmati kehangatan resep rahasia Uncle Osh. Mulai dari kopi sedap
-            hingga mie khas Laoban yang memanjakan lidah, disajikan modern namun
-            tetap menjaga tradisi.
-          </p>
-
+          <p className="hero-desc">Nikmati kehangatan resep rahasia Uncle Osh. Mulai dari kopi sedap hingga mie khas Laoban yang memanjakan lidah, disajikan modern namun tetap menjaga tradisi.</p>
           <div className="hero-action">
             <button className="btn-red" onClick={() => navigateToTop("/menu")}>Lihat Menu Pilihan</button>
             <button className="btn-outline" onClick={() => navigateToTop("/partnership")}>Gabung Kemitraan</button>
@@ -285,40 +248,20 @@ export default function Home() {
       <div className="red-marquee-container fade-in-up">
         <div className="red-marquee-track">
           {marqueeCities.map((city, idx) => (
-            <div className="marquee-item" key={`orig-${idx}`}>
-              <span className="yellow-box">&#9632;</span> {city}
-            </div>
+            <div className="marquee-item" key={`orig-${idx}`}><span className="yellow-box">&#9632;</span> {city}</div>
           ))}
           {marqueeCities.map((city, idx) => (
-            <div className="marquee-item" key={`dup-${idx}`}>
-              <span className="yellow-box">&#9632;</span> {city}
-            </div>
+            <div className="marquee-item" key={`dup-${idx}`}><span className="yellow-box">&#9632;</span> {city}</div>
           ))}
         </div>
       </div>
 
       {/* ================= STATS ================= */}
       <section className="stats fade-in-up" ref={statsRef}>
-        <div className="stat-box">
-          <h2>{branches.length > 0 ? branches.length : cabang}+</h2>
-          <h3>CABANG AKTIF</h3>
-          <p>Di seluruh Indonesia</p>
-        </div>
-        <div className="stat-box">
-          <h2>{kota}</h2>
-          <h3>KOTA & KABUPATEN</h3>
-          <p>Sabang - Makassar</p>
-        </div>
-        <div className="stat-box">
-          <h2>{tahun}+</h2>
-          <h3>TAHUN PENGALAMAN</h3>
-          <p>Berdiri sejak 2018</p>
-        </div>
-        <div className="stat-box">
-          <h2>{pelanggan}M+</h2>
-          <h3>PELANGGAN SETIA</h3>
-          <p>Kepercayaan jutaan orang</p>
-        </div>
+        <div className="stat-box"><h2>{branches.length > 0 ? branches.length : cabang}+</h2><h3>CABANG AKTIF</h3><p>Di seluruh Indonesia</p></div>
+        <div className="stat-box"><h2>{kota}</h2><h3>KOTA & KABUPATEN</h3><p>Sabang - Makassar</p></div>
+        <div className="stat-box"><h2>{tahun}+</h2><h3>TAHUN PENGALAMAN</h3><p>Berdiri sejak 2018</p></div>
+        <div className="stat-box"><h2>{pelanggan}M+</h2><h3>PELANGGAN SETIA</h3><p>Kepercayaan jutaan orang</p></div>
       </section>
 
       <div className="yellow-line"></div>
@@ -330,44 +273,26 @@ export default function Home() {
           <img src={ImgAbout1} alt="Kopi Laoban" className="about-img-left" />
           <img src={ImgAbout2} alt="Teh Laoban" className="about-img-right" />
         </div>
-
         <div className="about-text">
           <p className="label-red">CERITA KAMI</p>
           <h2 className="title-dark">Warisan Rasa dari Uncle Osh</h2>
-          <p className="desc-gray">
-            Berawal dari kecintaan terhadap budaya ngopi dan menyantap kudapan
-            lezat di sore hari, Laoban hadir mengusung konsep Kopitiam klasik
-            yang dikemas secara modern.
-          </p>
-          <p className="desc-gray">
-            Kami berkomitmen untuk selalu menyajikan kualitas terbaik dengan
-            harga yang bersahabat. Kebersihan, pelayanan ramah, dan cita rasa
-            autentik adalah kunci yang membawa kami terus berekspansi hingga
-            memiliki lebih dari 50 cabang di seluruh Indonesia.
-          </p>
-          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); navigateToTop("/about"); }}>
-            Baca Selengkapnya &rarr;
-          </a>
+          <p className="desc-gray">Berawal dari kecintaan terhadap budaya ngopi dan menyantap kudapan lezat di sore hari, Laoban hadir mengusung konsep Kopitiam klasik yang dikemas secara modern.</p>
+          <p className="desc-gray">Kami berkomitmen untuk selalu menyajikan kualitas terbaik dengan harga yang bersahabat. Kebersihan, pelayanan ramah, dan cita rasa autentik adalah kunci yang membawa kami terus berekspansi hingga memiliki lebih dari 50 cabang di seluruh Indonesia.</p>
+          <a href="#" className="link-red" onClick={(e) => { e.preventDefault(); navigateToTop("/about"); }}>Baca Selengkapnya &rarr;</a>
         </div>
       </section>
 
       {/* ================= 5. MENU SECTION ================= */}
       <section className="menu-section fade-in-up">
         <div className="center-title">
-          <p className="label-red">OUR MENU</p>
-          <h2 className="title-dark">Menu Perguruan Laoban</h2>
+          <p className="label-red text-center">OUR MENU</p>
+          <h2 className="title-dark text-center">Menu Perguruan Laoban</h2>
         </div>
 
         <div className="menu-tabs">
           {menuCategories.map((cat, idx) => (
-            <div
-              key={idx}
-              className={`tab ${activeMenuCategory === cat.name ? "active" : ""}`}
-              onClick={() => setActiveMenuCategory(cat.name)}
-            >
-              <div className="icon">
-                <img src={cat.icon} alt={cat.name} className="tab-img" />
-              </div>
+            <div key={idx} className={`tab ${activeMenuCategory === cat.name ? "active" : ""}`} onClick={() => setActiveMenuCategory(cat.name)}>
+              <div className="icon"><img src={cat.icon} alt={cat.name} className="tab-img" /></div>
               <span>{cat.name}</span>
             </div>
           ))}
@@ -375,9 +300,7 @@ export default function Home() {
 
         <div className="menu-list fade-in-up delay-1">
           {loading ? (
-            <p style={{ gridColumn: "1 / -1", textAlign: "center", padding: "20px" }}>
-              Lagi nyiapin menu favoritmu...
-            </p>
+            <p style={{ gridColumn: "1 / -1", textAlign: "center", padding: "20px" }}>Lagi nyiapin menu favoritmu...</p>
           ) : displayedMenus.length > 0 ? (
             displayedMenus.map((item) => (
               <div className="menu-card" key={item.id}>
@@ -393,33 +316,24 @@ export default function Home() {
               </div>
             ))
           ) : (
-            <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "#888" }}>
-              Belum ada menu di kategori ini.
-            </p>
+            <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "#888" }}>Belum ada menu di kategori ini.</p>
           )}
         </div>
 
         <div className="center-btn">
-          <button className="btn-outline-red" onClick={() => navigateToTop("/menu")}>
-            Lihat Seluruh Menu
-          </button>
+          <button className="btn-outline-red" onClick={() => navigateToTop("/menu")}>Lihat Seluruh Menu</button>
         </div>
       </section>
 
       {/* ================= 6. MAP SECTION ================= */}
       <section className="map-section fade-in-up">
         <h2 className="title-dark center-title">50+ Titik Kenikmatan di Seluruh Nusantara</h2>
-        <p className="desc-gray text-center max-w">
-          Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk
-          mendekatkan kehangatan Kopitiam autentik ke kota Anda.
-        </p>
+        <p className="desc-gray text-center max-w">Dari ujung barat hingga timur, Laoban terus melebarkan sayap untuk mendekatkan kehangatan Kopitiam autentik ke kota Anda.</p>
 
         <div className="home-map-wrapper fade-in-up delay-1">
-          <MapContainer center={[-2.5, 118.0]} zoom={5} scrollWheelZoom={false} className="home-map-container">
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+          {/* REVISI: scrollWheelZoom diubah jadi true biar bisa dizoom in/out pake mouse scroll */}
+          <MapContainer center={[-2.5, 118.0]} zoom={5} scrollWheelZoom={true} className="home-map-container">
+            <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {branches.map((branch) => (
               <Marker key={branch.id} position={[branch.lat, branch.lng]}>
                 <Popup>
@@ -439,9 +353,7 @@ export default function Home() {
         </div>
 
         <div className="center-btn">
-          <button className="btn-outline-red" onClick={() => navigateToTop("/our-partner")}>
-            Lihat Detail Cabang
-          </button>
+          <button className="btn-outline-red" onClick={() => navigateToTop("/our-partner")}>Lihat Detail Cabang</button>
         </div>
       </section>
 
@@ -454,14 +366,7 @@ export default function Home() {
 
         <div className="ig-grid">
           {gridImages.map((image, index) => (
-            <div
-              key={index}
-              className="ig-item-wrapper fade-in-up"
-              style={{ transitionDelay: `${index * 0.05}s` }}
-              onMouseEnter={() => setHoveredGridIndex(index)}
-              onMouseLeave={() => setHoveredGridIndex(null)}
-              onClick={() => window.open(igPostDetails[index].link, "_blank")}
-            >
+            <div key={index} className="ig-item-wrapper fade-in-up" style={{ transitionDelay: `${index * 0.05}s` }} onMouseEnter={() => setHoveredGridIndex(index)} onMouseLeave={() => setHoveredGridIndex(null)} onClick={() => window.open(igPostDetails[index].link, "_blank")}>
               <img src={image} alt={`IG ${index + 1}`} className="ig-img" />
               {index === hoveredGridIndex && (
                 <div className="ig-overlay-card">
@@ -486,26 +391,10 @@ export default function Home() {
           <div className="watermark">☕</div>
           <div className="cta-content">
             <h2>Jadilah Bagian dari Kesuksesan<br />Laoban</h2>
-            <p>
-              Sudah 50+ cabang membuktikan kualitas dan profitabilitas bisnis
-              Laoban Nusantara. Kini giliran Anda membuka peluang sukses dan
-              bertumbuh bersama kami.
-            </p>
+            <p>Sudah 50+ cabang membuktikan kualitas dan profitabilitas bisnis Laoban Nusantara. Kini giliran Anda membuka peluang sukses dan bertumbuh bersama kami.</p>
             <div className="cta-action">
-              <button
-                className="btn-yellow"
-                style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                onClick={() => navigateToTop("/partnership")}
-              >
-                <img src={IconKemitraan} alt="Kemitraan Icon" style={{ width: "20px", height: "20px", objectFit: "contain" }} />
-                Pelajari Kemitraan
-              </button>
-              <button
-                className="btn-outline-white"
-                onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")}
-              >
-                Hubungi Tim Sales
-              </button>
+              <button className="btn-yellow" style={{ display: "flex", alignItems: "center", gap: "10px" }} onClick={() => navigateToTop("/partnership")}><img src={IconKemitraan} alt="Kemitraan Icon" style={{ width: "20px", height: "20px", objectFit: "contain" }} />Pelajari Kemitraan</button>
+              <button className="btn-outline-white" onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")}>Hubungi Tim Sales</button>
             </div>
           </div>
         </div>
@@ -518,18 +407,10 @@ export default function Home() {
             <img src={LogoLaoban} alt="Logo Laoban" className="logo-img" style={{ marginBottom: "15px", cursor: "pointer" }} onClick={() => navigateToTop("/home")} />
             <p>Menyajikan hidangan dan minuman khas Kopitiam Nusantara dengan bahan premium, kebersihan terjaga, dan resep rahasia Uncle Osh.</p>
             <div className="socials socials-colored unified-socmed">
-              <div className="soc-colored" onClick={() => window.open("https://www.instagram.com/laoban.nusantara/", "_blank")}>
-                <img src={IconInstagram} alt="Instagram" className="soc-img" />
-              </div>
-              <div className="soc-colored" onClick={() => window.open("https://www.tiktok.com/@laoban.nusantara", "_blank")}>
-                <img src={IconTiktok} alt="Tiktok" className="soc-img" />
-              </div>
-              <div className="soc-colored" onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")}>
-                <img src={IconWhatsapp} alt="Whatsapp" className="soc-img" />
-              </div>
-              <div className="soc-colored" onClick={() => window.open("https://www.facebook.com/laoban.nusantara/", "_blank")}>
-                <img src={IconFacebook} alt="Facebook" className="soc-img" />
-              </div>
+              <div className="soc-colored" onClick={() => window.open("https://www.instagram.com/laoban.nusantara/", "_blank")}><img src={IconInstagram} alt="Instagram" className="soc-img" /></div>
+              <div className="soc-colored" onClick={() => window.open("https://www.tiktok.com/@laoban.nusantara", "_blank")}><img src={IconTiktok} alt="Tiktok" className="soc-img" /></div>
+              <div className="soc-colored" onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")}><img src={IconWhatsapp} alt="Whatsapp" className="soc-img" /></div>
+              <div className="soc-colored" onClick={() => window.open("https://www.facebook.com/laoban.nusantara/", "_blank")}><img src={IconFacebook} alt="Facebook" className="soc-img" /></div>
             </div>
           </div>
 
@@ -554,14 +435,8 @@ export default function Home() {
           <div className="foot-links">
             <h4>Hubungi Kami</h4>
             <ul className="contact-list contact-modern">
-              <li onClick={() => (window.location.href = "mailto:laobankopitiam@gmail.com")} style={{ cursor: "pointer" }}>
-                <img src={IconMessage} alt="Email" className="contact-icon" />
-                <span className="contact-info contact-link">laobankopitiam@gmail.com</span>
-              </li>
-              <li onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")} style={{ cursor: "pointer" }}>
-                <img src={IconCall} alt="Phone" className="contact-icon" />
-                <span className="contact-info contact-bold">+62 822 4450 3221</span>
-              </li>
+              <li onClick={() => (window.location.href = "mailto:laobankopitiam@gmail.com")} style={{ cursor: "pointer" }}><img src={IconMessage} alt="Email" className="contact-icon" /><span className="contact-info contact-link">laobankopitiam@gmail.com</span></li>
+              <li onClick={() => window.open("https://api.whatsapp.com/send/?phone=%2B6282244503221", "_blank")} style={{ cursor: "pointer" }}><img src={IconCall} alt="Phone" className="contact-icon" /><span className="contact-info contact-bold">+62 822 4450 3221</span></li>
             </ul>
           </div>
         </div>

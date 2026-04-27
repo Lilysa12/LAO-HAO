@@ -1,5 +1,10 @@
+/* src/pages/customer/MenuList.css */
+
 .ml-container, .ml-container * { box-sizing: border-box; }
-.ml-container { width: 100%; max-width: 2000px; margin: 0 auto; background-color: #FFFFFF; display: flex; flex-direction: column; min-height: 100vh; position: relative; } /* Tambah position relative untuk anchor tombol floating */
+.ml-container { width: 100%; max-width: 2000px; margin: 0 auto; background-color: #FFFFFF; display: flex; flex-direction: column; min-height: 100vh; position: relative; }
+
+/* Kunci Layar saat modal terbuka */
+.ml-container.modal-open { height: 100vh; overflow: hidden; }
 
 .ml-header { display: flex; justify-content: space-between; align-items: center; min-height: 92px; padding: 0 60px; border-bottom: 1px solid #F3F4F6; background: #fff; position: sticky; top: 0; z-index: 100; }
 .ml-logo { height: 45px; object-fit: contain; }
@@ -16,45 +21,10 @@
 .ml-side-tab:hover { color: #212529; }
 .ml-side-tab.active { color: #A00500; }
 
-/* =========================================================
-   KUNCI PRESISI 100%: SVG ICONS 
-========================================================= */
-.ml-st-icon { 
-  width: 56px; 
-  height: 56px; 
-  min-width: 56px; 
-  min-height: 56px;
-  border-radius: 50%; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  background: #FFFFFF; 
-  border: 1px solid #E5E7EB; 
-  transition: all 0.3s ease;
-  color: #A0AEC0; 
-  flex-shrink: 0;
-}
-
-.ml-st-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-  transition: all 0.3s ease;
-  display: block; 
-}
-
-.ml-side-tab.active .ml-st-icon { 
-  background: rgba(160, 5, 0, 0.05); 
-  border-color: #A00500; 
-  box-shadow: 0 4px 10px rgba(160,5,0,0.1); 
-  color: #A00500; 
-}
-
-.ml-side-tab.active .ml-st-icon svg { 
-  transform: scale(1.1); 
-} 
-/* ========================================================= */
-
+.ml-st-icon { width: 56px; height: 56px; min-width: 56px; min-height: 56px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: #FFFFFF; border: 1px solid #E5E7EB; transition: all 0.3s ease; color: #A0AEC0; flex-shrink: 0;}
+.ml-st-icon svg { width: 24px; height: 24px; fill: currentColor; transition: all 0.3s ease; display: block; }
+.ml-side-tab.active .ml-st-icon { background: rgba(160, 5, 0, 0.05); border-color: #A00500; box-shadow: 0 4px 10px rgba(160,5,0,0.1); color: #A00500; }
+.ml-side-tab.active .ml-st-icon svg { transform: scale(1.1); } 
 .ml-st-text { font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .ml-content-area { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
@@ -71,8 +41,13 @@
 .ml-btn-add { background: rgba(160, 5, 0, 0.05); color: #A00500; border: none; padding: 10px 24px; border-radius: 25px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.3s;}
 .ml-btn-add:hover { background: rgba(160, 5, 0, 0.1); transform: translateY(-2px);}
 
+.ml-qty-control-wrapper { display: flex; align-items: center; gap: 12px; background-color: #FFFFFF; border: 1px solid #EAEAEA; border-radius: 20px; padding: 4px 12px; height: 36px; }
+.ml-qty-btn { background: transparent; border: none; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; color: #212529; }
+.ml-qty-btn.plus { color: #A00500; }
+.ml-qty-number { font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; color: #212529; min-width: 14px; text-align: center; }
+
 .ml-checkout-wrapper { position: fixed; bottom: 0; left:0; width: 100%; padding: 30px 60px 40px 60px; display: flex; justify-content: center; background-color: #FFFFFF; border-top: 1px solid #F3F4F6; z-index: 90; }
-.ml-floating-bar { position: relative; width: 100%; background-color: #A00500; padding: 15px 25px 15px 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(160,5,0,0.15); z-index: 10; transition: 0.3s ease; cursor: pointer;}
+.ml-floating-bar { position: relative; width: 100%; background-color: #A00500; padding: 15px 25px 15px 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(160,5,0,0.15); cursor: pointer; transition: 0.3s ease;}
 .ml-floating-bar:hover { box-shadow: 0 15px 40px rgba(160,5,0,0.25); transform: translateY(-2px);}
 .ml-fb-left { display: flex; align-items: center; gap: 20px; color: #FFFFFF; }
 .ml-cart-box { width: 50px; height: 50px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; display: flex; justify-content: center; align-items: center; position: relative; }
@@ -83,90 +58,139 @@
 .ml-btn-checkout { background: #FFC627; color: #212529; border: none; padding: 14px 28px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.3s;}
 .ml-btn-checkout:hover { background: #e5b223; transform: scale(1.03);}
 
+.ml-history-btn { position: fixed; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #A00500; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 25px rgba(160, 5, 0, 0.4); cursor: pointer; z-index: 85; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.ml-history-btn img { width: 28px; height: 28px; object-fit: contain; filter: brightness(0) invert(1); transition: transform 0.3s ease; }
+.ml-history-btn:hover { transform: translateY(-5px) scale(1.05); background-color: #8a0400; }
+.ml-history-btn.with-cart { bottom: 140px; }
+
+.img-frame { background-color: #F8F9FA; border: 2px dashed #DEE2E6; display: flex; justify-content: center; align-items: center; color: #A0AEC0; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; text-align: center; padding: 10px; transition: 0.3s; }
+
 /* =========================================================
-   TOMBOL HISTORY PESANAN (FLOATING)
+   BOTTOM SHEET MODAL ALA SHOPEEFOOD
 ========================================================= */
-.ml-history-btn {
+.ml-modal-overlay {
   position: fixed;
-  bottom: 40px; /* Jarak dari bawah */
-  right: 40px; /* Jarak dari kanan */
-  width: 60px;
-  height: 60px;
-  background-color: #A00500; /* Merah Laoban */
-  border-radius: 50%;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
-  align-items: center;
-  box-shadow: 0 8px 25px rgba(160, 5, 0, 0.4); /* Bayangan estetik */
-  cursor: pointer;
-  z-index: 85; /* Di bawah bar checkout (z-index: 90) jika muncul */
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animasi memantul */
+  align-items: flex-end; /* MUTLAK NEMPEL KE BAWAH */
+  z-index: 9999999999;
 }
 
-.ml-history-btn img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  filter: brightness(0) invert(1); /* Mewarnai icon jadi putih jika aslinya hitam */
-  transition: transform 0.3s ease;
+.ml-modal-bottom-sheet {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 600px; /* Batas di layar besar */
+  border-radius: 24px 24px 0 0; /* Lengkung Atas Saja */
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh; /* Sisakan sedikit area gelap di atas */
+  box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
 }
 
-.ml-history-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 12px 30px rgba(160, 5, 0, 0.5);
-  background-color: #8a0400; /* Merah lebih gelap saat dihover */
+.ml-modal-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 20px 25px; border-bottom: 1px solid #EAEAEA; 
+}
+.ml-modal-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; margin: 0; color: #1A1A1A; }
+.ml-close-btn { background: transparent; border: none; font-size: 22px; color: #6C757D; cursor: pointer; }
+
+.ml-modal-body { 
+  padding: 20px 25px; 
+  overflow-y: auto; 
+  flex: 1; /* Agar list bisa discroll */
 }
 
-.ml-history-btn:hover img {
-  transform: rotate(-10deg); /* Sedikit rotasi saat dihover */
+/* LIST BARANG DI KERANJANG */
+.ml-preview-list { display: flex; flex-direction: column; gap: 20px; }
+.ml-preview-item-card { display: flex; gap: 15px; border-bottom: 1px solid #F3F4F6; padding-bottom: 20px;}
+.ml-preview-img-box { width: 65px; height: 65px; flex-shrink: 0; border-radius: 12px; overflow: hidden; background: #F8F9FA;}
+.ml-preview-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+.ml-preview-details-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between;}
+.ml-preview-item-name { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; color: #1A1A1A; margin-bottom: 8px;}
+
+.ml-preview-note-wrapper { 
+  display: flex; align-items: center; gap: 8px; 
+  margin-bottom: 12px; cursor: text;
+}
+.ml-preview-note-wrapper input {
+  border: none; outline: none; background: transparent;
+  font-family: 'Inter', sans-serif; font-size: 13px; color: #1A1A1A;
+  width: 100%;
+}
+.ml-preview-note-wrapper input::placeholder { color: #A0AEC0; }
+
+.ml-preview-price-qty { display: flex; justify-content: space-between; align-items: center;}
+.ml-preview-price { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #A00500; }
+
+/* QTY Control didalam Modal */
+.ml-qty-control-wrapper-small { display: flex; align-items: center; gap: 10px; border: 1px solid #EAEAEA; border-radius: 8px; padding: 2px 8px;}
+.ml-qty-btn-small { background: transparent; border: none; font-size: 16px; font-weight: 600; color: #212529; cursor: pointer; padding: 0 4px;}
+.ml-qty-btn-small.plus { color: #A00500; }
+.ml-qty-number-small { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; min-width: 12px; text-align: center;}
+
+/* FOOTER / BAR CHECKOUT DI DALAM MODAL */
+.ml-modal-footer { 
+  padding: 15px 25px; 
+  background: #fff; 
+  border-top: 1px solid #EAEAEA; 
+  display: flex; justify-content: space-between; align-items: center;
+}
+.ml-modal-footer-left { display: flex; align-items: center; gap: 15px; }
+
+.ml-modal-cart-icon { 
+  width: 45px; height: 45px; 
+  background: #FFF4F4; border-radius: 50%; 
+  display: flex; justify-content: center; align-items: center; 
+  position: relative;
+}
+.ml-modal-cart-icon img { width: 22px; height: 22px; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
+.ml-modal-cart-badge { 
+  position: absolute; top: -2px; right: -2px; 
+  background: #FFC627; color: #212529; 
+  font-size: 10px; font-weight: 800; 
+  width: 18px; height: 18px; border-radius: 50%; 
+  display: flex; justify-content: center; align-items: center; 
+  border: 2px solid #FFF;
 }
 
-/* Jika ada item di cart (bar checkout muncul), naikkan posisi tombol history */
-.ml-history-btn.with-cart {
-  bottom: 140px; /* Sesuaikan dengan tinggi bar checkout */
+.ml-modal-total-text .text-red { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: #A00500; }
+
+.ml-btn-checkout-real { 
+  background: #A00500; color: #FFFFFF; 
+  border: none; padding: 14px 30px; 
+  border-radius: 30px; font-family: 'Poppins', sans-serif; 
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; 
 }
+.ml-btn-checkout-real:active { transform: scale(0.96); background: #8a0400;}
 
-
-.animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(30px); }
-@keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
+/* ANIMASI BOTTOM SHEET */
+.slide-up-bottom-sheet { animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .slide-up-animation { animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 @keyframes popUp { from { opacity: 0; transform: translateY(100px); } to { opacity: 1; transform: translateY(0); } }
 
-.img-frame { background-color: #F8F9FA; border: 2px dashed #DEE2E6; display: flex; justify-content: center; align-items: center; color: #A0AEC0; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; text-align: center; padding: 10px; transition: 0.3s; }
-.img-frame:hover { background-color: #F3F4F6; border-color: #A00500; color: #A00500; }
-
+/* =========================================================
+   RESPONSIVE MOBILE
+========================================================= */
 @media (max-width: 768px) {
   .ml-container { overflow-x: hidden; width: 100%; max-width: 100vw; }
-  
   .ml-header { display: none !important; } 
-
   .ml-top-bar { padding: 25px 20px 15px 20px; border-bottom: none; align-items: center; width: 100%; box-sizing: border-box; }
   .ml-welcome-text { display: flex; flex-direction: column; gap: 4px; }
   .ml-greeting { font-size: 12px; margin: 0; color: #6C757D;}
   .ml-page-title { font-size: 24px; margin: 0; font-weight: 800;}
   .ml-table-badge { padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; box-shadow: none; }
-
   .ml-main-layout { padding: 0 20px; flex-direction: column; gap: 0; width: 100%; box-sizing: border-box; }
 
-  .ml-sidebar { 
-    flex-direction: row; width: 100%; position: relative; top: 0; overflow-x: auto; 
-    justify-content: space-between; gap: 15px; padding: 15px 10px; 
-    margin-bottom: 20px; border-bottom: 1px solid #F3F4F6; 
-  }
+  .ml-sidebar { flex-direction: row; width: 100%; position: relative; top: 0; overflow-x: auto; justify-content: space-between; gap: 15px; padding: 15px 10px; margin-bottom: 20px; border-bottom: 1px solid #F3F4F6; }
   .ml-sidebar::-webkit-scrollbar { display: none; }
-  
   .ml-side-tab { flex: 1; gap: 8px; min-width: unset;}
-  
-  .ml-st-icon { 
-    width: 50px; height: 50px; min-width: 50px; min-height: 50px; 
-    background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 50%; 
-  }
+  .ml-st-icon { width: 50px; height: 50px; min-width: 50px; min-height: 50px; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 50%; }
   .ml-st-icon svg { width: 22px; height: 22px; }
-
-  .ml-side-tab.active .ml-st-icon { 
-    background: rgba(160, 5, 0, 0.05); border-color: #A00500; color: #A00500; 
-  }
-  
+  .ml-side-tab.active .ml-st-icon { background: rgba(160, 5, 0, 0.05); border-color: #A00500; color: #A00500; }
   .ml-st-text { font-size: 11px; font-weight: 700; color: #A0AEC0;}
   .ml-side-tab.active .ml-st-text { color: #A00500; }
 
@@ -182,36 +206,8 @@
   .ml-price { font-size: 15px; font-weight: 700; color: #A00500;}
   .ml-btn-add { padding: 6px 14px; font-size: 13px; background: #FDE8E8; color: #A00500; border-radius: 8px; font-weight: 700; }
 
-  /* =========================================================
-     FIX: CHECKOUT BAR NGAMBANG & GRADASI (MOBILE)
-  ========================================================= */
-  .ml-checkout-wrapper { 
-    position: fixed; 
-    bottom: 0; 
-    left: 0; 
-    width: 100%; 
-    padding: 15px 20px 25px 20px; /* Padding bawah 25px agar tidak mepet dasar */
-    box-sizing: border-box; 
-    background: linear-gradient(to top, #ffffff 80%, rgba(255,255,255,0)); /* Efek gradasi pudar */
-    border-top: none; 
-    pointer-events: none; /* Agar area gradasi tetap bisa diklik untuk scroll */
-    z-index: 100; 
-  } 
-
-  .ml-floating-bar { 
-    padding: 12px 15px 12px 20px; 
-    border-radius: 16px; 
-    flex-direction: row; 
-    align-items: center; 
-    text-align: left; 
-    gap: 15px; 
-    background-color: #A00500; 
-    box-shadow: 0 8px 25px rgba(160, 5, 0, 0.3); 
-    pointer-events: auto; /* Kembalikan pointer event pada pil merahnya */
-    width: 100%; 
-    box-sizing: border-box; 
-  }
-
+  .ml-checkout-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; padding: 15px 20px 25px 20px; box-sizing: border-box; background: linear-gradient(to top, #ffffff 80%, rgba(255,255,255,0)); border-top: none; pointer-events: none; z-index: 100; } 
+  .ml-floating-bar { padding: 12px 15px 12px 20px; border-radius: 16px; flex-direction: row; align-items: center; text-align: left; gap: 15px; background-color: #A00500; box-shadow: 0 8px 25px rgba(160, 5, 0, 0.3); pointer-events: auto; width: 100%; box-sizing: border-box; }
   .ml-fb-left { gap: 15px; flex: 1;}
   .ml-cart-box { display: flex; width: auto; height: auto; border: none; background: transparent; padding: 0;}
   .ml-cart-icon { width: 32px; height: 32px; filter: brightness(0) invert(1); } 
@@ -221,15 +217,12 @@
   .ml-cart-text p { font-size: 16px; font-weight: 800; margin: 0;}
   .ml-btn-checkout { width: auto; padding: 12px 20px; font-size: 14px; border-radius: 12px; box-shadow: none; display: flex; align-items: center; gap: 6px; }
 
-  /* Penyesuaian Tombol History di Mobile */
-  .ml-history-btn {
-    bottom: 25px; /* Jarak dari bawah di mobile */
-    right: 20px; /* Jarak dari kanan di mobile */
-    width: 55px; /* Sedikit lebih kecil di mobile */
-    height: 55px;
-  }
-  
-  .ml-history-btn.with-cart {
-    bottom: 120px; /* Sesuaikan dengan tinggi bar checkout di mobile */
-  }
+  .ml-history-btn { bottom: 25px; right: 20px; width: 55px; height: 55px; }
+  .ml-history-btn.with-cart { bottom: 120px; }
+
+  /* Pastikan Bottom Sheet juga pas di HP */
+  .ml-modal-bottom-sheet { border-radius: 28px 28px 0 0; }
+  .ml-modal-header { padding: 20px; }
+  .ml-modal-body { padding: 15px 20px; }
+  .ml-modal-footer { padding: 15px 20px 20px 20px; }
 }

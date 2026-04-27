@@ -9,7 +9,7 @@ import IconWhatsapp from "../../../assets/icons/icons-customer/whatsapp.png";
 import IconTiktok from "../../../assets/icons/icons-customer/tiktok.png";
 import IconFacebook from "../../../assets/icons/icons-customer/facebook.png";
 import IconLink from "../../../assets/icons/icons-customer/link.png";
-import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
+import Loading from '../../../components/Loading'; 
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -19,15 +19,20 @@ export default function Checkout() {
   const [isLoading, setIsLoading] = useState(false);
 
   // =========================================================
-  // LOGIKA GROUPING CART (Meringkas item yang sama)
+  // LOGIKA GROUPING CART (Meringkas item yang sama + gabungin note)
   // =========================================================
   const initialCart = location.state?.cart || [];
+  
+  // Revisi: Kita perbaiki grouping supaya kalau menunya sama tapi catatannya BEDA, 
+  // dia nggak digabung jadi 1. Biar catatannya nggak ketiban!
   const groupedCart = initialCart.reduce((acc, item) => {
-    const existing = acc.find((i) => i.id === item.id);
+    // Cari item yang ID-nya sama DAN Catatannya sama
+    const existing = acc.find((i) => i.id === item.id && i.note === item.note);
     if (existing) {
       existing.quantity += 1;
     } else {
-      acc.push({ ...item, quantity: 1 });
+      // Pastikan property note ada, minimal string kosong
+      acc.push({ ...item, quantity: 1, note: item.note || "" });
     }
     return acc;
   }, []);
@@ -40,11 +45,13 @@ export default function Checkout() {
     return parseInt(p?.toString().replace(/[^0-9]/g, ""), 10) || 0;
   };
 
-  const updateQty = (id, delta) => {
+  // --- FUNGSI UPDATE QTY ---
+  const updateQty = (id, note, delta) => {
     setCart((prevCart) =>
       prevCart
         .map((item) => {
-          if (item.id === id) {
+          // Cari berdasarkan ID dan Note biar presisi
+          if (item.id === id && item.note === note) {
             const newQty = Math.max(0, item.quantity + delta);
             return { ...item, quantity: newQty };
           }
@@ -54,12 +61,24 @@ export default function Checkout() {
     );
   };
 
+  // --- FUNGSI UPDATE CATATAN LANGSUNG DARI CHECKOUT ---
+  const updateNote = (id, oldNote, newNote) => {
+    setCart((prevCart) =>
+      prevCart.map((item) => {
+        if (item.id === id && item.note === oldNote) {
+          return { ...item, note: newNote };
+        }
+        return item;
+      })
+    );
+  };
+
   const handleBackToMenu = () => {
     const flatCart = [];
     cart.forEach((item) => {
       for (let i = 0; i < item.quantity; i++) {
         const { quantity, ...originalItem } = item;
-        flatCart.push(originalItem);
+        flatCart.push(originalItem); // Bawa serta note-nya balik ke menu
       }
     });
     navigate("/order-list", { state: { cart: flatCart } });
@@ -100,14 +119,11 @@ export default function Checkout() {
   const handleProceedToPayment = () => {
     if (cart.length === 0) return;
 
-    // 1. Tampilkan Loading
     setIsLoading(true);
 
-    // Simulasi proses (1.5 detik) agar animasi loading terlihat cantik
     setTimeout(() => {
       const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-      // 2. Siapkan data pesanan
       const newOrder = {
         id: `#LH-${Math.floor(100000 + Math.random() * 900000)}`,
         title: cart[0]?.name + (cart.length > 1 ? ' dkk' : ''),
@@ -116,15 +132,13 @@ export default function Checkout() {
         totalPrice: totalPayment,
         status: 'SELESAI',
         image: cart[0]?.image_url || 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=200&q=80',
-        items: cart
+        items: cart // <--- Data cart ini (beserta catatannya) akan masuk ke kasir/dapur
       };
 
-      // 3. Simpan ke Session Storage
       const existingHistory = JSON.parse(sessionStorage.getItem('laoban_order_history')) || [];
       const updatedHistory = [newOrder, ...existingHistory];
       sessionStorage.setItem('laoban_order_history', JSON.stringify(updatedHistory));
 
-      // 4. Selesaikan loading dan pindah halaman
       setIsLoading(false);
       navigate("/payment", {
         state: {
@@ -138,7 +152,6 @@ export default function Checkout() {
     }, 1500);
   };
 
-  // JIKA SEDANG LOADING, TAMPILKAN KOMPONEN LOADING
   if (isLoading) {
     return <Loading text="Sedang memproses pesananmu..." />;
   }
@@ -173,8 +186,8 @@ export default function Checkout() {
       <main className="co-main-layout">
         <section className="co-left-column">
           {cart.length > 0 ? (
-            cart.map((item) => (
-              <div className="co-item-card" key={item.id}>
+            cart.map((item, index) => (
+              <div className="co-item-card" key={`${item.id}-${index}`}>
                 <div className="co-item-header">
                   <div className="co-item-img-frame">
                     <img
@@ -197,23 +210,26 @@ export default function Checkout() {
                   <div className="co-qty-control">
                     <button
                       className="co-qty-btn"
-                      onClick={() => updateQty(item.id, -1)}
+                      onClick={() => updateQty(item.id, item.note, -1)}
                     >
                       -
                     </button>
                     <span className="co-qty-num">{item.quantity}</span>
                     <button
                       className="co-qty-btn text-red"
-                      onClick={() => updateQty(item.id, 1)}
+                      onClick={() => updateQty(item.id, item.note, 1)}
                     >
                       +
                     </button>
                   </div>
                 </div>
+                
                 <input
                   type="text"
                   className="co-notes-input"
                   placeholder="Tambah catatan (opsional)"
+                  value={item.note || ""}
+                  onChange={(e) => updateNote(item.id, item.note, e.target.value)}
                 />
               </div>
             ))
@@ -236,13 +252,7 @@ export default function Checkout() {
         </section>
 
         <section className="co-right-column">
-          <div className="co-promo-card yellow-tint">
-            <div className="co-promo-icon text-yellow">⭐</div>
-            <div className="co-promo-text">
-              <h4>Kumpulkan Poin Lao-Hao</h4>
-              <p>Dapat {Math.floor(subtotal / 1000)} poin dari pesanan ini</p>
-            </div>
-          </div>
+          {/* FITUR POIN SUDAH DIHAPUS DARI SINI */}
 
           <div
             className="co-promo-card efek-klik-kartu"

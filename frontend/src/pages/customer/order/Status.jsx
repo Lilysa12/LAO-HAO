@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import "./Status.css";
-import Loading from '../../../components/Loading'; // <--- IMPORT LOADING
+import Loading from '../../../components/Loading'; 
+
+// --- IMPORT PDF MAKER ---
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
 // --- IMPORT ASSETS LOKAL ---
 import LogoLaoban from "../../../assets/icons/icons-customer/logoLaoban.png";
@@ -38,49 +42,106 @@ export default function Status() {
   }, []);
 
   // =========================================================
-  // LOGIKA UNDUH STRUK PESANAN (TXT FILE)
+  // LOGIKA UNDUH STRUK PESANAN (PDF FILE)
   // =========================================================
-  const handleDownloadStruk = () => {
+  const handleDownloadStrukPDF = () => {
     const historyOrders = JSON.parse(sessionStorage.getItem('laoban_order_history')) || [];
     const currentOrder = historyOrders.find(o => o.id === orderId) || historyOrders[0];
 
     const formatRupiah = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
 
-    let strukText = `========================================\n`;
-    strukText += `            LAOBAN NUSANTARA            \n`;
-    strukText += `========================================\n`;
-    strukText += `Order ID : ${orderId}\n`;
-    strukText += `Tanggal  : ${new Date().toLocaleString('id-ID')}\n`;
-    strukText += `Meja     : ${tableNumber}\n`;
-    strukText += `Metode   : ${selectedMethod.toUpperCase()}\n`;
-    strukText += `Status   : ${isCash ? 'Menunggu Pembayaran Kasir' : 'Lunas (Diproses)'}\n`;
-    strukText += `----------------------------------------\n`;
+    // Inisialisasi PDF (Format Struk Thermal 80mm)
+    // p = portrait, mm = milimeter, [80, 200] = ukuran kertas (lebar 8cm, panjang 20cm)
+    const doc = new jsPDF({
+      orientation: "p",
+      unit: "mm",
+      format: [80, 200]
+    });
+
+    const marginX = 5;
+    let cursorY = 10;
+
+    // --- HEADER STRUK ---
+    doc.setFont("courier", "bold");
+    doc.setFontSize(14);
+    doc.text("LAOBAN NUSANTARA", 40, cursorY, { align: "center" });
+    cursorY += 4;
     
+    doc.setFontSize(10);
+    doc.setFont("courier", "normal");
+    doc.text("-".repeat(32), 40, cursorY, { align: "center" });
+    cursorY += 5;
+
+    // --- INFO PESANAN ---
+    doc.setFontSize(9);
+    doc.text(`Order ID : ${orderId}`, marginX, cursorY); cursorY += 4;
+    doc.text(`Tanggal  : ${new Date().toLocaleString('id-ID')}`, marginX, cursorY); cursorY += 4;
+    doc.text(`Meja     : ${tableNumber}`, marginX, cursorY); cursorY += 4;
+    doc.text(`Metode   : ${selectedMethod.toUpperCase()}`, marginX, cursorY); cursorY += 4;
+    doc.text(`Status   : ${isCash ? 'Menunggu Pembayaran' : 'Lunas (Diproses)'}`, marginX, cursorY); cursorY += 6;
+
+    doc.text("-".repeat(32), 40, cursorY, { align: "center" });
+    cursorY += 6;
+
+    // --- DAFTAR ITEM & CATATAN ---
     if (currentOrder && currentOrder.items) {
       currentOrder.items.forEach(item => {
-        strukText += `${item.name} (x${item.quantity || 1})\n`;
-        strukText += `   ${formatRupiah(item.price)}\n`;
+        // Nama Menu & Qty
+        doc.setFont("courier", "bold");
+        const itemName = `${item.name} (x${item.quantity || 1})`;
+        // Jika nama kepanjangan, potong otomatis
+        const splitTitle = doc.splitTextToSize(itemName, 70); 
+        doc.text(splitTitle, marginX, cursorY);
+        cursorY += (splitTitle.length * 4);
+
+        // Cetak Catatan (Jika ada)
+        if (item.note && item.note.trim() !== "") {
+          doc.setFont("courier", "italic");
+          doc.setFontSize(8);
+          // Menggunakan warna abu-abu gelap untuk catatan
+          doc.setTextColor(80, 80, 80); 
+          const splitNote = doc.splitTextToSize(`Catatan: ${item.note}`, 65);
+          doc.text(splitNote, marginX + 3, cursorY);
+          cursorY += (splitNote.length * 4);
+          doc.setTextColor(0, 0, 0); // Kembalikan ke warna hitam
+          doc.setFontSize(9);
+        }
+
+        // Harga
+        doc.setFont("courier", "normal");
+        const priceStr = formatRupiah(item.price * (item.quantity || 1));
+        doc.text(priceStr, 75, cursorY, { align: "right" });
+        cursorY += 6;
       });
     } else {
-      strukText += `Total Pembayaran\n`;
+      doc.setFont("courier", "bold");
+      doc.text("Total Pembayaran", marginX, cursorY); cursorY += 6;
     }
-    
-    strukText += `----------------------------------------\n`;
-    strukText += `TOTAL    : ${formatRupiah(currentOrder ? currentOrder.totalPrice : totalPayment)}\n`;
-    strukText += `========================================\n`;
-    strukText += `      Terima Kasih Atas Kunjungan       \n`;
-    strukText += `                 Anda!                  \n`;
-    strukText += `========================================\n`;
 
-    const blob = new Blob([strukText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Struk_Laoban_${orderId}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    doc.setFont("courier", "normal");
+    doc.text("-".repeat(32), 40, cursorY, { align: "center" });
+    cursorY += 6;
+
+    // --- TOTAL ---
+    doc.setFontSize(10);
+    doc.setFont("courier", "bold");
+    doc.text("TOTAL", marginX, cursorY);
+    const finalTotal = formatRupiah(currentOrder ? currentOrder.totalPrice : totalPayment);
+    doc.text(finalTotal, 75, cursorY, { align: "right" });
+    cursorY += 8;
+
+    doc.setFontSize(9);
+    doc.setFont("courier", "normal");
+    doc.text("=".repeat(32), 40, cursorY, { align: "center" });
+    cursorY += 6;
+
+    // --- FOOTER ---
+    doc.setFontSize(8);
+    doc.text("Terima Kasih Atas Kunjungan", 40, cursorY, { align: "center" }); cursorY += 4;
+    doc.text("Anda!", 40, cursorY, { align: "center" });
+
+    // Menyimpan dan mendownload PDF
+    doc.save(`Struk_Laoban_${orderId}.pdf`);
   };
 
   // JIKA SEDANG LOADING, TAMPILKAN KOMPONEN LOADING
@@ -192,13 +253,13 @@ export default function Status() {
             )}
           </p>
 
-          <button className="st-btn-download efek-klik" onClick={handleDownloadStruk}>
+          <button className="st-btn-download efek-klik" onClick={handleDownloadStrukPDF}>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '10px'}}>
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-            Unduh Struk
+            Unduh Struk PDF
           </button>
 
           <span className="st-link-again" onClick={() => navigate("/order-list")}>
