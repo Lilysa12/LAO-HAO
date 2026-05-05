@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './OverviewCabang.css';
@@ -20,9 +20,13 @@ import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg';
 
 const OverviewCabang = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Inisialisasi navigate
   
   const [selectedFilter, setSelectedFilter] = useState('Semua Cabang');
   const [isLoading, setIsLoading] = useState(true);
+
+  // --- STATE UNTUK POP-UP DETAIL CABANG ---
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // DATA STATE
   const [summary, setSummary] = useState({
@@ -34,6 +38,13 @@ const OverviewCabang = () => {
   const [branchComparison, setBranchComparison] = useState([]);
   const [dropdownOptions, setDropdownOptions] = useState(['Semua Cabang']);
 
+  // --- FIX: FUNGSI LOGOUT DI DALAM KOMPONEN ---
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    navigate('/login'); // Arahkan ke halaman login
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       setIsLoading(true);
@@ -42,22 +53,18 @@ const OverviewCabang = () => {
         const [resTrx, resPromo, resBranch] = await Promise.all([
           axios.get(`http://127.0.0.1:8000/api/admin/transactions?_t=${timeStamp}`),
           axios.get(`http://127.0.0.1:8000/api/admin/promos?_t=${timeStamp}`),
-          axios.get(`http://127.0.0.1:8000/api/admin/branches?_t=${timeStamp}`) // API Baru!
+          axios.get(`http://127.0.0.1:8000/api/admin/branches?_t=${timeStamp}`)
         ]);
 
         const dataTrx = resTrx.data;
         const dataPromo = resPromo.data;
         const dataBranch = resBranch.data;
 
-        // 1. Hitung Promo Aktif
         const activePromosCount = dataPromo.filter(p => p.status === 'AKTIF').length;
-
-        // 2. Hitung Cabang Asli & Buat Dropdown
         const branchCount = dataBranch.length;
         const options = ['Semua Cabang', ...dataBranch.map(b => b.name)];
         setDropdownOptions(options);
 
-        // 3. Hitung Pendapatan & Grafik
         let tPendapatan = 0;
         const daysTemplate = [
           { name: 'Min', p: 0 }, { name: 'Sen', p: 0 }, { name: 'Sel', p: 0 }, 
@@ -72,12 +79,10 @@ const OverviewCabang = () => {
             
             if (selectedFilter === 'Semua Cabang' || tBranch.includes(selectedFilter)) {
               tPendapatan += amount;
-              // Format Date Laravel
               const d = new Date(trx.time); 
               if (!isNaN(d)) daysTemplate[d.getDay()].p += amount;
             }
             
-            // Untuk tabel perbandingan
             if (!branchRev[tBranch]) branchRev[tBranch] = 0;
             branchRev[tBranch] += amount;
           }
@@ -85,7 +90,6 @@ const OverviewCabang = () => {
 
         const orderedChartData = [ daysTemplate[1], daysTemplate[2], daysTemplate[3], daysTemplate[4], daysTemplate[5], daysTemplate[6], daysTemplate[0] ];
         
-        // Jika tidak ada transaksi, tampilkan cabang default
         const comparisonArray = Object.keys(branchRev).length > 0 
           ? Object.keys(branchRev).map(key => ({
               cabang: key, pendapatan: branchRev[key], trend: '+12%' 
@@ -126,11 +130,11 @@ const OverviewCabang = () => {
           </nav>
         </div>
         
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG MENGGUNAKAN FUNGSI handleLogout --- */}
         <div className="sidebar-footer">
-          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
+          <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -146,7 +150,6 @@ const OverviewCabang = () => {
 
         <div className="content-wrapper">
           <div className="dashboard-page">
-            
             <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
               <div>
                 <h1 className="page-title">Overview Cabang</h1>
@@ -161,10 +164,7 @@ const OverviewCabang = () => {
 
             {isLoading ? ( <div style={{ textAlign: 'center', padding: '40px' }}>Memuat data cabang...</div> ) : (
               <>
-                {/* SUMMARY CARDS FIGMA STYLE DENGAN IKON ASLI */}
                 <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '20px' }}>
-                  
-                  {/* CARD 1: TOTAL PENDAPATAN */}
                   <div className="card" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
                     <span style={{ fontSize: '14px', color: '#64748b', fontWeight: '600' }}>Total Pendapatan (Bulan Ini)</span>
                     <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#fee2e2', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -173,8 +173,6 @@ const OverviewCabang = () => {
                     <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '15px 0 5px 0' }}>{formatRupiah(summary.totalPendapatan)}</h2>
                     <span style={{ fontSize: '13px', color: '#64748b' }}>Dari {summary.totalCabang} Cabang Aktif</span>
                   </div>
-                  
-                  {/* CARD 2: TOTAL CABANG */}
                   <div className="card" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
                     <span style={{ fontSize: '14px', color: '#64748b', fontWeight: '600' }}>Total Cabang</span>
                     <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#e2e8f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -183,8 +181,6 @@ const OverviewCabang = () => {
                     <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '15px 0 5px 0' }}>{summary.totalCabang}</h2>
                     <span style={{ fontSize: '13px', color: '#64748b' }}>Beroperasi Penuh</span>
                   </div>
-
-                  {/* CARD 3: PROMO AKTIF */}
                   <div className="card" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
                     <span style={{ fontSize: '14px', color: '#64748b', fontWeight: '600' }}>Promo Aktif</span>
                     <div style={{ position: 'absolute', top: '20px', right: '20px', width: '32px', height: '32px', backgroundColor: '#fef3c7', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -193,10 +189,8 @@ const OverviewCabang = () => {
                     <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '15px 0 5px 0' }}>{summary.promoAktif}</h2>
                     <span style={{ fontSize: '13px', color: '#64748b' }}>Berlaku untuk semua cabang</span>
                   </div>
-
                 </div>
 
-                {/* BOTTOM SECTION */}
                 <div className="bottom-section" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }}>
                   <div className="card chart-container" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                     <h3 style={{ fontSize: '16px', marginBottom: '20px', color: '#1e293b' }}>Grafik Pendapatan Gabungan</h3>
@@ -218,9 +212,8 @@ const OverviewCabang = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', fontWeight: 'bold', color: '#94a3b8', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '10px' }}>
                       <span>CABANG</span><span>PENDAPATAN</span>
                     </div>
-                    
                     <div style={{ overflowY: 'auto', flex: 1 }}>
-                      {branchComparison.map((item, index) => (
+                      {branchComparison.slice(0, 4).map((item, index) => (
                         <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
                           <div>
                             <div style={{ fontSize: '14px', fontWeight: '600', color: '#334155' }}>{item.cabang}</div>
@@ -230,6 +223,13 @@ const OverviewCabang = () => {
                         </div>
                       ))}
                     </div>
+                    {branchComparison.length > 0 && (
+                      <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                        <span onClick={() => setIsDetailModalOpen(true)} style={{ color: '#aa0000', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>
+                          Lihat Detail &gt;
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -237,6 +237,37 @@ const OverviewCabang = () => {
           </div>
         </div>
       </main>
+
+      {/* MODAL DETAIL SEMUA CABANG */}
+      {isDetailModalOpen && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="modal-content" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', width: '90%', maxWidth: '500px', maxHeight: '80vh', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '18px', margin: 0, color: '#0f172a' }}>Detail Perbandingan Semua Cabang</h2>
+              <button onClick={() => setIsDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer', color: '#64748b' }}>&times;</button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 'bold', color: '#94a3b8', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', marginBottom: '10px' }}>
+              <span>CABANG</span><span>PENDAPATAN</span>
+            </div>
+            <div style={{ overflowY: 'auto', flex: 1, paddingRight: '10px' }}>
+              {branchComparison.map((item, index) => (
+                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: '600', color: '#334155' }}>{item.cabang}</div>
+                    <div style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold' }}>{item.trend}</div>
+                  </div>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#aa0000' }}>{formatRupiah(item.pendapatan)}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: '20px', textAlign: 'right' }}>
+              <button onClick={() => setIsDetailModalOpen(false)} style={{ padding: '8px 20px', backgroundColor: '#f1f5f9', color: '#334155', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

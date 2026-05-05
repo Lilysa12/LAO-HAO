@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./ManajemenAkunStaf.css";
 
@@ -15,6 +15,7 @@ import iconPromosi from "../../assets/Icons/icons-admin/promosi.svg";
 import iconKunci from "../../assets/Icons/icons-admin/kunci.svg";
 
 const ManajemenAkunStaf = () => {
+  const navigate = useNavigate(); // Inisialisasi navigate
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // STATE UNTUK DATA TABEL
@@ -36,6 +37,13 @@ const ManajemenAkunStaf = () => {
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // --- FIX: FUNGSI LOGOUT DI DALAM KOMPONEN ---
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    navigate('/login'); // Langsung lempar ke login agar tidak blank putih
+  };
 
   // FETCH DATA
   const fetchStaffData = () => {
@@ -195,12 +203,12 @@ const ManajemenAkunStaf = () => {
           </nav>
         </div>
 
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI FUNGSI handleLogout --- */}
         <div className="sidebar-footer">
-          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
+          <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
             Logout
-          </Link>
+          </button>
         </div>
       </aside>
 

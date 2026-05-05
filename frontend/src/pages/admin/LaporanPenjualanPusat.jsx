@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
@@ -25,12 +25,23 @@ import iconList from '../../assets/Icons/icons-admin/list.svg';
 
 const LaporanPenjualanPusat = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Inisialisasi navigate
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allTransactions, setAllTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState({ totalPendapatan: 0, pendapatanKasir: 0, pendapatanQr: 0, totalTransaksi: 0 });
   const [chartData, setChartData] = useState([]);
+
+  // --- STATE UNTUK POP-UP LIHAT SEMUA ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // --- FIX: FUNGSI LOGOUT DI DALAM KOMPONEN ---
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    navigate('/login'); // Lempar langsung ke login
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -140,23 +151,11 @@ const LaporanPenjualanPusat = () => {
 
   return (
     <div className="admin-container">
-      {/* --- SIDEBAR REVISI (KONSISTEN) --- */}
+      {/* --- SIDEBAR --- */}
       <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-          {/* LOGO LAOBAN FIXED STANDAR 160PX */}
-          <div style={{ 
-            width: '100%', 
-            padding: '35px 20px 20px 20px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            boxSizing: 'border-box'
-          }}>
-            <img 
-              src={logoLaobanSvg} 
-              alt="Logo Laoban" 
-              style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} 
-            />
+          <div style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
+            <img src={logoLaobanSvg} alt="Logo Laoban" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
 
           <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
@@ -188,12 +187,12 @@ const LaporanPenjualanPusat = () => {
           </nav>
         </div>
         
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI FUNGSI --- */}
         <div className="sidebar-footer">
-          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
+          <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
             Logout
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -240,7 +239,7 @@ const LaporanPenjualanPusat = () => {
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconTotal} className="card-icon-svg icon-red" alt="Total" /></div>
-                  <span className="trend positive">Bulan Ini</span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>+15.2%</span>
                 </div>
                 <span className="card-label">Total Pendapatan</span>
                 <h2 className="card-value">{formatRupiah(summary.totalPendapatan)}</h2>
@@ -248,7 +247,7 @@ const LaporanPenjualanPusat = () => {
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconKasir} className="card-icon-svg icon-red" alt="Kasir" /></div>
-                  <span className="trend positive">Bulan Ini</span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>+5.4%</span>
                 </div>
                 <span className="card-label">Pendapatan Kasir</span>
                 <h2 className="card-value">{formatRupiah(summary.pendapatanKasir)}</h2>
@@ -256,7 +255,7 @@ const LaporanPenjualanPusat = () => {
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconQr} className="card-icon-svg icon-red" alt="QR" /></div>
-                  <span className="trend positive">Bulan Ini</span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>+24.1%</span>
                 </div>
                 <span className="card-label">Pendapatan QR Code</span>
                 <h2 className="card-value">{formatRupiah(summary.pendapatanQr)}</h2>
@@ -264,7 +263,7 @@ const LaporanPenjualanPusat = () => {
               <div className="card">
                 <div className="card-header">
                   <div className="icon-wrapper text-red"><img src={iconList} className="card-icon-svg icon-red" alt="List" /></div>
-                  <span className="trend positive">Bulan Ini</span>
+                  <span style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b' }}>+12%</span>
                 </div>
                 <span className="card-label">Total Transaksi</span>
                 <h2 className="card-value">{summary.totalTransaksi} Trx</h2>
@@ -292,53 +291,111 @@ const LaporanPenjualanPusat = () => {
             </div>
 
             <div className="transaction-container card">
-              <div className="table-header-row">
-                <h3 className="section-title">Detail Transaksi ({selectedDate.toLocaleDateString('id-ID', { month: 'long' })})</h3>
+              <div className="table-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 className="section-title" style={{ margin: 0 }}>Detail Transaksi Terakhir</h3>
+                <span 
+                  onClick={() => setIsModalOpen(true)}
+                  style={{ color: '#aa0000', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Lihat Semua
+                </span>
               </div>
+
               {isLoading ? (
                 <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data transaksi...</div>
               ) : (
-                <table className="transaction-table">
-                  <thead>
-                    <tr>
-                      <th>NO. INVOICE</th>
-                      <th>WAKTU</th>
-                      <th>PELANGGAN</th>
-                      <th>METODE</th>
-                      <th>TOTAL</th>
-                      <th className="text-center">STATUS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTransactions.length > 0 ? (
-                      filteredTransactions.map((row) => (
-                        <tr key={row.id}>
-                          <td className="font-bold text-black">{row.inv}</td>
-                          <td>{row.time}</td>
-                          <td>{row.user}</td>
-                          <td>{row.method}</td>
-                          <td className="font-bold text-red">{row.total}</td>
-                          <td className="text-center">
-                            <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
-                              {row.status}
-                            </span>
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="transaction-table">
+                    <thead>
+                      <tr>
+                        <th>NO. INVOICE</th>
+                        <th>WAKTU</th>
+                        <th>PELANGGAN</th>
+                        <th>METODE</th>
+                        <th>TOTAL</th>
+                        <th className="text-center">STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredTransactions.length > 0 ? (
+                        filteredTransactions.slice(0, 5).map((row) => (
+                          <tr key={row.id}>
+                            <td className="font-bold text-black">{row.inv}</td>
+                            <td>{row.time}</td>
+                            <td>{row.user}</td>
+                            <td>{row.method}</td>
+                            <td className="font-bold text-red">{row.total}</td>
+                            <td className="text-center">
+                              <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
+                                {row.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="6" className="text-center text-gray" style={{ padding: '20px' }}>
+                            Tidak ada transaksi pada bulan ini.
                           </td>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="text-center text-gray" style={{ padding: '20px' }}>
-                          Tidak ada transaksi pada bulan ini.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </div>
         </div>
       </main>
+
+      {/* --- MODAL DAFTAR TRANSAKSI --- */}
+      {isModalOpen && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="modal-content" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', width: '90%', maxWidth: '800px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '20px', margin: 0, color: '#0f172a' }}>
+                Semua Transaksi ({selectedDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })})
+              </h2>
+              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer', color: '#64748b' }}>&times;</button>
+            </div>
+            <div style={{ overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
+              <table className="transaction-table" style={{ width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>NO. INVOICE</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>WAKTU</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>PELANGGAN</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>METODE</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>TOTAL</th>
+                    <th className="text-center" style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTransactions.map((row) => (
+                    <tr key={row.id}>
+                      <td className="font-bold text-black">{row.inv}</td>
+                      <td>{row.time}</td>
+                      <td>{row.user}</td>
+                      <td>{row.method}</td>
+                      <td className="font-bold text-red">{row.total}</td>
+                      <td className="text-center">
+                        <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ marginTop: '20px', textAlign: 'right' }}>
+              <button onClick={() => setIsModalOpen(false)} style={{ padding: '10px 24px', backgroundColor: '#f1f5f9', color: '#334155', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

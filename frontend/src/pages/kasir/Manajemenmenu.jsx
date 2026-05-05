@@ -22,10 +22,18 @@ const Manajemenmenu = () => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('Semua Kategori');
+
+  // --- STATE MODAL & FORM ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [formData, setFormData] = useState({ name: '', price: '', category: '', description: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    price: '', 
+    category: '', 
+    description: '',
+    img: null 
+  });
 
   const fetchMenus = async () => {
     setIsLoading(true);
@@ -47,10 +55,30 @@ const Manajemenmenu = () => {
   const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
   const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
 
+  // --- HANDLERS FOR MODAL ---
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleEditClick = (item) => {
-    setIsEditMode(true); setEditId(item.id);
-    setFormData({ name: item.name, price: item.price, category: item.category, description: item.description || '' });
+    setIsEditMode(true); 
+    setEditId(item.id);
+    setFormData({ 
+      name: item.name, 
+      price: item.price, 
+      category: item.category, 
+      description: item.description || '',
+      img: item.img 
+    });
     setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditId(null);
+    setFormData({ name: '', price: '', category: '', description: '', img: null });
   };
 
   const filteredMenus = menus.filter(item => {
@@ -98,7 +126,6 @@ const Manajemenmenu = () => {
               <h1 className="page-title">Manajemen Menu</h1>
               <p className="page-subtitle">Kelola daftar menu, harga, dan ketersediaan</p>
             </div>
-            {/* FIX: Ikon + dibungkus span agar bisa dibesarkan */}
             <button className="btn-add-menu-figma" onClick={() => {setIsEditMode(false); setIsModalOpen(true);}}>
               <span className="plus-icon">+</span> Tambah Menu Cabang
             </button>
@@ -157,6 +184,90 @@ const Manajemenmenu = () => {
           </div>
         </div>
       </main>
+
+      {/* --- MODAL DETAIL MENU (TAMBAH / EDIT) --- */}
+      {isModalOpen && (
+        <div className="modal-overlay-figma">
+          <div className="modal-content-figma">
+            <div className="modal-header-figma">
+              <h2>{isEditMode ? 'Edit Menu Cabang' : 'Tambah Menu Baru'}</h2>
+              <button className="btn-close-modal" onClick={handleCloseModal}>&times;</button>
+            </div>
+            
+            <div className="modal-body-figma">
+              {/* SISI KIRI: UPLOAD GAMBAR */}
+              <div className="modal-image-section">
+                <label className="image-upload-label">
+                  {formData.img ? (
+                    <img src={formData.img} alt="Preview" className="image-preview-large" />
+                  ) : (
+                    <div className="image-placeholder">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      <span>Pilih Foto Menu</span>
+                    </div>
+                  )}
+                  <input type="file" style={{display: 'none'}} />
+                </label>
+                <p className="image-hint">Format JPG, PNG. Maks 2MB</p>
+              </div>
+
+              {/* SISI KANAN: FORM INPUT */}
+              <div className="modal-form-section">
+                <div className="form-group-figma">
+                  <label>NAMA MENU</label>
+                  <input 
+                    type="text" 
+                    name="name" 
+                    placeholder="Contoh: Es Teh Manis" 
+                    value={formData.name} 
+                    onChange={handleInputChange} 
+                  />
+                </div>
+
+                <div className="form-row-figma">
+                  <div className="form-group-figma">
+                    <label>KATEGORI</label>
+                    <select name="category" value={formData.category} onChange={handleInputChange}>
+                      <option value="">Pilih Kategori</option>
+                      {dynamicCategories.filter(c => c !== 'Semua Kategori').map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group-figma">
+                    <label>HARGA (RP)</label>
+                    <input 
+                      type="number" 
+                      name="price" 
+                      placeholder="0" 
+                      value={formData.price} 
+                      onChange={handleInputChange} 
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group-figma">
+                  <label>DESKRIPSI (OPSIONAL)</label>
+                  <textarea 
+                    name="description" 
+                    rows="3" 
+                    placeholder="Tulis komposisi atau detail menu..."
+                    value={formData.description}
+                    onChange={handleInputChange}
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer-figma">
+              <button className="btn-cancel-figma" onClick={handleCloseModal}>Batal</button>
+              <button className="btn-save-figma">
+                {isEditMode ? 'Simpan Perubahan' : 'Tambahkan Menu'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

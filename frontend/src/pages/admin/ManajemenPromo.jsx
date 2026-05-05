@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -16,6 +16,8 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg'; 
 
 const ManajemenPromo = () => {
+  const navigate = useNavigate(); // Inisialisasi navigate
+
   // ==========================================
   // STATE MANAGEMENT
   // ==========================================
@@ -38,8 +40,16 @@ const ManajemenPromo = () => {
   });
 
   // ==========================================
-  // API & LOGIC HANDLERS
+  // HANDLERS
   // ==========================================
+  
+  // --- FIX: FUNGSI LOGOUT ---
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    navigate('/login'); // Kembali ke login tanpa layar putih
+  };
+
   const fetchPromos = () => {
     setIsLoading(true);
     axios.get(`http://127.0.0.1:8000/api/admin/promos?_t=${new Date().getTime()}`)
@@ -137,7 +147,6 @@ const ManajemenPromo = () => {
     }
   };
 
-  // Filter Data
   const filteredPromos = promoData.filter((promo) => {
     const matchesSearch = promo.code.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           promo.desc.toLowerCase().includes(searchQuery.toLowerCase());
@@ -150,9 +159,7 @@ const ManajemenPromo = () => {
 
   return (
     <div className="admin-container">
-      {/* ==========================================
-          SIDEBAR
-      ========================================== */}
+      {/* SIDEBAR */}
       <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <div style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
@@ -184,17 +191,15 @@ const ManajemenPromo = () => {
           </nav>
         </div>
         
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI FUNGSI --- */}
         <div className="sidebar-footer">
-          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
+          <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%', display: 'flex', alignItems: 'center', gap: '12px', color: 'white' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
-          </Link>
+          </button>
         </div>
       </aside>
 
-      {/* ==========================================
-          MAIN CONTENT
-      ========================================== */}
+      {/* MAIN CONTENT */}
       <main className="main-content">
         <header className="topbar">
           <div className="breadcrumb">
@@ -212,8 +217,6 @@ const ManajemenPromo = () => {
 
         <div className="content-wrapper">
           <div className="dashboard-page">
-            
-            {/* HEADER AREA: Sesuai referensi gambar */}
             <div className="dashboard-header">
               <div>
                 <h1 className="page-title">Manajemen Promo & Voucher</h1>
@@ -224,10 +227,7 @@ const ManajemenPromo = () => {
               </button>
             </div>
 
-            {/* TABLE & TOOLBAR AREA */}
             <div className="card table-container">
-              
-              {/* TOOLBAR: Search Kiri, Filter Kanan */}
               <div className="table-toolbar">
                 <div className="search-wrapper">
                   <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -250,7 +250,6 @@ const ManajemenPromo = () => {
                 </div>
               </div>
 
-              {/* DATA TABLE */}
               {isLoading ? (
                 <div style={{ padding: '40px', textAlign: 'center' }}>Memuat data promo...</div>
               ) : (
@@ -295,7 +294,6 @@ const ManajemenPromo = () => {
                           </td>
                           <td>
                             <div className="action-icons-cell">
-                              {/* Toggle Status Button */}
                               <button className="action-icon-btn" onClick={() => handleToggleStatus(promo.id)}>
                                 {promo.status === 'AKTIF' ? (
                                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" strokeWidth="2">
@@ -309,15 +307,11 @@ const ManajemenPromo = () => {
                                   </svg>
                                 )}
                               </button>
-                              
-                              {/* Edit Button */}
                               <button className="action-icon-btn" onClick={() => handleEditClick(promo)}>
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
                                   <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                 </svg>
                               </button>
-                              
-                              {/* Delete Button */}
                               <button className="action-icon-btn" onClick={() => handleDeletePromo(promo.id, promo.code)}>
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2">
                                   <polyline points="3 6 5 6 21 6"></polyline>
@@ -343,9 +337,7 @@ const ManajemenPromo = () => {
         </div>
       </main>
 
-      {/* ==========================================
-          MODAL EDIT / TAMBAH
-      ========================================== */}
+      {/* MODAL EDIT / TAMBAH */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -353,79 +345,36 @@ const ManajemenPromo = () => {
               <h2>{isEditMode ? 'Edit Promo & Voucher' : 'Buat Promo & Voucher'}</h2>
               <button className="close-modal-btn" onClick={() => setIsModalOpen(false)}>×</button>
             </div>
-            
             <form onSubmit={handleSubmitForm}>
               <div className="modal-body">
                 <div className="form-group">
                   <label>NAMA PROMO</label>
-                  <input 
-                    type="text" 
-                    name="description" 
-                    value={formData.description} 
-                    onChange={handleInputChange} 
-                    placeholder="Ex: Diskon Spesial" 
-                    className="form-input" 
-                    required 
-                  />
+                  <input type="text" name="description" value={formData.description} onChange={handleInputChange} placeholder="Ex: Diskon Spesial" className="form-input" required />
                 </div>
-                
                 <div className="form-group">
                   <label>KODE VOUCHER</label>
-                  <input 
-                    type="text" 
-                    name="code" 
-                    value={formData.code} 
-                    onChange={handleInputChange} 
-                    placeholder="Ex: LAOBAN10" 
-                    className="form-input" 
-                    required 
-                  />
+                  <input type="text" name="code" value={formData.code} onChange={handleInputChange} placeholder="Ex: LAOBAN10" className="form-input" required />
                 </div>
-                
                 <div className="form-row">
                   <div className="form-group half-width">
                     <label>TIPE DISKON</label>
-                    <select 
-                      name="type" 
-                      value={formData.type} 
-                      onChange={handleInputChange} 
-                      className="form-input select-input" 
-                      required
-                    >
+                    <select name="type" value={formData.type} onChange={handleInputChange} className="form-input select-input" required>
                       <option value="Persentase (%)">Persentase (%)</option>
                       <option value="Nominal (Rp)">Nominal (Rp)</option>
                     </select>
                   </div>
-                  
                   <div className="form-group half-width">
                     <label>NILAI DISKON</label>
-                    <input 
-                      type="number" 
-                      name="value" 
-                      value={formData.value} 
-                      onChange={handleInputChange} 
-                      className="form-input" 
-                      required 
-                    />
+                    <input type="number" name="value" value={formData.value} onChange={handleInputChange} className="form-input" required />
                   </div>
                 </div>
-                
                 <div className="form-group">
                   <label>BERLAKU HINGGA</label>
-                  <DatePicker 
-                    selected={promoDate} 
-                    onChange={(date) => setPromoDate(date)} 
-                    dateFormat="dd/MM/yyyy" 
-                    className="form-input" 
-                    required 
-                  />
+                  <DatePicker selected={promoDate} onChange={(date) => setPromoDate(date)} dateFormat="dd/MM/yyyy" className="form-input" required />
                 </div>
               </div>
-              
               <div className="modal-footer">
-                <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>
-                  Batal
-                </button>
+                <button type="button" className="btn-secondary" onClick={() => setIsModalOpen(false)}>Batal</button>
                 <button type="submit" className="btn-primary" disabled={isSubmitting}>
                   {isSubmitting ? 'Menyimpan...' : 'Simpan'}
                 </button>

@@ -291,3 +291,45 @@ body {
   filter: brightness(0) invert(1);
 }
 
+/* ========================================================
+   🔥 POP-UP / MODAL DETAIL CABANG (ANIMASI & SCROLLBAR) 🔥
+======================================================== */
+
+/* Efek latar belakang gelap transparan (Fade In) */
+.modal-overlay {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Kotak Pop-up (Muncul efek Slide Up / Naik dari bawah sedikit) */
+.modal-content {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- Custom Scrollbar Khusus untuk List Cabang di Pop-up --- */
+/* Biar scrollbar-nya tipis elegan, gak tebel bawaan Windows/Browser */
+.modal-content div[style*="overflow-y: auto"]::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content div[style*="overflow-y: auto"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-content div[style*="overflow-y: auto"]::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+.modal-content div[style*="overflow-y: auto"]::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}

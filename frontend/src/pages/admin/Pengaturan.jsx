@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Pengaturan.css';
 
@@ -15,12 +15,10 @@ import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg';
 
 import iconCabang from '../../assets/Icons/icons-admin/cabang.svg';
 import iconStruk from '../../assets/Icons/icons-admin/struk.svg';
-import iconPos from '../../assets/Icons/icons-admin/pos.svg';
-import iconNotifikasi from '../../assets/Icons/icons-admin/notifikasi.svg';
-import iconKeamanan from '../../assets/Icons/icons-admin/keamanan.svg';
 import iconSimpan from '../../assets/Icons/icons-admin/simpan.svg';
 
 const Pengaturan = () => {
+  const navigate = useNavigate(); // Inisialisasi navigate
   const [activeTab, setActiveTab] = useState('profil');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,6 +32,13 @@ const Pengaturan = () => {
     service_charge: 0,
     receipt_footer: ''
   });
+
+  // --- FIX: FUNGSI LOGOUT DI DALAM KOMPONEN ---
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    navigate('/login'); // Lempar kembali ke login
+  };
 
   const fetchSettings = async () => {
     setIsLoading(true);
@@ -147,12 +152,12 @@ const Pengaturan = () => {
           </nav>
         </div>
 
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI LINK --- */}
+        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI handleLogout --- */}
         <div className="sidebar-footer">
-          <Link to="/logout" className="logout-btn" style={{ textDecoration: 'none' }}>
+          <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
             Logout
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -184,24 +189,22 @@ const Pengaturan = () => {
               <div className="settings-sidebar">
                 <div className="settings-nav-card">
                   <button className={`settings-nav-btn ${activeTab === 'profil' ? 'active' : ''}`} onClick={() => setActiveTab('profil')}>
-                    <img src={iconCabang} alt="Profil" className={`btn-icon-svg ${activeTab === 'profil' ? 'icon-red' : 'icon-gray'}`} />
+                    <img 
+                      src={iconCabang} 
+                      alt="Profil" 
+                      className={`btn-icon-svg ${activeTab === 'profil' ? 'icon-red' : 'icon-gray'}`} 
+                      style={activeTab === 'profil' ? { filter: 'brightness(0) saturate(100%) invert(13%) sepia(97%) saturate(4051%) hue-rotate(350deg) brightness(90%) contrast(105%)' } : {}}
+                    />
                     Profil Restoran
                   </button>
                   <button className={`settings-nav-btn ${activeTab === 'pajak' ? 'active' : ''}`} onClick={() => setActiveTab('pajak')}>
-                    <img src={iconStruk} alt="Pajak" className={`btn-icon-svg ${activeTab === 'pajak' ? 'icon-red' : 'icon-gray'}`} />
+                    <img 
+                      src={iconStruk} 
+                      alt="Pajak" 
+                      className={`btn-icon-svg ${activeTab === 'pajak' ? 'icon-red' : 'icon-gray'}`} 
+                      style={activeTab === 'pajak' ? { filter: 'brightness(0) saturate(100%) invert(13%) sepia(97%) saturate(4051%) hue-rotate(350deg) brightness(90%) contrast(105%)' } : {}}
+                    />
                     Pajak & Struk
-                  </button>
-                  <button className={`settings-nav-btn ${activeTab === 'pos' ? 'active' : ''}`} onClick={() => setActiveTab('pos')}>
-                    <img src={iconPos} alt="POS" className={`btn-icon-svg ${activeTab === 'pos' ? 'icon-red' : 'icon-gray'}`} />
-                    Tampilan POS
-                  </button>
-                  <button className={`settings-nav-btn ${activeTab === 'notifikasi' ? 'active' : ''}`} onClick={() => setActiveTab('notifikasi')}>
-                    <img src={iconNotifikasi} alt="Notifikasi" className={`btn-icon-svg ${activeTab === 'notifikasi' ? 'icon-red' : 'icon-gray'}`} />
-                    Notifikasi
-                  </button>
-                  <button className={`settings-nav-btn ${activeTab === 'keamanan' ? 'active' : ''}`} onClick={() => setActiveTab('keamanan')}>
-                    <img src={iconKeamanan} alt="Keamanan" className={`btn-icon-svg ${activeTab === 'keamanan' ? 'icon-red' : 'icon-gray'}`} />
-                    Keamanan
                   </button>
                 </div>
               </div>
@@ -301,19 +304,6 @@ const Pengaturan = () => {
                     )}
                   </>
                 )}
-
-                {(activeTab === 'pos' || activeTab === 'notifikasi' || activeTab === 'keamanan') && (
-                  <div className="settings-card">
-                    <div className="empty-state-wrapper" style={{ textAlign: 'center', padding: '60px 20px' }}>
-                      <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '48px', height: '48px', marginBottom: '16px' }}>
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                      </svg>
-                      <h2 className="empty-state-title" style={{ fontSize: '18px', color: '#1e293b', marginBottom: '8px' }}>Menu sedang dalam pengembangan</h2>
-                      <p className="empty-state-desc" style={{ fontSize: '14px', color: '#64748b' }}>Fitur ini akan segera hadir pada update berikutnya.</p>
-                    </div>
-                  </div>
-                )}
-
               </div>
             </div>
           </div>
