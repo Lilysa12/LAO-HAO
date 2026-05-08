@@ -17,7 +17,8 @@
 .md-table-badge { background-color: #FFC627; color: #212529; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: 10px; }
 
 /* --- MAIN CONTENT & SIDEBAR --- */
-.md-main-layout { display: flex; padding: 30px 60px 0 60px; gap: 60px; flex: 1; overflow: hidden; min-height: 0; }
+/* Diberikan jarak padding-bottom besar agar tidak tertutup floating bar & footer */
+.md-main-layout { display: flex; padding: 30px 60px 180px 60px; gap: 60px; flex: 1; overflow: hidden; min-height: 0; }
 .md-sidebar { width: 80px; display: flex; flex-direction: column; gap: 35px; flex-shrink: 0; }
 .md-side-tab { display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; color: #6C757D; transition: 0.3s; text-align: center;}
 .md-side-tab:hover { color: #212529; }
@@ -59,13 +60,36 @@
 .md-qty-btn.plus { color: #A00500; }
 .md-qty-number { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; color: #212529; min-width: 12px; text-align: center; }
 
-/* --- CHECKOUT BAR UTAMA (MERAH & KUNING) --- */
-.md-checkout-wrapper { flex-shrink: 0; width: 100%; padding: 15px 60px 25px 60px; display: flex; justify-content: center; background-color: #FFFFFF; border-top: 1px solid #F3F4F6; z-index: 90; }
-.md-floating-bar { position: relative; width: 100%; background-color: #A00500; padding: 15px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 25px; box-shadow: 0 10px 30px rgba(160,5,0,0.15); z-index: 10; transition: 0.3s ease; cursor: pointer;}
+/* --- CHECKOUT BAR UTAMA (MELAYANG DI ATAS FOOTER) --- */
+.md-checkout-wrapper {
+  position: fixed;
+  bottom: 95px;
+  left: 0;
+  width: 100%;
+  padding: 0 60px;
+  background: transparent;
+  border-top: none;
+  z-index: 90;
+  pointer-events: none;
+}
+.md-floating-bar {
+  position: relative;
+  width: 100%;
+  background-color: #a00500;
+  padding: 16px 22px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(160, 5, 0, 0.25);
+  transition: 0.3s ease;
+  cursor: pointer;
+  pointer-events: auto;
+}
 .md-floating-bar:hover { box-shadow: 0 15px 40px rgba(160,5,0,0.25); transform: translateY(-2px);}
 .md-fb-left { display: flex; align-items: center; gap: 20px; color: #FFFFFF; flex: 1; min-width: 0; }
 .md-cart-box { width: 50px; height: 50px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; display: flex; justify-content: center; align-items: center; position: relative; flex-shrink: 0;}
-.md-cart-icon { width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); }
+.md-cart-icon { width: 24px; height: 24px; object-fit: contain; filter: brightness(0) invert(1); }
 .md-cart-dot { position: absolute; top: 12px; right: 12px; width: 9px; height: 9px; background-color: #FFC627; border-radius: 50%; border: 1.5px solid #A00500; }
 .md-cart-text { display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
 .md-cart-text h4 { margin: 0 0 3px 0; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 400; opacity: 0.9; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
@@ -74,9 +98,58 @@
 .md-btn-checkout:hover { background: #e5b223; transform: scale(1.03);}
 
 /* --- TOMBOL HISTORY PESANAN --- */
-.md-history-btn { position: fixed; bottom: 40px; right: 40px; width: 60px; height: 60px; background-color: #A00500; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 25px rgba(160, 5, 0, 0.4); cursor: pointer; z-index: 85; transition: 0.3s; }
+.md-history-btn { position: fixed; bottom: 85px; right: 40px; width: 60px; height: 60px; background-color: #A00500; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 25px rgba(160, 5, 0, 0.4); cursor: pointer; z-index: 85; transition: 0.3s; }
 .md-history-btn img { width: 28px; height: 28px; object-fit: contain; filter: brightness(0) invert(1); transition: 0.3s ease; }
-.md-history-btn.with-cart { bottom: 140px; }
+.md-history-btn.with-cart { bottom: 180px; }
+
+/* =========================
+   FOOTER (SAMA DENGAN MENULIST)
+========================= */
+.md-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #a00500;
+  padding: 14px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 80;
+}
+
+.md-socials { display: flex; gap: 12px; }
+
+.md-soc-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease;
+  text-decoration: none;
+}
+
+.md-soc-circle:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.md-soc-circle img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.md-copyright {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  color: #ffffff;
+  opacity: 0.9;
+}
 
 .efek-klik { transition: transform 0.1s ease-in-out, background-color 0.2s; }
 .efek-klik:active { transform: scale(0.96); }
@@ -88,7 +161,7 @@
 @keyframes popUp { from { opacity: 0; transform: translateY(100px); } to { opacity: 1; transform: translateY(0); } }
 
 /* =========================================================
-   MODAL BOTTOM SHEET KERANJANG (PERSIS GAMBAR 0eadfb)
+   MODAL BOTTOM SHEET KERANJANG
 ========================================================= */
 .md-modal-overlay {
   position: fixed;
@@ -96,70 +169,106 @@
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
-  align-items: flex-end; /* Mutlak nempel ke bawah */
+  align-items: center; /* Di tengah untuk desktop */
   z-index: 999999999;
 }
 
 .md-modal-bottom-sheet {
   background: #FFFFFF;
   width: 100%;
-  max-width: 600px;
-  border-radius: 24px 24px 0 0;
+  max-width: 550px;
+  border-radius: 28px;
   display: flex;
   flex-direction: column;
   max-height: 85vh;
-  box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  overflow: hidden;
 }
 
 .md-modal-header { 
   display: flex; justify-content: space-between; align-items: center; 
-  padding: 20px 25px; border-bottom: 1px solid #F3F4F6; 
+  padding: 22px 25px; border-bottom: 1px solid #eaeaea; 
 }
-.md-modal-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; margin: 0; color: #1A1A1A; }
+.md-modal-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; margin: 0; color: #212529; }
 .md-close-btn { background: transparent; border: none; font-size: 22px; color: #6C757D; cursor: pointer; }
 
 .md-modal-body { padding: 20px 25px; overflow-y: auto; flex: 1; }
 
 /* Item List Modal */
-.md-preview-list { display: flex; flex-direction: column; gap: 20px; }
-.md-preview-item-card { display: flex; gap: 15px; border-bottom: 1px solid #F3F4F6; padding-bottom: 20px; }
-.md-preview-img-box { width: 65px; height: 65px; flex-shrink: 0; border-radius: 12px; overflow: hidden; background: #F8F9FA; }
+.md-preview-list { display: flex; flex-direction: column; gap: 16px; }
+.md-preview-item-card { display: flex; gap: 16px; background: #ffffff; border: 1px solid #f0f0f0; border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02); transition: 0.3s; }
+.md-preview-item-card:hover { border-color: #e2e8f0; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04); }
+.md-preview-img-box { width: 80px; height: 80px; flex-shrink: 0; border-radius: 12px; overflow: hidden; border: 1px solid #f8f9fa; }
 .md-preview-img-box img { width: 100%; height: 100%; object-fit: cover; }
 
 .md-preview-details-box { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-.md-preview-item-name { font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; color: #1A1A1A; margin-bottom: 4px; }
+.md-preview-item-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; color: #212529; }
 
-.md-preview-note-wrapper { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
-.md-preview-note-wrapper input { border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 13px; color: #1A1A1A; width: 100%; }
+.md-preview-note-wrapper { display: flex; align-items: center; gap: 10px; margin: 8px 0; background: #f8f9fa; padding: 8px 14px; border-radius: 10px; border: 1px solid #edf2f7; }
+.md-preview-note-wrapper input { border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 13px; color: #4a5568; width: 100%; }
 .md-preview-note-wrapper input::placeholder { color: #A0AEC0; }
 
-.md-preview-price-qty { display: flex; justify-content: space-between; align-items: center; }
-.md-preview-price { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #A00500; }
+.md-preview-price-qty { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.md-preview-price { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: #A00500; }
 
-.md-qty-control-wrapper-small { display: flex; align-items: center; gap: 10px; border: 1px solid #EAEAEA; border-radius: 8px; padding: 2px 8px; }
-.md-qty-btn-small { background: transparent; border: none; font-size: 16px; font-weight: 600; cursor: pointer; color: #212529; }
+.md-qty-control-wrapper-small { display: flex; align-items: center; gap: 14px; background-color: #ffffff; border: 1px solid #eaeaea; border-radius: 999px; padding: 4px 12px; }
+.md-qty-btn-small { background: transparent; border: none; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; color: #212529; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;}
 .md-qty-btn-small.plus { color: #A00500; }
-.md-qty-number-small { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; min-width: 12px; text-align: center; }
+.md-qty-number-small { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; min-width: 14px; text-align: center; }
 
-/* Footer Modal (Putih, Harga Merah, Tombol Merah) */
+/* Footer Modal (Sesuai MenuList) */
 .md-modal-footer { 
-  padding: 15px 25px; background: #fff; border-top: 1px solid #EAEAEA; 
+  padding: 20px 25px; background: #ffffff; border-top: 1px solid #EAEAEA; 
   display: flex; justify-content: space-between; align-items: center; 
 }
-.md-modal-footer-left { display: flex; align-items: center; gap: 15px; }
-.md-modal-cart-icon-wrapper { 
-  width: 45px; height: 45px; background: #FFF9E6; /* Light yellow background */
-  border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; 
+.md-modal-footer-left { display: flex; align-items: center; }
+
+.md-modal-cart-icon {
+  width: 52px;
+  height: 52px;
+  background: #a00500;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
-.md-modal-cart-badge { 
-  position: absolute; top: 0; right: 0; background: #FFC627; color: #1A1A1A; 
-  font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%; 
-  display: flex; justify-content: center; align-items: center; 
+
+.md-modal-cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ffc627;
+  color: #212529;
+  font-weight: 800;
+  font-size: 13px;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #fff;
 }
-.md-modal-total-text .text-red { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 800; color: #A00500; }
-.md-btn-checkout-real { 
-  background: #A00500; color: #FFFFFF; border: none; padding: 14px 30px; 
-  border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; 
+
+.md-modal-total-text .text-red { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 800; color: #A00500; margin-left: 15px;}
+
+.md-btn-checkout-real {
+  background: #ffc627;
+  color: #212529;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(255, 198, 39, 0.3);
+  transition: 0.3s;
+}
+.md-btn-checkout-real:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(255, 198, 39, 0.4);
 }
 
 .slide-up-bottom-sheet { animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -196,10 +305,10 @@
   .md-btn-add { padding: 8px 24px; font-size: 13px; border-radius: 10px; background: #FDE8E8; color: #A00500; font-weight: 700; }
 
   /* Floating Checkout Bar Mobile */
-  .md-checkout-wrapper { position: fixed; bottom: 0; left: 0; padding: 15px 20px 25px 20px; background: linear-gradient(to top, #fff 80%, rgba(255,255,255,0)); border-top: none; }
-  .md-floating-bar { padding: 12px 15px 12px 20px; border-radius: 16px; gap: 15px; box-shadow: 0 8px 25px rgba(160, 5, 0, 0.3); }
+  .md-checkout-wrapper { bottom: 20px !important; padding: 0 20px; }
+  .md-floating-bar { padding: 12px 15px; }
   .md-fb-left { gap: 15px; flex: 1; min-width: 0;}
-  .md-cart-box { width: 40px; height: 40px; border-radius: 10px; border: none; background: transparent; padding: 0; flex-shrink: 0;}
+  .md-cart-box { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); border: none; flex-shrink: 0;}
   .md-cart-icon { width: 18px; height: 18px; filter: brightness(0) invert(1); } 
   .md-cart-dot { top: 10px; right: 10px; width: 7px; height: 7px; border: 1.5px solid #A00500; }
   .md-cart-text { display: flex; flex-direction: column; overflow: hidden; }
@@ -207,11 +316,15 @@
   .md-cart-text p { font-size: 17px; font-weight: 800; margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
   .md-btn-checkout { padding: 10px 20px; font-size: 14px; border-radius: 10px; flex-shrink: 0; white-space: nowrap;}
 
-  .md-history-btn { bottom: 25px; right: 20px; width: 55px; height: 55px; }
-  .md-history-btn.with-cart { bottom: 120px; }
+  .md-history-btn { bottom: 20px; right: 20px; width: 55px; height: 55px; }
+  .md-history-btn.with-cart { bottom: 110px !important; }
   
-  .md-modal-bottom-sheet { border-radius: 28px 28px 0 0; }
+  .md-modal-overlay { align-items: flex-end; padding: 0; }
+  .md-modal-bottom-sheet { border-radius: 28px 28px 0 0; max-height: 85vh; }
   .md-modal-header { padding: 20px; }
   .md-modal-body { padding: 15px 20px; }
   .md-modal-footer { padding: 15px 20px 20px 20px; }
+
+  /* Pastikan footer hilang di mobile */
+  .md-footer { display: none !important; }
 }

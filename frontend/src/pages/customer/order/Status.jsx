@@ -268,13 +268,24 @@ export default function Status() {
         </div>
       </main>
 
+      {/* FOOTER BARU (Disamakan dengan halaman lainnya) */}
       <footer className="st-footer">
         <div className="st-socials">
-          <div className="st-soc-circle"><img src={IconInstagram} alt="Instagram" /></div>
-          <div className="st-soc-circle"><img src={IconWhatsapp} alt="Whatsapp" /></div>
-          <div className="st-soc-circle"><img src={IconFacebook} alt="Facebook" /></div>
-          <div className="st-soc-circle"><img src={IconLink} alt="Link" /></div>
-          <div className="st-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
+          <a href="https://www.instagram.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="st-soc-circle">
+            <img src={IconInstagram} alt="Instagram" />
+          </a>
+          <a href="https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="st-soc-circle">
+            <img src={IconWhatsapp} alt="Whatsapp" />
+          </a>
+          <a href="https://www.facebook.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="st-soc-circle">
+            <img src={IconFacebook} alt="Facebook" />
+          </a>
+          <div className="st-soc-circle">
+            <img src={IconLink} alt="Link" />
+          </div>
+          <a href="https://www.tiktok.com/@laoban.nusantara" target="_blank" rel="noopener noreferrer" className="st-soc-circle">
+            <img src={IconTiktok} alt="Tiktok" />
+          </a>
         </div>
         <div className="st-copyright">© Copyright Laoban Nusantara.</div>
       </footer>

@@ -8,6 +8,13 @@ import LogoLaoban from '../../../assets/icons/icons-customer/logoLaoban.png';
 import IconCheckout from '../../../assets/icons/icons-customer/checkout.png';
 import IconHistory from '../../../assets/icons/icons-customer/history.png';
 
+// --- IMPORT ICON MEDSOS UNTUK FOOTER ---
+import IconInstagram from '../../../assets/icons/icons-customer/instagram.png'; 
+import IconWhatsapp from '../../../assets/icons/icons-customer/whatsapp.png';
+import IconFacebook from '../../../assets/icons/icons-customer/facebook.png';
+import IconLink from '../../../assets/icons/icons-customer/link.png';
+import IconTiktok from '../../../assets/icons/icons-customer/tiktok.png';
+
 // =========================================================
 // SVG ICONS COMPONENT
 // =========================================================
@@ -21,15 +28,6 @@ const IconPencil = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#A0AEC0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-  </svg>
-);
-
-// ICON CART KUNING DI MODAL
-const IconCartYellow = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#FFC627" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="9" cy="21" r="1"></circle>
-    <circle cx="20" cy="21" r="1"></circle>
-    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
   </svg>
 );
 
@@ -232,11 +230,11 @@ export default function MenuDetail() {
               </div>
             </div>
 
-            {/* Footer Modal (Checkout Bar Putih) */}
+            {/* Footer Modal (Checkout Bar Putih - Disesuaikan dengan MenuList) */}
             <div className="md-modal-footer">
               <div className="md-modal-footer-left">
-                <div className="md-modal-cart-icon-wrapper">
-                  <IconCartYellow />
+                <div className="md-modal-cart-icon">
+                  <img src={IconCheckout} alt="Cart" className="md-cart-icon" />
                   <div className="md-modal-cart-badge">{cart.length}</div>
                 </div>
                 <div className="md-modal-total-text">
@@ -255,6 +253,28 @@ export default function MenuDetail() {
           </div>
         </div>
       )}
+
+      {/* ================= FOOTER (Desktop Saja) ================= */}
+      <footer className="md-footer">
+        <div className="md-socials">
+          <a href="https://www.instagram.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="md-soc-circle">
+            <img src={IconInstagram} alt="Instagram" />
+          </a>
+          <a href="https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="md-soc-circle">
+            <img src={IconWhatsapp} alt="Whatsapp" />
+          </a>
+          <a href="https://www.facebook.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="md-soc-circle">
+            <img src={IconFacebook} alt="Facebook" />
+          </a>
+          <div className="md-soc-circle">
+            <img src={IconLink} alt="Link" />
+          </div>
+          <a href="https://www.tiktok.com/@laoban.nusantara" target="_blank" rel="noopener noreferrer" className="md-soc-circle">
+            <img src={IconTiktok} alt="Tiktok" />
+          </a>
+        </div>
+        <div className="md-copyright">© Copyright Laoban Nusantara.</div>
+      </footer>
 
     </div>
   );
