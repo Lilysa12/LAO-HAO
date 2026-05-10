@@ -46,8 +46,10 @@ const Pos = () => {
   const getMenuClass = (path) => location.pathname === path ? "sidebar-item active" : "sidebar-item";
   const getIconClass = (path) => location.pathname === path ? "sidebar-icon icon-active-white" : "sidebar-icon icon-white";
 
+  // --- FIX: FUNGSI LOGOUT DIPERBAIKI (Hapus Role) ---
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
     navigate('/login');
   };
 
@@ -133,12 +135,18 @@ const Pos = () => {
             <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}><img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /><span>Laporan & Riwayat</span></Link>
             <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}><img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /><span>QR Code Meja</span></Link>
             <div className="sidebar-divider" />
-            <Link to="/admin" className="sidebar-item"><img src={iconDashboard} alt="Admin" className="sidebar-icon icon-white" /><span>Kembali ke Pusat</span></Link>
+            
+            {/* --- FIX: TOMBOL KEMBALI KE PUSAT SEKARANG MEMICU LOGOUT --- */}
+            <button onClick={handleLogout} className="sidebar-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center' }}>
+              <img src={iconDashboard} alt="Admin" className="sidebar-icon icon-white" />
+              <span>Kembali ke Pusat</span>
+            </button>
+
           </nav>
         </div>
 
         <div className="sidebar-footer">
-          <button className="sidebar-logout" onClick={handleLogout}>
+          <button className="sidebar-logout" onClick={handleLogout} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', background: 'none', border: 'none', color: 'white', width: '100%', gap: '10px' }}>
             <img src={iconLogout} alt="Logout" className="sidebar-icon icon-white" />
             <span>Logout</span>
           </button>

@@ -196,10 +196,10 @@ const ManajemenAkunStaf = () => {
 
             <div className="divider" style={{ margin: '15px 16px' }}></div>
 
-            <Link to="/kasir" className="menu-item">
-              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
-              Kasir / POS Mode
-            </Link>
+            {/* --- FIX: TOMBOL KASIR SEKARANG MEMICU LOGOUT (RE-LOGIN) --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', gap: '12px' }}>
+              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode
+            </button>
           </nav>
         </div>
 

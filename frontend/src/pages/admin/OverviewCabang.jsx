@@ -126,11 +126,15 @@ const OverviewCabang = () => {
             <Link to="/admin/manajemen-akun-staf" className="menu-item"><img src={iconManajemen} alt="Staf" className="menu-icon-svg icon-white" /> Manajemen Akun Staf</Link>
             <Link to="/admin/pengaturan" className="menu-item"><img src={iconPengaturan} alt="Set" className="menu-icon-svg icon-white" /> Pengaturan</Link>
             <div className="divider" style={{ margin: '15px 16px' }}></div>
-            <Link to="/kasir" className="menu-item"><img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode</Link>
+            
+            {/* --- FIX: TOMBOL KASIR SEKARANG MEMICU LOGOUT (RE-LOGIN) --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', gap: '12px' }}>
+              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode
+            </button>
+
           </nav>
         </div>
         
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG MENGGUNAKAN FUNGSI handleLogout --- */}
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout

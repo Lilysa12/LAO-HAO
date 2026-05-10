@@ -31,17 +31,36 @@ import Pengaturan from './pages/admin/Pengaturan';
 import Kasir from './pages/kasir/DenahMeja';
 import Pos from './pages/kasir/Pos'; 
 import PesananDapur from './pages/kasir/PesananDapur';
-import Manajemenmenu from './pages/kasir/Manajemenmenu'; // <--- DITAMBAHKAN
+import Manajemenmenu from './pages/kasir/Manajemenmenu';
 import StokMenu from './pages/kasir/StokMenu';
 import LaporanRiwayat from './pages/kasir/LaporanRiwayat';
-import QrMeja from './pages/kasir/QrMeja'; // <--- DITAMBAHKAN
+import QrMeja from './pages/kasir/QrMeja';
 
-// --- KOMPONEN PROTECTED ROUTE ---
-const ProtectedRoute = ({ children }) => {
+// --- KOMPONEN PROTECTED ROUTE BERLAPIS (FILTER ROLE) ---
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated');
+  const userRole = localStorage.getItem('userRole'); // Ambil role yang login ('SUPER ADMIN' atau 'KASIR')
+
+  // 1. Jika belum login sama sekali, tendang ke login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+
+  // 2. Jika sudah login, tapi role-nya tidak diizinkan masuk ke rute ini
+  if (allowedRoles && !allowedRoles.includes(userRole)) {
+    // Jika Kasir nyasar ke halaman Admin, kembalikan ke Kasir
+    if (userRole === 'KASIR') {
+      return <Navigate to="/kasir" replace />;
+    }
+    // Jika Super Admin nyasar ke halaman yang cuma untuk Kasir, kembalikan ke Admin
+    if (userRole === 'SUPER ADMIN') {
+      return <Navigate to="/admin" replace />;
+    }
+    // Jaga-jaga jika role tidak valid, paksa login ulang
+    return <Navigate to="/login" replace />;
+  }
+
+  // 3. Jika aman, izinkan masuk
   return children;
 };
 
@@ -69,21 +88,22 @@ function App() {
         <Route path="/status" element={<Status />} />
         <Route path="/history" element={<History />} /> 
         
-        {/* --- AREA ADMIN (PROTECTED) --- */}
-        <Route path="/admin" element={<ProtectedRoute><OverviewCabang /></ProtectedRoute>} />
-        <Route path="/admin/laporan-penjualan-pusat" element={<ProtectedRoute><LaporanPenjualanPusat /></ProtectedRoute>} />
-        <Route path="/admin/manajemen-promo" element={<ProtectedRoute><ManajemenPromo /></ProtectedRoute>} />
-        <Route path="/admin/manajemen-akun-staf" element={<ProtectedRoute><ManajemenAkunStaf /></ProtectedRoute>} />
-        <Route path="/admin/pengaturan" element={<ProtectedRoute><Pengaturan /></ProtectedRoute>} />
+        {/* --- AREA ADMIN (HANYA BISA DIAKSES OLEH SUPER ADMIN) --- */}
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={['SUPER ADMIN']}><OverviewCabang /></ProtectedRoute>} />
+        <Route path="/admin/laporan-penjualan-pusat" element={<ProtectedRoute allowedRoles={['SUPER ADMIN']}><LaporanPenjualanPusat /></ProtectedRoute>} />
+        <Route path="/admin/manajemen-promo" element={<ProtectedRoute allowedRoles={['SUPER ADMIN']}><ManajemenPromo /></ProtectedRoute>} />
+        <Route path="/admin/manajemen-akun-staf" element={<ProtectedRoute allowedRoles={['SUPER ADMIN']}><ManajemenAkunStaf /></ProtectedRoute>} />
+        <Route path="/admin/pengaturan" element={<ProtectedRoute allowedRoles={['SUPER ADMIN']}><Pengaturan /></ProtectedRoute>} />
 
-        {/* --- AREA KASIR (PROTECTED - 8 MENU LENGKAP) --- */}
-        <Route path="/kasir" element={<ProtectedRoute><Kasir /></ProtectedRoute>} />
-        <Route path="/kasir/pos" element={<ProtectedRoute><Pos /></ProtectedRoute>} /> 
-        <Route path="/kasir/pesanan" element={<ProtectedRoute><PesananDapur /></ProtectedRoute>} />
-        <Route path="/kasir/manajemen-menu" element={<ProtectedRoute><Manajemenmenu /></ProtectedRoute>} /> {/* <--- FIX: Manajemen Menu */}
-        <Route path="/kasir/stok" element={<ProtectedRoute><StokMenu /></ProtectedRoute>} />
-        <Route path="/kasir/laporan" element={<ProtectedRoute><LaporanRiwayat /></ProtectedRoute>} />
-        <Route path="/kasir/qr-meja" element={<ProtectedRoute><QrMeja /></ProtectedRoute>} /> {/* <--- FIX: QR Code Meja */}
+        {/* --- AREA KASIR (BISA DIAKSES KASIR & SUPER ADMIN JIKA MAU) --- */}
+        {/* Catatan: Super Admin diizinkan masuk sini, tapi kalau mau ketat cuma Kasir, hapus 'SUPER ADMIN' dari array */}
+        <Route path="/kasir" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><Kasir /></ProtectedRoute>} />
+        <Route path="/kasir/pos" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><Pos /></ProtectedRoute>} /> 
+        <Route path="/kasir/pesanan" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><PesananDapur /></ProtectedRoute>} />
+        <Route path="/kasir/manajemen-menu" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><Manajemenmenu /></ProtectedRoute>} />
+        <Route path="/kasir/stok" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><StokMenu /></ProtectedRoute>} />
+        <Route path="/kasir/laporan" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><LaporanRiwayat /></ProtectedRoute>} />
+        <Route path="/kasir/qr-meja" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><QrMeja /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

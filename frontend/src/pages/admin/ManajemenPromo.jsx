@@ -16,17 +16,12 @@ import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 import iconPromosi from '../../assets/Icons/icons-admin/promosi.svg'; 
 
 const ManajemenPromo = () => {
-  const navigate = useNavigate(); // Inisialisasi navigate
-
-  // ==========================================
-  // STATE MANAGEMENT
-  // ==========================================
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   const [promoData, setPromoData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Modal & Form State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -39,15 +34,10 @@ const ManajemenPromo = () => {
     value: '',
   });
 
-  // ==========================================
-  // HANDLERS
-  // ==========================================
-  
-  // --- FIX: FUNGSI LOGOUT ---
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userRole');
-    navigate('/login'); // Kembali ke login tanpa layar putih
+    navigate('/login');
   };
 
   const fetchPromos = () => {
@@ -107,11 +97,9 @@ const ManajemenPromo = () => {
       alert('Tolong pilih tanggal kedaluwarsa!'); 
       return; 
     }
-    
     setIsSubmitting(true);
     const formattedDate = promoDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     const payload = { ...formData, expired_at: formattedDate };
-    
     try {
       if (isEditMode) {
         await axios.post(`http://127.0.0.1:8000/api/admin/promos/${editId}/update`, payload);
@@ -153,13 +141,11 @@ const ManajemenPromo = () => {
     let matchesTab = true;
     if (activeTab === 'Aktif') matchesTab = promo.status === 'AKTIF';
     if (activeTab === 'Nonaktif') matchesTab = promo.status !== 'AKTIF';
-    
     return matchesSearch && matchesTab;
   });
 
   return (
     <div className="admin-container">
-      {/* SIDEBAR */}
       <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <div style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
@@ -185,13 +171,13 @@ const ManajemenPromo = () => {
             
             <div className="divider" style={{ margin: '15px 16px' }}></div>
             
-            <Link to="/kasir" className="menu-item">
+            {/* --- FIX: TOMBOL KASIR SEKARANG MEMICU LOGOUT --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', gap: '12px' }}>
               <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode
-            </Link>
+            </button>
           </nav>
         </div>
         
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI FUNGSI --- */}
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%', display: 'flex', alignItems: 'center', gap: '12px', color: 'white' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
@@ -199,7 +185,6 @@ const ManajemenPromo = () => {
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
       <main className="main-content">
         <header className="topbar">
           <div className="breadcrumb">
@@ -222,9 +207,7 @@ const ManajemenPromo = () => {
                 <h1 className="page-title">Manajemen Promo & Voucher</h1>
                 <p className="page-subtitle">Buat dan kelola kode promo untuk pelanggan</p>
               </div>
-              <button className="btn-primary" onClick={handleAddClick}>
-                + Buat Promo Baru
-              </button>
+              <button className="btn-primary" onClick={handleAddClick}>+ Buat Promo Baru</button>
             </div>
 
             <div className="card table-container">
@@ -234,15 +217,8 @@ const ManajemenPromo = () => {
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
-                  <input 
-                    type="text" 
-                    placeholder="Cari kode promo..." 
-                    className="search-input" 
-                    value={searchQuery} 
-                    onChange={(e) => setSearchQuery(e.target.value)} 
-                  />
+                  <input type="text" placeholder="Cari kode promo..." className="search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 </div>
-                
                 <div className="filter-section">
                   <button className={`tab-btn ${activeTab === 'Semua' ? 'active' : ''}`} onClick={() => setActiveTab('Semua')}>Semua</button>
                   <button className={`tab-btn ${activeTab === 'Aktif' ? 'active' : ''}`} onClick={() => setActiveTab('Aktif')}>Aktif</button>
@@ -283,9 +259,7 @@ const ManajemenPromo = () => {
                             <div className="font-bold text-black">{promo.value}</div>
                             <div className="text-gray text-small">{promo.type}</div>
                           </td>
-                          <td className="text-gray">
-                            {promo.used_quota || 0} / {promo.max_quota || '∞'}
-                          </td>
+                          <td className="text-gray">{promo.used_quota || 0} / {promo.max_quota || '∞'}</td>
                           <td className="text-gray">{promo.exp}</td>
                           <td>
                             <span className={`badge ${promo.status === 'AKTIF' ? 'badge-success' : 'badge-danger'}`}>
@@ -296,27 +270,16 @@ const ManajemenPromo = () => {
                             <div className="action-icons-cell">
                               <button className="action-icon-btn" onClick={() => handleToggleStatus(promo.id)}>
                                 {promo.status === 'AKTIF' ? (
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" strokeWidth="2">
-                                    <rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect>
-                                    <circle cx="16" cy="12" r="3"></circle>
-                                  </svg>
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" strokeWidth="2"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>
                                 ) : (
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" strokeWidth="2">
-                                    <rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect>
-                                    <circle cx="8" cy="12" r="3"></circle>
-                                  </svg>
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" strokeWidth="2"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>
                                 )}
                               </button>
                               <button className="action-icon-btn" onClick={() => handleEditClick(promo)}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
-                                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                </svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                               </button>
                               <button className="action-icon-btn" onClick={() => handleDeletePromo(promo.id, promo.code)}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2">
-                                  <polyline points="3 6 5 6 21 6"></polyline>
-                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                </svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="red" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                               </button>
                             </div>
                           </td>
@@ -324,9 +287,7 @@ const ManajemenPromo = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center text-gray" style={{ padding: '30px' }}>
-                          Tidak ada promo ditemukan.
-                        </td>
+                        <td colSpan="6" className="text-center text-gray" style={{ padding: '30px' }}>Tidak ada promo ditemukan.</td>
                       </tr>
                     )}
                   </tbody>
@@ -337,7 +298,6 @@ const ManajemenPromo = () => {
         </div>
       </main>
 
-      {/* MODAL EDIT / TAMBAH */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">

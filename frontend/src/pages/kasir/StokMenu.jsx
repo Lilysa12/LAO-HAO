@@ -26,6 +26,13 @@ const StokMenu = () => {
   const [filterKategori, setFilterKategori] = useState('Semua Kategori');
   const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
 
+  // --- FIX: FUNGSI LOGOUT DIPERBAIKI (Hapus Role) ---
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    navigate('/login');
+  };
+
   const fetchInventory = async () => {
     setIsLoading(true);
     try {
@@ -66,11 +73,17 @@ const StokMenu = () => {
             <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}><img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat</Link>
             <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}><img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja</Link>
             <div className="divider" />
-            <Link to="/admin" className="menu-item"><img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat</Link>
+            
+            {/* --- FIX: TOMBOL KEMBALI KE PUSAT SEKARANG MEMICU LOGOUT --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '13px', gap: '12px', padding: '10px 16px' }}>
+              <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
+            </button>
           </nav>
         </div>
         <div className="sidebar-footer">
-          <button className="logout-btn" onClick={() => navigate('/login')}><img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout</button>
+          <button className="logout-btn" onClick={handleLogout} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', color: 'white', width: '100%' }}>
+            <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" /> Logout
+          </button>
         </div>
       </aside>
 
@@ -173,7 +186,6 @@ const StokMenu = () => {
           <div className="modal-box">
             <div className="modal-header">
               <h2>Update Stok Bahan Baku</h2>
-              {/* FIX: CLASS INI BIAR 'X' GAK KABUR KE UJUNG KULON */}
               <button className="close-stok-btn" onClick={() => setIsRestockModalOpen(false)}>✕</button>
             </div>
             <div className="modal-body">

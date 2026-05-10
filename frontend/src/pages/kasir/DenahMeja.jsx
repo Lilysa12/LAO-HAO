@@ -51,6 +51,7 @@ const DenahMeja = () => {
         fetchTables();
     }, []);
 
+    // --- FIX: FUNGSI LOGOUT (MENGHAPUS SESI DAN KE LOGIN) ---
     const handleLogout = () => {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('userRole');
@@ -117,10 +118,13 @@ const DenahMeja = () => {
                         <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
                             <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja
                         </Link>
+                        
                         <div className="sidebar-divider"></div>
-                        <Link to="/admin" className="menu-item">
+
+                        {/* --- FIX: TOMBOL KEMBALI KE PUSAT MENGGUNAKAN FUNGSI LOGOUT --- */}
+                        <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '13px', gap: '12px', padding: '10px 16px' }}>
                             <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
-                        </Link>
+                        </button>
                     </nav>
                 </div>
                 
@@ -188,7 +192,6 @@ const DenahMeja = () => {
                                                 
                                                 <div className="card-right-actions">
                                                     <div className="hover-action-container">
-                                                        {/* Ikon Kapasitas (Kondisi Diam) */}
                                                         <div className="table-capacity">
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -197,7 +200,6 @@ const DenahMeja = () => {
                                                             {table.capacity}
                                                         </div>
 
-                                                        {/* Tombol Edit/Hapus (Kondisi Hover Menimpa) */}
                                                         <div className="action-buttons-group">
                                                             <button className="action-circle-btn" onClick={() => handleOpenEditModal(table)}>
                                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
