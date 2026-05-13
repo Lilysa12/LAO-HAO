@@ -270,3 +270,50 @@ input:checked + .toggle-slider:before { transform: translateX(18px); }
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+.loading-state,
+.error-state,
+.empty-table-message {
+  padding: 32px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.error-state {
+  color: #b91c1c;
+}
+
+.menu-image-empty {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.action-cell {
+  gap: 8px;
+}
+
+.btn-delete-figma {
+  background: white;
+  border: 1px solid #fecaca;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-delete-figma:hover {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
