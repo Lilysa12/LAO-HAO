@@ -33,7 +33,6 @@
 
 .co-right-column { flex: 4; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px;}
 
-
 .co-promo-card { display: flex; align-items: center; gap: 15px; padding: 20px; border-radius: 16px; border: 1px solid #DEE2E6; background: #fff; cursor: pointer;}
 .co-promo-card.yellow-tint { background: linear-gradient(90deg, rgba(255, 198, 39, 0.1) 0%, rgba(255, 255, 255, 0) 100%); border-color: rgba(255, 198, 39, 0.4);}
 .co-promo-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: 800;}
@@ -59,12 +58,51 @@
 .co-btn-pay { width: 100%; background: #A00500; color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; font-size: 16px;}
 .co-btn-pay:hover:not(:disabled) { background: #8B0000; transform: translateY(-2px); }
 
-/* Footer */
-.co-footer { background-color: #A00500; padding: 25px 60px; display: flex; justify-content: space-between; align-items: center; color: #fff; margin-top: auto;}
-.co-socials { display: flex; gap: 15px; }
-.co-soc-circle { width: 40px; height: 40px; background-color: #FFFFFF; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-.co-soc-circle img { width: 20px; filter: invert(13%) sepia(85%) saturate(5423%) hue-rotate(352deg) brightness(88%) contrast(111%); }
-.co-copyright { font-family: 'Inter', sans-serif; font-size: 13px; opacity: 0.9; }
+/* =========================
+   FOOTER (Disamakan dengan MenuList)
+========================= */
+.co-footer {
+  background-color: #a00500;
+  padding: 14px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  z-index: 80;
+}
+
+.co-socials { display: flex; gap: 12px; }
+
+.co-soc-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease;
+  text-decoration: none;
+}
+
+.co-soc-circle:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.co-soc-circle img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.co-copyright {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  color: #ffffff;
+  opacity: 0.9;
+}
 
 .co-empty-state { text-align: center; padding: 40px; color: #6C757D; font-family: 'Inter', sans-serif; }
 .co-btn-add-initial { margin-top: 15px; padding: 10px 20px; background: #FFC627; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Poppins', sans-serif;}

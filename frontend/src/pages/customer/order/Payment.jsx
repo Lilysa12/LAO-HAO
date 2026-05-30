@@ -253,11 +253,21 @@ export default function Payment() {
 
       <footer className="pay-footer">
         <div className="pay-socials">
-          <div className="pay-soc-circle"><img src={IconInstagram} alt="IG" /></div>
-          <div className="pay-soc-circle"><img src={IconWhatsapp} alt="WA" /></div>
-          <div className="pay-soc-circle"><img src={IconFacebook} alt="FB" /></div>
-          <div className="pay-soc-circle"><img src={IconLink} alt="Link" /></div>
-          <div className="pay-soc-circle"><img src={IconTiktok} alt="Tiktok" /></div>
+          <a href="https://www.instagram.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+            <img src={IconInstagram} alt="Instagram" />
+          </a>
+          <a href="https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+            <img src={IconWhatsapp} alt="Whatsapp" />
+          </a>
+          <a href="https://www.facebook.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+            <img src={IconFacebook} alt="Facebook" />
+          </a>
+          <div className="pay-soc-circle">
+            <img src={IconLink} alt="Link" />
+          </div>
+          <a href="https://www.tiktok.com/@laoban.nusantara" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+            <img src={IconTiktok} alt="Tiktok" />
+          </a>
         </div>
         <div className="pay-copyright">© Copyright Laoban Nusantara.</div>
       </footer>
