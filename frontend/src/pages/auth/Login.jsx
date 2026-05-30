@@ -12,11 +12,25 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     
-    // Simpan tanda bahwa user berhasil login (Hanya 1 sesi untuk semua)
-    localStorage.setItem('isAuthenticated', 'true');
+    // --- SIMULASI PENGECEKAN ROLE (Bisa diganti fetch API Backend nanti) ---
+    const userRoleLower = username.toLowerCase();
 
-    // Selalu arahkan ke Admin pertama kali dibuka
-    navigate('/admin');
+    if (userRoleLower === 'admin') {
+      // SET SESI SUPER ADMIN
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('userRole', 'SUPER ADMIN');
+      navigate('/admin'); // Arahkan ke halaman Admin
+      
+    } else if (userRoleLower === 'kasir') {
+      // SET SESI KASIR
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('userRole', 'KASIR');
+      navigate('/kasir'); // Arahkan ke halaman Kasir
+      
+    } else {
+      // GAGAL LOGIN
+      alert('Username tidak ditemukan! Coba gunakan "admin" atau "kasir".');
+    }
   };
 
   return (
@@ -46,7 +60,7 @@ const Login = () => {
                 </svg>
                 <input 
                   type="text" 
-                  placeholder="Masukkan username" 
+                  placeholder="Ketik 'admin' atau 'kasir'" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required 
@@ -63,7 +77,7 @@ const Login = () => {
                 </svg>
                 <input 
                   type="password" 
-                  placeholder="Masukkan password" 
+                  placeholder="Masukkan password bebas" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required 

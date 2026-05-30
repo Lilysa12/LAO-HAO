@@ -395,6 +395,7 @@ const LaporanRiwayat = () => {
     printWindow.document.close();
   };
 
+  // --- FIX: FUNGSI LOGOUT ---
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userRole');
@@ -416,49 +417,21 @@ const LaporanRiwayat = () => {
           <div className="sidebar-logo-container">
             <img src={logoLaobanSvg} alt="Logo Lao-Hao" />
           </div>
+          <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
+            <Link to="/kasir" className={getMenuClass('/kasir')}><img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} /> Denah Meja</Link>
+            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}><img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} /> Kasir / POS</Link>
+            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}><img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} /> Pesanan Dapur</Link>
+            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}><img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} /> Manajemen Menu</Link>
+            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}><img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} /> Stok Bahan Baku</Link>
+            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}><img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} /> Laporan & Riwayat</Link>
+            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}><img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja</Link>
+            <div className="divider" style={{ margin: '15px 16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
+            
+            {/* --- FIX: TOMBOL KEMBALI KE PUSAT SEKARANG MEMICU LOGOUT --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '13px', gap: '12px', padding: '10px 16px' }}>
+              <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
+            </button>
 
-          <nav className="sidebar-menu">
-            <Link to="/kasir" className={getMenuClass('/kasir')}>
-              <img src={iconDashboard} alt="Denah" className={getIconClass('/kasir')} />
-              Denah Meja
-            </Link>
-
-            <Link to="/kasir/pos" className={getMenuClass('/kasir/pos')}>
-              <img src={iconPos} alt="POS" className={getIconClass('/kasir/pos')} />
-              Kasir / POS
-            </Link>
-
-            <Link to="/kasir/pesanan" className={getMenuClass('/kasir/pesanan')}>
-              <img src={iconPesananDapur} alt="Pesanan" className={getIconClass('/kasir/pesanan')} />
-              Pesanan Dapur
-            </Link>
-
-            <Link to="/kasir/manajemen-menu" className={getMenuClass('/kasir/manajemen-menu')}>
-              <img src={iconStok} alt="Menu" className={getIconClass('/kasir/manajemen-menu')} />
-              Manajemen Menu
-            </Link>
-
-            <Link to="/kasir/stok" className={getMenuClass('/kasir/stok')}>
-              <img src={iconStok} alt="Stok" className={getIconClass('/kasir/stok')} />
-              Stok Bahan Baku
-            </Link>
-
-            <Link to="/kasir/laporan" className={getMenuClass('/kasir/laporan')}>
-              <img src={iconLaporan} alt="Laporan" className={getIconClass('/kasir/laporan')} />
-              Laporan & Riwayat
-            </Link>
-
-            <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}>
-              <img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} />
-              QR Code Meja
-            </Link>
-
-            <div className="divider"></div>
-
-            <Link to="/admin" className="menu-item">
-              <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" />
-              Kembali ke Pusat
-            </Link>
           </nav>
         </div>
 

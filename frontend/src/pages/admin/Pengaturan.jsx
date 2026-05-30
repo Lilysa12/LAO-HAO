@@ -18,7 +18,7 @@ import iconStruk from '../../assets/Icons/icons-admin/struk.svg';
 import iconSimpan from '../../assets/Icons/icons-admin/simpan.svg';
 
 const Pengaturan = () => {
-  const navigate = useNavigate(); // Inisialisasi navigate
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profil');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,11 +33,10 @@ const Pengaturan = () => {
     receipt_footer: ''
   });
 
-  // --- FIX: FUNGSI LOGOUT DI DALAM KOMPONEN ---
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userRole');
-    navigate('/login'); // Lempar kembali ke login
+    navigate('/login');
   };
 
   const fetchSettings = async () => {
@@ -102,23 +101,11 @@ const Pengaturan = () => {
 
   return (
     <div className="admin-container">
-      {/* --- SIDEBAR STANDAR LOGO LAOBAN --- */}
       <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           
-          <div style={{ 
-            width: '100%', 
-            padding: '35px 20px 20px 20px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            boxSizing: 'border-box'
-          }}>
-            <img 
-              src={logoLaobanSvg} 
-              alt="Logo Laoban" 
-              style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} 
-            />
+          <div style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
+            <img src={logoLaobanSvg} alt="Logo Laoban" style={{ width: '100%', maxWidth: '160px', height: 'auto', display: 'block' }} />
           </div>
 
           <nav className="sidebar-menu" style={{ marginTop: '0px', paddingTop: '10px' }}>
@@ -145,14 +132,13 @@ const Pengaturan = () => {
 
             <div className="divider" style={{ margin: '15px 16px' }}></div>
 
-            <Link to="/kasir" className="menu-item">
-              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
-              Kasir / POS Mode
-            </Link>
+            {/* --- FIX: TOMBOL KASIR SEKARANG MEMICU LOGOUT --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', gap: '12px' }}>
+              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode
+            </button>
           </nav>
         </div>
 
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI handleLogout --- */}
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />

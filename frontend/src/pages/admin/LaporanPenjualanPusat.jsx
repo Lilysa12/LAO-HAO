@@ -25,7 +25,7 @@ import iconList from '../../assets/Icons/icons-admin/list.svg';
 
 const LaporanPenjualanPusat = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // Inisialisasi navigate
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [allTransactions, setAllTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
@@ -33,14 +33,12 @@ const LaporanPenjualanPusat = () => {
   const [summary, setSummary] = useState({ totalPendapatan: 0, pendapatanKasir: 0, pendapatanQr: 0, totalTransaksi: 0 });
   const [chartData, setChartData] = useState([]);
 
-  // --- STATE UNTUK POP-UP LIHAT SEMUA ---
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // --- FIX: FUNGSI LOGOUT DI DALAM KOMPONEN ---
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userRole');
-    navigate('/login'); // Lempar langsung ke login
+    navigate('/login');
   };
 
   useEffect(() => {
@@ -151,7 +149,6 @@ const LaporanPenjualanPusat = () => {
 
   return (
     <div className="admin-container">
-      {/* --- SIDEBAR --- */}
       <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <div style={{ width: '100%', padding: '35px 20px 20px 20px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
@@ -180,14 +177,14 @@ const LaporanPenjualanPusat = () => {
               Pengaturan
             </Link>
             <div className="divider" style={{ margin: '15px 16px' }}></div>
-            <Link to="/kasir" className="menu-item">
-              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" />
-              Kasir / POS Mode
-            </Link>
+            
+            {/* --- FIX: TOMBOL KASIR SEKARANG MEMICU LOGOUT --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', gap: '12px' }}>
+              <img src={iconKasir} alt="Kasir" className="menu-icon-svg icon-white" /> Kasir / POS Mode
+            </button>
           </nav>
         </div>
         
-        {/* --- FIX: TOMBOL LOGOUT SEKARANG PAKAI FUNGSI --- */}
         <div className="sidebar-footer">
           <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', padding: '10px 16px', cursor: 'pointer', textAlign: 'left', width: '100%', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={iconLogout} alt="Logout" className="menu-icon-svg icon-white" />
@@ -348,7 +345,6 @@ const LaporanPenjualanPusat = () => {
         </div>
       </main>
 
-      {/* --- MODAL DAFTAR TRANSAKSI --- */}
       {isModalOpen && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div className="modal-content" style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', width: '90%', maxWidth: '800px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
@@ -362,29 +358,37 @@ const LaporanPenjualanPusat = () => {
               <table className="transaction-table" style={{ width: '100%' }}>
                 <thead>
                   <tr>
-                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>NO. INVOICE</th>
-                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>WAKTU</th>
-                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>PELANGGAN</th>
-                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>METODE</th>
-                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>TOTAL</th>
-                    <th className="text-center" style={{ position: 'sticky', top: 0, backgroundColor: 'white' }}>STATUS</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>NO. INVOICE</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>WAKTU</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>PELANGGAN</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>METODE</th>
+                    <th style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>TOTAL</th>
+                    <th className="text-center" style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>STATUS</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTransactions.map((row) => (
-                    <tr key={row.id}>
-                      <td className="font-bold text-black">{row.inv}</td>
-                      <td>{row.time}</td>
-                      <td>{row.user}</td>
-                      <td>{row.method}</td>
-                      <td className="font-bold text-red">{row.total}</td>
-                      <td className="text-center">
-                        <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
-                          {row.status}
-                        </span>
+                  {filteredTransactions.length > 0 ? (
+                    filteredTransactions.map((row) => (
+                      <tr key={row.id}>
+                        <td className="font-bold text-black">{row.inv}</td>
+                        <td>{row.time}</td>
+                        <td>{row.user}</td>
+                        <td>{row.method}</td>
+                        <td className="font-bold text-red">{row.total}</td>
+                        <td className="text-center">
+                          <span className={`badge ${row.status === 'BERHASIL' ? 'badge-success' : 'badge-danger'}`}>
+                            {row.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center text-gray" style={{ padding: '20px' }}>
+                        Tidak ada transaksi pada bulan ini.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

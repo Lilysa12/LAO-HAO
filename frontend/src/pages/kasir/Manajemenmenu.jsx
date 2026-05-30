@@ -70,8 +70,18 @@ const Manajemenmenu = () => {
     fetchMenus();
   }, []);
 
-  const dynamicCategories = useMemo(() => {
-    const categories = menus.map((item) => item.category).filter(Boolean);
+  const dynamicCategories = ['Semua Kategori', ...new Set(menus.map(item => item.category))];
+  const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+  
+  // --- FIX: FUNGSI LOGOUT DIPERBAIKI ---
+  const handleLogout = () => { 
+    localStorage.removeItem('isAuthenticated'); 
+    localStorage.removeItem('userRole'); 
+    navigate('/login'); 
+  };
+  
+  const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
+  const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
 
     return ["Semua Kategori", ...new Set(categories)];
   }, [menus]);
@@ -324,15 +334,12 @@ const Manajemenmenu = () => {
             </Link>
 
             <div className="divider"></div>
+            
+            {/* --- FIX: TOMBOL KEMBALI KE PUSAT SEKARANG MEMICU LOGOUT --- */}
+            <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '14px', gap: '12px' }}>
+              <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
+            </button>
 
-            <Link to="/admin" className="menu-item">
-              <img
-                src={iconDashboard}
-                alt="Admin"
-                className="menu-icon-svg icon-white"
-              />
-              Kembali ke Pusat
-            </Link>
           </nav>
         </div>
 

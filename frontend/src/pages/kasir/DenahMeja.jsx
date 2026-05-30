@@ -68,137 +68,7 @@ const DenahMeja = () => {
         fetchTables();
     }, []);
 
-    // ============================================================================
-    // MODAL TAMBAH / EDIT MEJA
-    // ============================================================================
-
-    const handleOpenAddModal = () => {
-        setModalData({
-            id: null,
-            table_number: '',
-            area: activeArea,
-            capacity: '',
-            status: 'tersedia',
-        });
-
-        setIsModalOpen(true);
-    };
-
-    const handleOpenEditModal = (table) => {
-        setModalData({
-            id: table.id,
-            table_number: table.table_number || '',
-            area: table.area || 'indoor',
-            capacity: table.capacity || '',
-            status: table.status || 'tersedia',
-        });
-
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        if (isSaving) {
-            return;
-        }
-
-        setIsModalOpen(false);
-    };
-
-    const handleModalInputChange = (event) => {
-        const { name, value } = event.target;
-
-        setModalData((currentData) => ({
-            ...currentData,
-            [name]: value,
-        }));
-    };
-
-    const validateTableForm = () => {
-        if (!modalData.table_number.trim()) {
-            alert('Nomor / nama meja wajib diisi.');
-            return false;
-        }
-
-        if (!modalData.area.trim()) {
-            alert('Area meja wajib dipilih.');
-            return false;
-        }
-
-        if (!modalData.capacity || Number(modalData.capacity) <= 0) {
-            alert('Kapasitas meja harus lebih dari 0.');
-            return false;
-        }
-
-        return true;
-    };
-
-    const handleSaveTable = async () => {
-        if (!validateTableForm()) {
-            return;
-        }
-
-        setIsSaving(true);
-
-        const payload = {
-            table_number: modalData.table_number.trim(),
-            area: modalData.area.toLowerCase(),
-            capacity: Number(modalData.capacity),
-            status: modalData.status || 'tersedia',
-        };
-
-        try {
-            if (modalData.id) {
-                await axios.post(`${API_BASE_URL}/kasir/tables/${modalData.id}/update`, payload);
-                alert('Meja berhasil diperbarui.');
-            } else {
-                await axios.post(`${API_BASE_URL}/kasir/tables`, payload);
-                alert('Meja berhasil ditambahkan.');
-            }
-
-            setIsModalOpen(false);
-            await fetchTables();
-        } catch (error) {
-            console.error('Gagal menyimpan meja:', error);
-
-            const message = error.response?.data?.message
-                || error.message
-                || 'Terjadi kesalahan saat menyimpan meja.';
-
-            alert(`Gagal menyimpan meja: ${message}`);
-        } finally {
-            setIsSaving(false);
-        }
-    };
-
-    const handleDeleteTable = async (table) => {
-        const isConfirmed = window.confirm(
-            `Yakin ingin menghapus meja ${table.table_number}?`
-        );
-
-        if (!isConfirmed) {
-            return;
-        }
-
-        try {
-            await axios.post(`${API_BASE_URL}/kasir/tables/${table.id}/delete`);
-
-            alert('Meja berhasil dihapus.');
-            await fetchTables();
-        } catch (error) {
-            console.error('Gagal menghapus meja:', error);
-
-            const message = error.response?.data?.message
-                || error.message
-                || 'Terjadi kesalahan saat menghapus meja.';
-
-            alert(`Gagal menghapus meja: ${message}`);
-        }
-    };
-
-    // ============================================================================
-    // NAVIGASI
-    // ============================================================================
-
+    // --- FIX: FUNGSI LOGOUT (MENGHAPUS SESI DAN KE LOGIN) ---
     const handleLogout = () => {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('userRole');
@@ -323,17 +193,13 @@ const DenahMeja = () => {
                             />
                             QR Code Meja
                         </Link>
-
+                        
                         <div className="sidebar-divider"></div>
 
-                        <Link to="/admin" className="menu-item">
-                            <img
-                                src={iconDashboard}
-                                alt="Admin"
-                                className="menu-icon-svg icon-white"
-                            />
-                            Kembali ke Pusat
-                        </Link>
+                        {/* --- FIX: TOMBOL KEMBALI KE PUSAT MENGGUNAKAN FUNGSI LOGOUT --- */}
+                        <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '13px', gap: '12px', padding: '10px 16px' }}>
+                            <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
+                        </button>
                     </nav>
                 </div>
 
