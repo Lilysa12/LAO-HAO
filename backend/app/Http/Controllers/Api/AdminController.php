@@ -12,8 +12,48 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+
 class AdminController extends Controller
 {
+    public function login(Request $request)
+{
+    $validated = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required'
+    ]);
+
+    $user = User::with('branchData')
+        ->where('email', $validated['email'])
+        ->first();
+
+    if (!$user) {
+        return response()->json([
+            'message' => 'Email tidak ditemukan'
+        ], 401);
+    }
+
+    if (!Hash::check($validated['password'], $user->password)) {
+        return response()->json([
+            'message' => 'Password salah'
+        ], 401);
+    }
+
+    $user->last_login_at = now();
+    $user->save();
+
+    return response()->json([
+        'success' => true,
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'branch_id' => $user->branch_id,
+            'branch_name' => optional($user->branchData)->name,
+        ]
+    ]);
+}
+
     // ============================================================================
     // MANAJEMEN STAF
     // ============================================================================

@@ -203,7 +203,7 @@ class CashierController extends Controller
                     'payment_method' => $order->payment_method,
                     'total_amount' => $this->formatRupiahValue($order->total_payment),
                     'status' => 'BERHASIL',
-                    'branch' => $order->branchData ? $order->branchData->name : null,
+                    'branch' => optional($order->branchData)->name,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -503,7 +503,7 @@ class CashierController extends Controller
             'payment_method' => $transaction->payment_method,
             'total_amount' => $transaction->total_amount,
             'status' => $transaction->status,
-            'branch' => $transaction->branch,
+            'branch' => optional($transaction->branchData)->name,
             'branch_id' => $transaction->branch_id,
             'order_id' => $transaction->order_id,
             'created_at' => $transaction->created_at,
