@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CashierController;
 use App\Http\Controllers\MidtransController;
+use App\Http\Controllers\Api\CustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -77,4 +78,26 @@ Route::prefix('kasir')->group(function () {
     Route::post('/menus', [CashierController::class, 'storeMenu']);
     Route::post('/menus/{id}/update', [CashierController::class, 'updateMenu']);
     Route::post('/menus/{id}/delete', [CashierController::class, 'destroyMenu']);
+});
+
+// ============================================================================
+// ROUTE UNTUK MOBILE CUSTOMER
+// ============================================================================
+Route::prefix('customer')->group(function () {
+
+    Route::get('/menus', [CustomerController::class, 'getMenus']);
+
+    Route::get('/promos', [CustomerController::class, 'getPromos']);
+
+    Route::get('/vouchers', [CustomerController::class, 'getVouchers']);
+
+    Route::post('/orders', [CustomerController::class, 'createOrder']);
+
+    Route::get('/orders/{order_id}', [CustomerController::class, 'getOrder']);
+
+    Route::get('/orders/{order_id}/status', [CustomerController::class, 'getOrderStatus']);
+
+    Route::get('/orders/history/{phone_number}', [CustomerController::class, 'getOrderHistory']);
+
+    Route::post('/voucher/check', [CustomerController::class, 'validateVoucher']);
 });
