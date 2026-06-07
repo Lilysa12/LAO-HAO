@@ -425,7 +425,7 @@ const Manajemenmenu = () => {
               >
                 {dynamicCategories.map((category) => (
                   <option key={category} value={category}>
-                    {category}
+                    {category}h
                   </option>
                 ))}
               </select>

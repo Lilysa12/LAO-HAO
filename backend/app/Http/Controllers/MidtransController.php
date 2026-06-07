@@ -3,58 +3,47 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Midtrans\Snap;
+use Midtrans\Config;
 
 class MidtransController extends Controller
 {
     public function getToken(Request $request)
     {
-        // Header CORS (Pastikan URL sesuai dengan frontend kamu)
-        header('Access-Control-Allow-Origin: http://localhost:5173');
-        header('Access-Control-Allow-Methods: POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = false;
 
-        if ($request->isMethod('options')) {
-            return response('', 200);
+        // 1. Tangkap pilihan dari React
+        $selectedMethod = $request->payment_type;
+        
+// 2. Mapping pilihan React ke kode asli Midtrans
+        $enabledPayment = [];
+        if ($selectedMethod === 'qris') {
+            $enabledPayment = ['other_qris']; // <--- UBAH JADI 'other_qris'
+        } elseif ($selectedMethod === 'gopay') {
+            $enabledPayment = ['gopay'];
+        } elseif ($selectedMethod === 'shopee') {
+            $enabledPayment = ['shopeepay'];
+        } else {
+            $enabledPayment = ['other_qris', 'gopay', 'shopeepay']; // <--- INI JUGA UBAH
         }
+        $params = [
+            'transaction_details' => [
+                'order_id' => $request->order_id ?? 'LHO-' . time(), 
+                'gross_amount' => (int) $request->total,
+            ],
+            'customer_details' => [
+                'first_name' => $request->name ?? 'Guest',
+                'phone' => $request->phone ?? '-',
+            ],
+            // 3. Masukkan array yang isinya cuma 1 metode tadi
+            'enabled_payments' => $enabledPayment
+        ];
 
-        try {
-            $serverKey = env('MIDTRANS_SERVER_KEY');
-            
-            if (!$serverKey) {
-                return response()->json(['error' => 'Server Key Midtrans belum diatur di .env'], 500);
-            }
+        $snapToken = Snap::getSnapToken($params);
 
-            // Payload transaksi
-            $payload = [
-                'transaction_details' => [
-                    'order_id' => 'LHO-' . time(),
-                    'gross_amount' => (int) $request->total,
-                ],
-                'customer_details' => [
-                    'first_name' => $request->name ?? 'Guest',
-                ]
-            ];
-
-            $url = "https://app.sandbox.midtrans.com/snap/v1/transactions";
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Authorization: Basic ' . base64_encode($serverKey . ':')
-            ]);
-            
-            $result = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            return response($result, $httpCode)->header('Content-Type', 'application/json');
-
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return response()->json([
+            'token' => $snapToken
+        ]);
     }
 }
