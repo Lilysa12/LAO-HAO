@@ -4,7 +4,7 @@ import { supabase } from "../../../supabase";
 import "./Payment.css";
 
 // --- IMPORT KOMPONEN LOADING ---
-import Loading from '../../../components/Loading'; 
+import Loading from "../../../components/Loading";
 
 // --- IMPORT ASSETS ---
 import LogoLaoban from "../../../assets/icons/icons-customer/logoLaoban.png";
@@ -19,12 +19,11 @@ import IconQris from "../../../assets/icons/icons-customer/qris.png";
 import IconGopay from "../../../assets/icons/icons-customer/gopay.png";
 import IconShopee from "../../../assets/icons/icons-customer/shopee.png";
 
-
 export default function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedMethod, setSelectedMethod] = useState("qris");
-  const [isSubmitting, setIsSubmitting] = useState(false); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // =========================================================
   // TANGKAP HARGA DINAMIS DARI HALAMAN CHECKOUT
@@ -44,18 +43,65 @@ export default function Payment() {
     }).format(number);
   };
 
+  // =========================================================
+  // FUNGSI TRIGGER MIDTRANS SNAP
+  // =========================================================
+  const triggerMidtransPayment = async (orderId, storedName, storedPhone) => {
+    try {
+      const response = await fetch("/api/midtrans/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: orderId, // Kirim Order ID yang sama dengan Supabase
+          total: totalPayment,
+          name: storedName,
+          phone: storedPhone,
+          payment_type: selectedMethod,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || "Gagal ambil token");
+      if (!data.token) throw new Error("Token Midtrans kosong");
+
+      window.snap.pay(data.token, {
+        onSuccess: () => {
+          navigate("/status", { state: { status: "success", selectedMethod } });
+        },
+        onPending: () => {
+          navigate("/status", { state: { status: "pending", selectedMethod } });
+        },
+        onError: () => {
+          alert("Pembayaran gagal");
+          setIsSubmitting(false);
+        },
+        onClose: () => setIsSubmitting(false),
+      });
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+      setIsSubmitting(false);
+    }
+  };
+
+  // =========================================================
+  // FUNGSI UTAMA SAAT TOMBOL KONFIRMASI DIKLIK
+  // =========================================================
   const handleConfirmPayment = async () => {
     if (isSubmitting) return;
-    setIsSubmitting(true); // Mulai proses (Loading muncul)
+    setIsSubmitting(true);
 
     try {
+      // 1. Bikin 1 Order ID untuk Supabase & Midtrans
       const orderId = `LHO-${Math.floor(10000 + Math.random() * 90000)}`;
+
       const storedName = localStorage.getItem("customerName") || "Guest";
       const storedPhone = localStorage.getItem("phoneNumber") || "-";
       const storedTable = localStorage.getItem("tableNumber") || "12";
 
-      // 1. SIMPAN KE SUPABASE
-      const { error: supabaseError } = await supabase.from("orders").insert([
+      // 2. Simpan order ke Supabase dengan status pending
+      const { error } = await supabase.from("orders").insert([
         {
           order_id: orderId,
           customer_name: storedName,
@@ -68,60 +114,24 @@ export default function Payment() {
         },
       ]);
 
-      if (supabaseError) throw supabaseError;
+      if (error) throw error;
 
-// 2. MINTA TOKEN KE LARAVEL (GANTI BAGIAN INI)
-      const response = await fetch('http://localhost:8000/api/midtrans/token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-              total: totalPayment, // Pakai variabel totalPayment yang dinamis
-              name: storedName,
-              phone: storedPhone
-          }),
-      });
-
-      const data = await response.json();
-
-      // Jika Laravel error (status 500), dia biasanya ngirim { message: "..." }
-      if (!response.ok) {
-        throw new Error(data.message || "Gagal menghubungi server pembayaran");
-      }
-
-      if (data.token) {
-        setIsSubmitting(false); 
-
-        // 3. MUNCULKAN POPUP MIDTRANS
-        window.snap.pay(data.token, {
-          onSuccess: function (result) {
-            // ... logic success tetap sama ...
-            navigate("/status", { state: { orderId, status: "success", selectedMethod } });
-          },
-          onPending: function (result) {
-            navigate("/status", { state: { orderId, status: "pending", selectedMethod } });
-          },
-          onError: function (result) {
-            alert("Pembayaran Gagal!");
-            setIsSubmitting(false);
-          },
-          onClose: function () {
-            alert("Kamu menutup popup sebelum menyelesaikan pembayaran");
-            setIsSubmitting(false);
-          },
-        });
+      // 3. Cek Metode Pembayaran
+      if (selectedMethod === "tunai") {
+        // Kalau tunai, langsung selesai
+        alert("Order berhasil dibuat! Silakan bayar di kasir.");
+        navigate("/status", { state: { status: "success", selectedMethod } });
+        setIsSubmitting(false);
       } else {
-        throw new Error("Token Midtrans tidak ditemukan dalam respon server");
+        // Kalau QRIS/GoPay/ShopeePay, panggil Midtrans Snap
+        await triggerMidtransPayment(orderId, storedName, storedPhone);
       }
-    } catch (error) {
-      console.error("Error Detail:", error);
-      alert("Terjadi kesalahan: " + error.message);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
       setIsSubmitting(false);
     }
   };
-  // JIKA SEDANG SUBMITTING, TAMPILKAN LOADING
-  if (isSubmitting) {
-    return <Loading text="Menghubungkan ke sistem pembayaran..." />;
-  }
 
   return (
     <div className="pay-container">
@@ -160,7 +170,11 @@ export default function Payment() {
             >
               <div className="pay-method-left">
                 <div className="pay-icon-box">
-                  <img src={IconTunai} alt="Tunai" className="pay-method-icon" />
+                  <img
+                    src={IconTunai}
+                    alt="Tunai"
+                    className="pay-method-icon"
+                  />
                 </div>
                 <span className="pay-method-name">Bayar di kasir</span>
               </div>
@@ -193,7 +207,11 @@ export default function Payment() {
             >
               <div className="pay-method-left">
                 <div className="pay-icon-box">
-                  <img src={IconGopay} alt="GoPay" className="pay-method-icon" />
+                  <img
+                    src={IconGopay}
+                    alt="GoPay"
+                    className="pay-method-icon"
+                  />
                 </div>
                 <span className="pay-method-name">GoPay</span>
               </div>
@@ -208,7 +226,11 @@ export default function Payment() {
             >
               <div className="pay-method-left">
                 <div className="pay-icon-box">
-                  <img src={IconShopee} alt="ShopeePay" className="pay-method-icon" />
+                  <img
+                    src={IconShopee}
+                    alt="ShopeePay"
+                    className="pay-method-icon"
+                  />
                 </div>
                 <span className="pay-method-name">ShopeePay</span>
               </div>
@@ -227,7 +249,9 @@ export default function Payment() {
             {discountAmount > 0 && (
               <div className="pay-summary-row" style={{ color: "#d32f2f" }}>
                 <span className="pay-sum-label">Diskon Voucher</span>
-                <span className="pay-sum-value">-{formatRupiah(discountAmount)}</span>
+                <span className="pay-sum-value">
+                  -{formatRupiah(discountAmount)}
+                </span>
               </div>
             )}
 
@@ -238,7 +262,9 @@ export default function Payment() {
 
             <div className="pay-summary-row total-row">
               <span className="pay-sum-label-bold">Total Pembayaran</span>
-              <span className="pay-sum-total">{formatRupiah(totalPayment)}</span>
+              <span className="pay-sum-total">
+                {formatRupiah(totalPayment)}
+              </span>
             </div>
 
             <button
@@ -253,19 +279,39 @@ export default function Payment() {
 
       <footer className="pay-footer">
         <div className="pay-socials">
-          <a href="https://www.instagram.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+          <a
+            href="https://www.instagram.com/laoban.nusantara/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pay-soc-circle"
+          >
             <img src={IconInstagram} alt="Instagram" />
           </a>
-          <a href="https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+          <a
+            href="https://api.whatsapp.com/send/?phone=%2B6282244503221&text&type=phone_number&app_absent=0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pay-soc-circle"
+          >
             <img src={IconWhatsapp} alt="Whatsapp" />
           </a>
-          <a href="https://www.facebook.com/laoban.nusantara/" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+          <a
+            href="https://www.facebook.com/laoban.nusantara/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pay-soc-circle"
+          >
             <img src={IconFacebook} alt="Facebook" />
           </a>
           <div className="pay-soc-circle">
             <img src={IconLink} alt="Link" />
           </div>
-          <a href="https://www.tiktok.com/@laoban.nusantara" target="_blank" rel="noopener noreferrer" className="pay-soc-circle">
+          <a
+            href="https://www.tiktok.com/@laoban.nusantara"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pay-soc-circle"
+          >
             <img src={IconTiktok} alt="Tiktok" />
           </a>
         </div>
