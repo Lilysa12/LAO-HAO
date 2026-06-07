@@ -117,6 +117,51 @@ const DenahMeja = () => {
     const tablesOutdoor = tables.filter((table) => normalizeArea(table.area) === 'outdoor');
     const currentTables = activeArea === 'indoor' ? tablesIndoor : tablesOutdoor;
 
+    const handleOpenAddModal = () => {
+    setModalData({
+        id: null,
+        table_number: '',
+        area: 'indoor',
+        capacity: '',
+        status: 'tersedia',
+    });
+
+    setIsModalOpen(true);
+};
+
+const handleOpenEditModal = (table) => {
+    setModalData({
+        id: table.id,
+        table_number: table.table_number,
+        area: table.area,
+        capacity: table.capacity,
+        status: table.status,
+    });
+
+    setIsModalOpen(true);
+};
+
+const handleCloseModal = () => {
+    setIsModalOpen(false);
+};
+
+const handleModalInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setModalData((prev) => ({
+        ...prev,
+        [name]: value,
+    }));
+};
+
+const handleSaveTable = async () => {
+    alert('Fungsi simpan belum dibuat');
+};
+
+const handleDeleteTable = async (table) => {
+    alert(`Hapus meja ${table.table_number}`);
+};
+
     return (
         <div className="admin-container">
             {/* --- SIDEBAR --- */}

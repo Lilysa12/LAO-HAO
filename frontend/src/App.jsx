@@ -97,13 +97,13 @@ function App() {
 
         {/* --- AREA KASIR (BISA DIAKSES KASIR & SUPER ADMIN JIKA MAU) --- */}
         {/* Catatan: Super Admin diizinkan masuk sini, tapi kalau mau ketat cuma Kasir, hapus 'SUPER ADMIN' dari array */}
-        <Route path="/kasir" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><Kasir /></ProtectedRoute>} />
-        <Route path="/kasir/pos" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><Pos /></ProtectedRoute>} /> 
-        <Route path="/kasir/pesanan" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><PesananDapur /></ProtectedRoute>} />
-        <Route path="/kasir/manajemen-menu" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><Manajemenmenu /></ProtectedRoute>} />
-        <Route path="/kasir/stok" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><StokMenu /></ProtectedRoute>} />
-        <Route path="/kasir/laporan" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><LaporanRiwayat /></ProtectedRoute>} />
-        <Route path="/kasir/qr-meja" element={<ProtectedRoute allowedRoles={['KASIR', 'SUPER ADMIN']}><QrMeja /></ProtectedRoute>} />
+        <Route path="/kasir" element={<ProtectedRoute allowedRoles={['KASIR']}><Kasir /></ProtectedRoute>} />
+        <Route path="/kasir/pos" element={<ProtectedRoute allowedRoles={['KASIR']}><Pos /></ProtectedRoute>} /> 
+        <Route path="/kasir/pesanan" element={<ProtectedRoute allowedRoles={['KASIR']}><PesananDapur /></ProtectedRoute>} />
+        <Route path="/kasir/manajemen-menu" element={<ProtectedRoute allowedRoles={['KASIR']}><Manajemenmenu /></ProtectedRoute>} />
+        <Route path="/kasir/stok" element={<ProtectedRoute allowedRoles={['KASIR']}><StokMenu /></ProtectedRoute>} />
+        <Route path="/kasir/laporan" element={<ProtectedRoute allowedRoles={['KASIR']}><LaporanRiwayat /></ProtectedRoute>} />
+        <Route path="/kasir/qr-meja" element={<ProtectedRoute allowedRoles={['KASIR']}><QrMeja /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
