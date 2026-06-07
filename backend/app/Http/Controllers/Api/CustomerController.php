@@ -7,6 +7,7 @@ use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Promo;
 use App\Models\Voucher;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -19,6 +20,14 @@ class CustomerController extends Controller
 
     return response()->json($menus);
 }
+    public function getBranches()
+{
+    $branches = Branch::query()
+        ->orderBy('id')
+        ->get();
+
+    return response()->json($branches);
+}
     public function getPromos()
 {
     $promos = Promo::query()
@@ -28,8 +37,33 @@ class CustomerController extends Controller
 
     return response()->json($promos);
 }
+    public function getPromoDetail($id)
+{
+    $promo = Promo::find($id);
+
+    if (!$promo) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Promo tidak ditemukan'
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => $promo
+    ]);
+}
     public function createOrder(Request $request)
 {
+    $request->validate([
+    'customer_name' => 'required',
+    'phone_number' => 'required',
+    'items' => 'required',
+    'subtotal' => 'required|numeric',
+    'total_payment' => 'required|numeric',
+    'branch_id' => 'required'
+]);
+
     $order = Order::create([
         'order_id' => 'ORD-' . time(),
 
@@ -38,7 +72,7 @@ class CustomerController extends Controller
 
         'table_number' => $request->table_number,
 
-        'items' => json_encode($request->items),
+        'items' => $request->items,
 
         'subtotal' => $request->subtotal,
         'discount_amount' => $request->discount_amount ?? 0,
@@ -76,6 +110,32 @@ class CustomerController extends Controller
     return response()->json([
         'success' => true,
         'data' => $order
+    ]);
+}
+    public function cancelOrder($order_id)
+{
+    $order = Order::where('order_id', $order_id)->first();
+
+    if (!$order) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Order tidak ditemukan'
+        ], 404);
+    }
+
+    if ($order->status !== 'PENDING') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Order tidak bisa dibatalkan'
+        ]);
+    }
+
+    $order->status = 'CANCELLED';
+    $order->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Order berhasil dibatalkan'
     ]);
 }
     public function getOrderStatus($order_id)
@@ -119,6 +179,22 @@ class CustomerController extends Controller
 
     return response()->json($vouchers);
 }
+    public function getVoucherDetail($id)
+{
+    $voucher = Voucher::find($id);
+
+    if (!$voucher) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Voucher tidak ditemukan'
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => $voucher
+    ]);
+}
     public function validateVoucher(Request $request)
 {
     $voucher = Voucher::find($request->voucher_id);
@@ -157,6 +233,34 @@ class CustomerController extends Controller
         'voucher' => $voucher->title,
         'discount' => $discount,
         'final_total' => $request->subtotal - $discount
+    ]);
+}
+    public function getMenuDetail($id)
+{
+    $menu = Menu::find($id);
+
+    if (!$menu) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Menu tidak ditemukan'
+        ], 404);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => $menu
+    ]);
+}
+
+public function searchMenu($keyword)
+{
+    $menus = Menu::where('name', 'ILIKE', '%' . $keyword . '%')
+        ->orderBy('name')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $menus
     ]);
 }
 }

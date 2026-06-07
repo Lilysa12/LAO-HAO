@@ -42,6 +42,7 @@ class Order extends Model
         'id' => 'integer',
         'branch_id' => 'integer',
         'table_id' => 'integer',
+        'items' => 'array',
         'subtotal' => 'float',
         'discount_amount' => 'float',
         'tax' => 'float',

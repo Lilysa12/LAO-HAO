@@ -85,19 +85,28 @@ Route::prefix('kasir')->group(function () {
 // ============================================================================
 Route::prefix('customer')->group(function () {
 
+    // MENU
     Route::get('/menus', [CustomerController::class, 'getMenus']);
+    Route::get('/menus/{id}', [CustomerController::class, 'getMenuDetail']);
+    Route::get('/menus/search/{keyword}', [CustomerController::class, 'searchMenu']);
 
+    // CABANG
+    Route::get('/branches', [CustomerController::class, 'getBranches']);
+
+    // PROMO
     Route::get('/promos', [CustomerController::class, 'getPromos']);
+    Route::get('/promos/{id}', [CustomerController::class, 'getPromoDetail']);
 
+    // VOUCHER
     Route::get('/vouchers', [CustomerController::class, 'getVouchers']);
-
-    Route::post('/orders', [CustomerController::class, 'createOrder']);
-
-    Route::get('/orders/{order_id}', [CustomerController::class, 'getOrder']);
-
-    Route::get('/orders/{order_id}/status', [CustomerController::class, 'getOrderStatus']);
-
-    Route::get('/orders/history/{phone_number}', [CustomerController::class, 'getOrderHistory']);
-
+    Route::get('/vouchers/{id}', [CustomerController::class, 'getVoucherDetail']);
     Route::post('/voucher/check', [CustomerController::class, 'validateVoucher']);
+
+    // ORDER
+    Route::post('/orders', [CustomerController::class, 'createOrder']);
+    Route::get('/orders/{order_id}', [CustomerController::class, 'getOrder']);
+    Route::get('/orders/{order_id}/status', [CustomerController::class, 'getOrderStatus']);
+    Route::get('/orders/history/{phone_number}', [CustomerController::class, 'getOrderHistory']);
+    Route::post('/orders/{order_id}/cancel', [CustomerController::class, 'cancelOrder']);
+
 });
