@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom"; // REVISI: Tambah useSearchParams
 import "./InputData.css";
 
 // --- IMPORT ASSETS ---
@@ -10,7 +10,7 @@ import IconWhatsapp from "../../../assets/icons/icons-customer/whatsapp.png";
 import IconFacebook from "../../../assets/icons/icons-customer/facebook.png";
 import IconLink from "../../../assets/icons/icons-customer/link.png";
 import IconTiktok from "../../../assets/icons/icons-customer/tiktok.png";
-import Loading from "../../../components/Loading"; // <--- IMPORT LOADING
+import Loading from "../../../components/Loading"; 
 
 // SVG Ikon Pin Lokasi (Merah)
 const SvgLocation = () => (
@@ -25,14 +25,27 @@ const SvgLocation = () => (
   </svg>
 );
 
-
 export default function InputData() {
   const navigate = useNavigate();
+
+  // REVISI: Ambil parameter query string dari URL (?cabang=Malang&meja=12)
+  const [searchParams] = useSearchParams();
+  const urlCabang = searchParams.get("cabang") || "Malang"; // Fallback ke 'Malang' jika kosong
+  const urlMeja = searchParams.get("meja") || "12";         // Fallback ke '12' jika kosong
 
   // State untuk menangkap input
   const [customerName, setCustomerName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [tableNumber, setTableNumber] = useState("12");
+  
+  // REVISI: Set nilai state awal langsung mengambil dari data URL QR hasil scan
+  const [tableNumber, setTableNumber] = useState(urlMeja);
+  const [branchName, setBranchName] = useState(urlCabang);
+
+  // REVISI: Sinkronisasi ulang data state jika sewaktu-waktu parameter URL berubah
+  useEffect(() => {
+    if (searchParams.get("meja")) setTableNumber(searchParams.get("meja"));
+    if (searchParams.get("cabang")) setBranchName(searchParams.get("cabang"));
+  }, [searchParams]);
 
   // STATE UNTUK LOADING
   const [isLoading, setIsLoading] = useState(false);
@@ -52,6 +65,7 @@ export default function InputData() {
       localStorage.setItem("customerName", customerName);
       localStorage.setItem("phoneNumber", phoneNumber);
       localStorage.setItem("tableNumber", tableNumber);
+      localStorage.setItem("branchName", branchName); // REVISI: Simpan data cabang juga ke memori
 
       // Matikan Loading dan pindah halaman
       setIsLoading(false);
@@ -102,14 +116,15 @@ export default function InputData() {
                 </div>
                 <div className="id-loc-text">
                   <span className="loc-title">Laoban</span>
-                  <span className="loc-subtitle">Malang</span>
+                  {/* REVISI: Teks nama cabang sekarang berubah secara dinamis sesuai QR */}
+                  <span className="loc-subtitle">{branchName}</span>
                 </div>
               </div>
               <div className="id-input-group">
                 <label>Nomor Meja</label>
                 <input
                   type="text"
-                  className="id-input-table-readonly" // Tambah class baru di CSS jika perlu
+                  className="id-input-table-readonly"
                   value={`Meja ${tableNumber}`}
                   readOnly
                   style={{
@@ -138,7 +153,7 @@ export default function InputData() {
               <div className="id-input-group">
                 <label>No Handphone</label>
                 <input
-                  type="tel"
+                  type="text"
                   placeholder="Contoh: 089123456789"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
