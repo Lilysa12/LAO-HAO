@@ -48,11 +48,11 @@ export default function Payment() {
   // =========================================================
   const triggerMidtransPayment = async (orderId, storedName, storedPhone) => {
     try {
-      const response = await fetch("/api/midtrans/token", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/midtrans/token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          order_id: orderId, // Kirim Order ID yang sama dengan Supabase
+          order_id: orderId,
           total: totalPayment,
           name: storedName,
           phone: storedPhone,

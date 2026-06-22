@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './MenuList.css';
 // IMPORT SUPABASE
 import { supabase } from '../../../supabase';
@@ -25,6 +25,10 @@ export default function MenuList() {
   const navigate = useNavigate();
   const location = useLocation();
   
+  const [searchParams] = useSearchParams();
+const meja = searchParams.get('meja') || location.state?.tableNumber || '-';
+const cabang = searchParams.get('cabang') || location.state?.branch || '';
+
   const customerName = location.state?.customerName || 'Laoban';
   const [activeCategory, setActiveCategory] = useState('MAIN');
   const [cart, setCart] = useState(location.state?.cart || []);
@@ -126,12 +130,13 @@ export default function MenuList() {
       </header>
 
       <div className="ml-top-bar">
-        <div className="ml-welcome-text">
-          <h2 className="ml-greeting">Halo, {customerName}!</h2>
-          <h2 className="ml-page-title">Pilih Menu</h2>
-        </div>
-        <div className="ml-table-badge">Meja 12</div>
-      </div>
+  <div className="ml-welcome-text">
+    <h2 className="ml-greeting">Halo, {customerName}!</h2>
+    <h2 className="ml-page-title">Pilih Menu</h2>
+  </div>
+  {/* Ubah teks "No " agar lebih rapi atau padat */}
+  <div className="ml-table-badge">Meja {meja}</div> 
+</div>
 
       <main className="ml-main-layout">
         <aside className="ml-sidebar">
@@ -150,7 +155,14 @@ export default function MenuList() {
             {displayedItems.map((item, index) => {
               const currentQty = getItemQuantity(item.id);
               return (
-                <div key={`${activeCategory}-${item.id}`} className="ml-card-row animate-slide-up" onClick={() => navigate('/detail', { state: { item, cart, customerName } })} style={{animationDelay: `${index * 0.08}s`}}>
+                <div key={`${activeCategory}-${item.id}`} className="ml-card-row animate-slide-up" onClick={() => navigate('/detail', { state: { 
+  item, 
+  cart, 
+  customerName,
+  tableNumber: meja,
+  branch: cabang
+}})}
+  style={{animationDelay: `${index * 0.08}s`}}>
                   <div className="ml-card-img img-frame">
                     {item.image_url ? <img src={item.image_url} alt={item.name} style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:'8px'}} /> : "No Image"}
                   </div>
@@ -273,7 +285,7 @@ export default function MenuList() {
               
               <button 
                 className="ml-btn-checkout-real efek-klik" 
-                onClick={() => navigate('/checkout', { state: { cart, totalPrice, customerName } })}
+                onClick={() => navigate('/checkout', { state: { cart, totalPrice, customerName, tableNumber: meja, branch: cabang } })}
               >
                 Checkout
               </button>

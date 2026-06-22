@@ -69,7 +69,11 @@ export default function InputData() {
 
       // Matikan Loading dan pindah halaman
       setIsLoading(false);
-      navigate("/order-list");
+     navigate(`/order-list${location.search}`, {
+  state: {
+    customerName,
+  },
+});
     }, 1500);
   };
 

@@ -11,6 +11,7 @@
 .md-logo { height: 45px; object-fit: contain; }
 
 /* --- TOP BAR --- */
+
 .md-top-bar { padding: 30px 60px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #F3F4F6; background: #fff; flex-shrink: 0;}
 .md-greeting { margin: 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #A0AEC0; }
 .md-page-title { margin: 5px 0 0 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; color: #212529; font-weight: 800; }
