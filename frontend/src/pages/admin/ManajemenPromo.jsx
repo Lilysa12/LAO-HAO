@@ -42,7 +42,7 @@ const ManajemenPromo = () => {
 
   const fetchPromos = () => {
     setIsLoading(true);
-    axios.get(`http://127.0.0.1:8000/api/admin/promos?_t=${new Date().getTime()}`)
+    axios.get(`/api/admin/promos?_t=${new Date().getTime()}`)
       .then(response => {
         setPromoData(response.data);
         setIsLoading(false);
@@ -102,9 +102,9 @@ const ManajemenPromo = () => {
     const payload = { ...formData, expired_at: formattedDate };
     try {
       if (isEditMode) {
-        await axios.post(`http://127.0.0.1:8000/api/admin/promos/${editId}/update`, payload);
+        await axios.post(`/api/admin/promos/${editId}/update`, payload);
       } else {
-        await axios.post('http://127.0.0.1:8000/api/admin/promos', payload);
+        await axios.post('/api/admin/promos', payload);
       }
       setIsModalOpen(false);
       fetchPromos();
@@ -118,7 +118,7 @@ const ManajemenPromo = () => {
   const handleDeletePromo = async (id, promoCode) => {
     if (window.confirm(`Hapus promo ${promoCode}?`)) {
       try {
-        await axios.post(`http://127.0.0.1:8000/api/admin/promos/${id}/delete`);
+        await axios.post(`/api/admin/promos/${id}/delete`);
         fetchPromos(); 
       } catch (error) { 
         alert('Gagal menghapus promo.'); 
@@ -128,7 +128,7 @@ const ManajemenPromo = () => {
 
   const handleToggleStatus = async (id) => {
     try {
-      await axios.post(`http://127.0.0.1:8000/api/admin/promos/${id}/toggle-status`);
+      await axios.post(`/api/admin/promos/${id}/toggle-status`);
       fetchPromos();
     } catch (error) { 
       alert('Gagal mengubah status.'); 

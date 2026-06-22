@@ -17,7 +17,7 @@ import iconDownload from '../../assets/Icons/icons-admin/download.svg';
 import iconPrinter from '../../assets/Icons/icons-admin/printer.svg';
 import iconLaporanKasir from '../../assets/Icons/icons-admin/laporankasir.svg';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/kasir';
+const API_BASE_URL = '/api/kasir';
 
 const LaporanRiwayat = () => {
   const navigate = useNavigate();

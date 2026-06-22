@@ -30,7 +30,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
     setIsLoading(true);
     setErrorMsg(null);
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/kasir/orders?_t=${new Date().getTime()}`);
+      const response = await axios.get(`/api/kasir/orders?_t=${new Date().getTime()}`);
       setOrders(response.data);
     } catch (error) {
       console.error("Gagal mengambil data pesanan:", error);
@@ -74,7 +74,7 @@ useEffect(() => {
 
   const handleUpdateStatus = async (id, newStatus) => {
     try {
-      await axios.post(`http://127.0.0.1:8000/api/kasir/orders/${id}/status`, { status: newStatus });
+      await axios.post(`/api/kasir/orders/${id}/status`, { status: newStatus });
       fetchOrders(); 
     } catch (error) {
       const pesanError = error.response?.data?.message || error.message;

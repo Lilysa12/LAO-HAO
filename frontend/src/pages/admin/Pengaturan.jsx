@@ -42,7 +42,7 @@ const Pengaturan = () => {
   const fetchSettings = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/admin/settings?_t=${new Date().getTime()}`);
+      const response = await axios.get(`/api/admin/settings?_t=${new Date().getTime()}`);
       const data = response.data;
       setFormData({
         restaurant_name: data.restaurant_name || '',
@@ -87,7 +87,7 @@ const Pengaturan = () => {
         service_charge: formData.service_charge ? parseInt(formData.service_charge) : 0
       };
 
-      await axios.post('http://127.0.0.1:8000/api/admin/settings/update', payload);
+      await axios.post('/api/admin/settings/update', payload);
       alert('Berhasil! Pengaturan sistem telah disimpan ke Supabase.');
       fetchSettings();
     } catch (error) {

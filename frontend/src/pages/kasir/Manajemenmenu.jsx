@@ -13,7 +13,7 @@ import iconLaporan from "../../assets/Icons/icons-admin/laporan.svg";
 import iconQrMeja from "../../assets/Icons/icons-admin/QrMeja.svg";
 import iconLogout from "../../assets/Icons/icons-admin/logout.svg";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api/kasir";
+const API_BASE_URL = "/api/kasir";
 
 const initialFormData = {
   name: "",

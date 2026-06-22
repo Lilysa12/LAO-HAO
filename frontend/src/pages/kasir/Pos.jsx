@@ -31,7 +31,7 @@ const Pos = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/kasir/menus?_t=${new Date().getTime()}`,
+        `/api/kasir/menus?_t=${new Date().getTime()}`,
       );
       setMenus(response.data);
     } catch (error) {
@@ -144,7 +144,7 @@ const Pos = () => {
 };
 
     try {
-      await axios.post(`http://127.0.0.1:8000/api/kasir/orders`, payload);
+      await axios.post(`/api/kasir/orders`, payload);
       alert(`Sukses! Pesanan ${customerName} berhasil dibuat.`);
       setCart([]);
       setCustomerName("");

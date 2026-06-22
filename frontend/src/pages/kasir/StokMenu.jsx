@@ -17,7 +17,7 @@ import iconQrMeja from '../../assets/Icons/icons-admin/QrMeja.svg';
 import iconLogout from '../../assets/Icons/icons-admin/logout.svg';
 import iconUpdateStok from '../../assets/Icons/icons-admin/updatestok.svg';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/kasir';
+const API_BASE_URL = '/api/kasir';
 
 const StokMenu = () => {
     const navigate = useNavigate();

@@ -29,7 +29,7 @@ const QrMeja = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/kasir/tables?_t=${new Date().getTime()}`,
+        `/api/kasir/tables?_t=${new Date().getTime()}`,
       );
       setTables(response.data);
     } catch (error) {

@@ -51,9 +51,9 @@ const OverviewCabang = () => {
       try {
         const timeStamp = new Date().getTime();
         const [resTrx, resPromo, resBranch] = await Promise.all([
-          axios.get(`http://127.0.0.1:8000/api/admin/transactions?_t=${timeStamp}`),
-          axios.get(`http://127.0.0.1:8000/api/admin/promos?_t=${timeStamp}`),
-          axios.get(`http://127.0.0.1:8000/api/admin/branches?_t=${timeStamp}`)
+          axios.get(`/api/admin/transactions?_t=${timeStamp}`),
+          axios.get(`/api/admin/promos?_t=${timeStamp}`),
+          axios.get(`/api/admin/branches?_t=${timeStamp}`)
         ]);
 
         const dataTrx = resTrx.data;

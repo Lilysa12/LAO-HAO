@@ -43,7 +43,7 @@ const LaporanPenjualanPusat = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    axios.get(`http://127.0.0.1:8000/api/admin/transactions?_t=${new Date().getTime()}`)
+    axios.get(`/api/admin/transactions?_t=${new Date().getTime()}`)
       .then(response => {
         setAllTransactions(response.data);
         setIsLoading(false);

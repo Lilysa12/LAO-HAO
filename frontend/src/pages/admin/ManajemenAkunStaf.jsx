@@ -49,7 +49,7 @@ const ManajemenAkunStaf = () => {
   const fetchStaffData = () => {
     setIsLoading(true);
     axios
-      .get(`http://127.0.0.1:8000/api/admin/staff?_t=${new Date().getTime()}`)
+      .get(`/api/admin/staff?_t=${new Date().getTime()}`)
       .then((response) => {
         setStaffData(response.data);
         setIsLoading(false);
@@ -99,12 +99,12 @@ const ManajemenAkunStaf = () => {
     try {
       if (isEditMode) {
         await axios.post(
-          `http://127.0.0.1:8000/api/admin/staff/${editId}/update`,
+          `/api/admin/staff/${editId}/update`,
           formData,
         );
         alert("Berhasil! Data staf telah diperbarui.");
       } else {
-        await axios.post("http://127.0.0.1:8000/api/admin/staff", formData);
+        await axios.post("/api/admin/staff", formData);
         alert("Berhasil! Akun staf baru telah ditambahkan.");
       }
 
@@ -126,7 +126,7 @@ const ManajemenAkunStaf = () => {
     );
     if (isConfirmed) {
       try {
-        await axios.post(`http://127.0.0.1:8000/api/admin/staff/${id}/delete`);
+        await axios.post(`/api/admin/staff/${id}/delete`);
         alert("Akun staf berhasil dihapus!");
         fetchStaffData();
       } catch (error) {
