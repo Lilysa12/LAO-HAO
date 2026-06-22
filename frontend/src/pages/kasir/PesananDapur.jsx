@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
 import axios from 'axios';
 import './PesananDapur.css';
 
@@ -21,6 +22,9 @@ const PesananDapur = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null); 
+  const supabaseUrl = 'https://jxeaplzfgydytostlvmi.supabase.co';
+const supabaseKey = 'sb_publishable_PPdS9m0kJl8rKerxbRDMLA_Nh9JaOCY';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
   const fetchOrders = async () => {
     setIsLoading(true);
@@ -37,10 +41,28 @@ const PesananDapur = () => {
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
+    // 1. Tarik data awal saat halaman pertama kali dibuka
     fetchOrders();
-    const intervalId = setInterval(fetchOrders, 10000);
-    return () => clearInterval(intervalId);
+
+    // 2. Nyalakan Radar Realtime Supabase
+    const orderChannel = supabase
+      .channel('pesanan-dapur-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders' }, // Mendengarkan event INSERT (pesanan baru) dan UPDATE (perubahan status)
+        (payload) => {
+          console.log('Ting! Ada perubahan di tabel orders:', payload);
+          // 3. Panggil ulang API Laravel agar format data (waktu, item) tetap rapi
+          fetchOrders(); 
+        }
+      )
+      .subscribe();
+
+    // 4. Matikan radar saat kasir pindah ke halaman lain (biar memori nggak bocor)
+    return () => {
+      supabase.removeChannel(orderChannel);
+    };
   }, []);
 
   // --- FIX: FUNGSI LOGOUT DIPERBAIKI (Hapus Role) ---
@@ -63,7 +85,8 @@ const PesananDapur = () => {
   const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
   const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
 
-  const processingOrders = orders.filter(order => order.status === 'diproses');
+  // Menggabungkan pesanan baru (pending) agar masuk ke kolom Sedang Diproses
+  const processingOrders = orders.filter(order => order.status === 'diproses' || order.status === 'pending');
   const readyOrders = orders.filter(order => order.status === 'siap');
 
   return (
@@ -216,6 +239,7 @@ const PesananDapur = () => {
       </main>
     </div>
   );
+  
 };
 
 export default PesananDapur;
