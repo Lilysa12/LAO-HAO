@@ -8,25 +8,25 @@ use Midtrans\Config;
 
 class MidtransController extends Controller
 {
-    public function getToken(Request $request)
-    {
+   public function getToken(Request $request)
+{
+    try {
         Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = false;
+        Config::$isProduction = false; // ganti true kalau production
 
-        // 1. Tangkap pilihan dari React
         $selectedMethod = $request->payment_type;
         
-// 2. Mapping pilihan React ke kode asli Midtrans
         $enabledPayment = [];
         if ($selectedMethod === 'qris') {
-            $enabledPayment = ['other_qris']; // <--- UBAH JADI 'other_qris'
+            $enabledPayment = ['other_qris'];
         } elseif ($selectedMethod === 'gopay') {
             $enabledPayment = ['gopay'];
         } elseif ($selectedMethod === 'shopee') {
             $enabledPayment = ['shopeepay'];
         } else {
-            $enabledPayment = ['other_qris', 'gopay', 'shopeepay']; // <--- INI JUGA UBAH
+            $enabledPayment = ['other_qris', 'gopay', 'shopeepay'];
         }
+
         $params = [
             'transaction_details' => [
                 'order_id' => $request->order_id ?? 'LHO-' . time(), 
@@ -36,14 +36,19 @@ class MidtransController extends Controller
                 'first_name' => $request->name ?? 'Guest',
                 'phone' => $request->phone ?? '-',
             ],
-            // 3. Masukkan array yang isinya cuma 1 metode tadi
             'enabled_payments' => $enabledPayment
         ];
 
         $snapToken = Snap::getSnapToken($params);
 
+        return response()->json(['token' => $snapToken]);
+
+    } catch (\Exception $e) {
         return response()->json([
-            'token' => $snapToken
-        ]);
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
     }
+}
 }
