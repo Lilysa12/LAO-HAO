@@ -598,12 +598,13 @@ class CashierController extends Controller
         return json_encode($items);
     }
 
-    private function decodeItems($items): ?array
+    private function decodeItems($items)
     {
         if ($items === null) {
             return null;
         }
 
+        // Jika sudah berbentuk array (jarang terjadi di pgsql string, tapi jaga-jaga)
         if (is_array($items)) {
             return $items;
         }
@@ -612,9 +613,17 @@ class CashierController extends Controller
             return null;
         }
 
+        // Coba decode JSON
         $decoded = json_decode($items, true);
 
-        return is_array($decoded) ? $decoded : null;
+        // Jika berhasil decode dan bentuknya array, kembalikan array tersebut
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        // ✅ PERBAIKAN: Jika BUKAN JSON (teks murni seperti "Nasi Ayam (1)"), 
+        // jangan kembalikan null! Kembalikan saja string aslinya agar React bisa memprosesnya.
+        return trim($items);
     }
 
     private function generateOrderCode(): string

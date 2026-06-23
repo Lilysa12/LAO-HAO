@@ -22,9 +22,10 @@ const PesananDapur = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null); 
+
   const supabaseUrl = 'https://jxeaplzfgydytostlvmi.supabase.co';
-const supabaseKey = 'sb_publishable_PPdS9m0kJl8rKerxbRDMLA_Nh9JaOCY';
-const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabaseKey = 'sb_publishable_PPdS9m0kJl8rKerxbRDMLA_Nh9JaOCY';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
   const fetchOrders = async () => {
     setIsLoading(true);
@@ -41,31 +42,26 @@ const supabase = createClient(supabaseUrl, supabaseKey);
     }
   };
 
-useEffect(() => {
-    // 1. Tarik data awal saat halaman pertama kali dibuka
+  useEffect(() => {
     fetchOrders();
 
-    // 2. Nyalakan Radar Realtime Supabase
     const orderChannel = supabase
       .channel('pesanan-dapur-channel')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'orders' }, // Mendengarkan event INSERT (pesanan baru) dan UPDATE (perubahan status)
+        { event: '*', schema: 'public', table: 'orders' }, 
         (payload) => {
           console.log('Ting! Ada perubahan di tabel orders:', payload);
-          // 3. Panggil ulang API Laravel agar format data (waktu, item) tetap rapi
           fetchOrders(); 
         }
       )
       .subscribe();
 
-    // 4. Matikan radar saat kasir pindah ke halaman lain (biar memori nggak bocor)
     return () => {
       supabase.removeChannel(orderChannel);
     };
   }, []);
 
-  // --- FIX: FUNGSI LOGOUT DIPERBAIKI (Hapus Role) ---
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('userRole');
@@ -85,9 +81,53 @@ useEffect(() => {
   const getMenuClass = (path) => location.pathname === path ? "menu-item active" : "menu-item";
   const getIconClass = (path) => location.pathname === path ? "menu-icon-svg" : "menu-icon-svg icon-white";
 
-  // Menggabungkan pesanan baru (pending) agar masuk ke kolom Sedang Diproses
-  const processingOrders = orders.filter(order => order.status === 'diproses' || order.status === 'pending');
-  const readyOrders = orders.filter(order => order.status === 'siap');
+  const processingOrders = orders.filter(
+    (order) => order.status?.toLowerCase() === 'pending' || order.status?.toLowerCase() === 'cooking'
+  );
+  
+  const readyOrders = orders.filter(
+    (order) => order.status?.toLowerCase() === 'ready'
+  );
+
+  // ✅ PARSING SUPER KEBAL VERSI REACT (Dipindah ke atas return)
+  const renderOrderItems = (rawItems) => {
+    if (!rawItems) return <div className="order-item" style={{ color: 'gray', fontSize: '12px' }}>Detail tidak tersedia</div>;
+
+    // 1. Jika datanya sudah berupa Array rapi
+    if (Array.isArray(rawItems)) {
+      return rawItems.map((item, idx) => (
+        <div key={idx} className="order-item">
+          <span className="item-qty">{item.qty || item.quantity || 1}x</span>
+          <span className="item-name">{item.name || item.nama_menu}</span>
+        </div>
+      ));
+    }
+
+    // 2. Jika datanya berupa String (Teks biasa dari Supabase)
+    if (typeof rawItems === 'string') {
+      try {
+        // Coba baca siapa tahu ini JSON String
+        const parsed = JSON.parse(rawItems);
+        if (Array.isArray(parsed)) {
+          return parsed.map((item, idx) => (
+            <div key={idx} className="order-item">
+              <span className="item-qty">{item.qty || item.quantity || 1}x</span>
+              <span className="item-name">{item.name || item.nama_menu}</span>
+            </div>
+          ));
+        }
+      } catch (e) {
+        // Jika gagal JSON parse, berarti murni teks jadul (Contoh: "Nasi Ayam (1), Mie (2)")
+        // Langsung tampilkan apa adanya!
+        return (
+          <div className="order-item">
+            <span className="item-name">{rawItems}</span>
+          </div>
+        );
+      }
+    }
+    return null;
+  };
 
   return (
     <div className="admin-container">
@@ -107,7 +147,6 @@ useEffect(() => {
             <Link to="/kasir/qr-meja" className={getMenuClass('/kasir/qr-meja')}><img src={iconQrMeja} alt="QR" className={getIconClass('/kasir/qr-meja')} /> QR Code Meja</Link>
             <div className="divider"></div>
             
-            {/* --- FIX: TOMBOL KEMBALI KE PUSAT SEKARANG MEMICU LOGOUT --- */}
             <button onClick={handleLogout} className="menu-item" style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer', fontFamily: 'inherit', color: 'white', display: 'flex', alignItems: 'center', fontSize: '13px', gap: '12px', padding: '10px 16px' }}>
               <img src={iconDashboard} alt="Admin" className="menu-icon-svg icon-white" /> Kembali ke Pusat
             </button>
@@ -149,7 +188,10 @@ useEffect(() => {
                 <div className="loading-state">Mensinkronkan pesanan...</div>
             ) : (
               <div className="orders-grid">
-                {/* KOLOM SEDANG DIPROSES */}
+                
+                {/* ========================================== */}
+                {/* KOLOM SEDANG DIPROSES (Pending & Cooking)    */}
+                {/* ========================================== */}
                 <div className="order-column column-processing">
                   <div className="column-header">
                     <h2>Sedang Diproses</h2>
@@ -173,25 +215,31 @@ useEffect(() => {
                       </div>
                       
                       <div className="order-items">
-                        {order.items && order.items.map((item, idx) => (
-                          <div key={idx} className="order-item">
-                            <span className="item-qty">{item.qty}x</span>
-                            <span className="item-name">{item.name}</span>
-                          </div>
-                        ))}
+                        {/* ✅ MENGGUNAKAN FUNGSI HELPER BARU */}
+                        {renderOrderItems(order.items)}
                       </div>
 
                       <div className="order-card-footer">
                         <span className="order-id">ID: {order.order_id}</span>
-                        <button className="btn-action" onClick={() => handleUpdateStatus(order.id, 'siap')}>
-                          <img src={iconCeklis} alt="Check" className="ceklis-icon" /> Sajikan / Selesai
-                        </button>
+                        
+                        {order.status?.toLowerCase() === 'pending' ? (
+                          <button className="btn-action" onClick={() => handleUpdateStatus(order.id, 'cooking')}>
+                            <img src={iconCeklis} alt="Check" className="ceklis-icon" /> Mulai Masak
+                          </button>
+                        ) : (
+                          <button className="btn-action" style={{ backgroundColor: '#eab308' }} onClick={() => handleUpdateStatus(order.id, 'ready')}>
+                            <img src={iconCeklis} alt="Check" className="ceklis-icon" /> Selesai Masak
+                          </button>
+                        )}
+                        
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* KOLOM SIAP DISAJIKAN */}
+                {/* ========================================== */}
+                {/* KOLOM SIAP DISAJIKAN (Ready)                 */}
+                {/* ========================================== */}
                 <div className="order-column column-ready">
                   <div className="column-header">
                     <h2>Siap Disajikan</h2>
@@ -215,31 +263,28 @@ useEffect(() => {
                       </div>
 
                       <div className="order-items">
-                        {order.items && order.items.map((item, idx) => (
-                          <div key={idx} className="order-item">
-                            <span className="item-qty">{item.qty}x</span>
-                            <span className="item-name">{item.name}</span>
-                          </div>
-                        ))}
+                        {/* ✅ MENGGUNAKAN FUNGSI HELPER BARU */}
+                        {renderOrderItems(order.items)}
                       </div>
 
                       <div className="order-card-footer">
                         <span className="order-id">ID: {order.order_id}</span>
-                        <button className="btn-action btn-ready" onClick={() => handleUpdateStatus(order.id, 'selesai')}>
+                        <button className="btn-action btn-ready" onClick={() => handleUpdateStatus(order.id, 'completed')}>
                           <img src={iconCeklis} alt="Check" className="ceklis-icon" /> Pesanan Diserahkan
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
+
               </div>
             )}
+            
           </div>
         </div>
       </main>
     </div>
   );
-  
 };
 
 export default PesananDapur;
